@@ -1,112 +1,114 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import type { Instrument, InstrumentType } from '@investor-app/shared'
-import { fetchInstruments } from '@/services/api'
-import { formatDate, formatTimeToMaturity } from '@/composables/useFormat'
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import type { Instrument, InstrumentType } from "@investor-app/shared";
+import { fetchInstruments } from "@/services/api";
+import { formatDate, formatTimeToMaturity } from "@/composables/useFormat";
 
-const router = useRouter()
+const router = useRouter();
 
-const instruments = ref<Instrument[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
-const search = ref('')
-const activeType = ref<InstrumentType | 'ALL'>('ALL')
-const sortKey = ref<'ticker' | 'maturityDate' | 'currency'>('maturityDate')
-const sortDir = ref<'asc' | 'desc'>('asc')
+const instruments = ref<Instrument[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+const search = ref("");
+const activeType = ref<InstrumentType | "ALL">("ALL");
+const sortKey = ref<"ticker" | "maturityDate" | "currency">("maturityDate");
+const sortDir = ref<"asc" | "desc">("asc");
 
-const TYPE_LABELS: Record<InstrumentType | 'ALL', string> = {
-  ALL:    'Todos',
-  BOND:   'Bonos',
-  LETTER: 'Letras',
-  ON:     'ONs',
-}
+const TYPE_LABELS: Record<InstrumentType | "ALL", string> = {
+  ALL: "Todos",
+  BOND: "Bonos",
+  LETTER: "Letras",
+  ON: "ONs",
+};
 
 const TYPE_ORDER: Record<InstrumentType, number> = {
   LETTER: 0,
-  BOND:   1,
-  ON:     2,
-}
+  BOND: 1,
+  ON: 2,
+};
 
 onMounted(async () => {
   try {
-    instruments.value = await fetchInstruments()
+    instruments.value = await fetchInstruments();
   } catch {
-    error.value = 'No se pudieron cargar los instrumentos.'
+    error.value = "No se pudieron cargar los instrumentos.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 
 const filtered = computed(() => {
   let list = instruments.value.filter((i) => {
-    const matchesType = activeType.value === 'ALL' || i.type === activeType.value
-    const q = search.value.toLowerCase()
+    const matchesType =
+      activeType.value === "ALL" || i.type === activeType.value;
+    const q = search.value.toLowerCase();
     const matchesSearch =
-      q === '' ||
+      q === "" ||
       i.ticker.toLowerCase().includes(q) ||
       i.name.toLowerCase().includes(q) ||
-      (i.issuer ?? '').toLowerCase().includes(q)
-    return matchesType && matchesSearch
-  })
+      (i.issuer ?? "").toLowerCase().includes(q);
+    return matchesType && matchesSearch;
+  });
 
   list = [...list].sort((a, b) => {
-    let cmp = 0
-    if (sortKey.value === 'ticker') {
-      cmp = a.ticker.localeCompare(b.ticker)
-    } else if (sortKey.value === 'maturityDate') {
-      cmp = a.maturityDate.localeCompare(b.maturityDate)
-    } else if (sortKey.value === 'currency') {
-      cmp = a.currency.localeCompare(b.currency)
+    let cmp = 0;
+    if (sortKey.value === "ticker") {
+      cmp = a.ticker.localeCompare(b.ticker);
+    } else if (sortKey.value === "maturityDate") {
+      cmp = a.maturityDate.localeCompare(b.maturityDate);
+    } else if (sortKey.value === "currency") {
+      cmp = a.currency.localeCompare(b.currency);
     }
-    // Secondary sort: by type order, then ticker
-    if (cmp === 0) cmp = TYPE_ORDER[a.type] - TYPE_ORDER[b.type]
-    if (cmp === 0) cmp = a.ticker.localeCompare(b.ticker)
-    return sortDir.value === 'asc' ? cmp : -cmp
-  })
+    if (cmp === 0) cmp = TYPE_ORDER[a.type] - TYPE_ORDER[b.type];
+    if (cmp === 0) cmp = a.ticker.localeCompare(b.ticker);
+    return sortDir.value === "asc" ? cmp : -cmp;
+  });
 
-  return list
-})
+  return list;
+});
 
-// Group filtered list by type for visual separators
 const grouped = computed(() => {
-  if (activeType.value !== 'ALL') return null
+  if (activeType.value !== "ALL") return null;
 
-  const groups: Record<string, Instrument[]> = {}
-  for (const i of filtered.value) {
-    if (!groups[i.type]) groups[i.type] = []
-    groups[i.type]!.push(i)
-  }
-  return groups
-})
+  const list = filtered.value; // explicit dependency on filtered
+  if (list.length === 0) return null;
+
+  const order: InstrumentType[] = ["LETTER", "BOND", "ON"];
+
+  return order
+    .map((type) => ({
+      type,
+      instruments: list.filter((i) => i.type === type),
+    }))
+    .filter((g) => g.instruments.length > 0);
+});
 
 function toggleSort(key: typeof sortKey.value): void {
   if (sortKey.value === key) {
-    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+    sortDir.value = sortDir.value === "asc" ? "desc" : "asc";
   } else {
-    sortKey.value = key
-    sortDir.value = 'asc'
+    sortKey.value = key;
+    sortDir.value = "asc";
   }
 }
 
 function sortIcon(key: typeof sortKey.value): string {
-  if (sortKey.value !== key) return '↕'
-  return sortDir.value === 'asc' ? '↑' : '↓'
+  if (sortKey.value !== key) return "↕";
+  return sortDir.value === "asc" ? "↑" : "↓";
 }
 
 function goToInstrument(ticker: string): void {
-  router.push({ name: 'instrument', params: { ticker } })
+  router.push({ name: "instrument", params: { ticker } });
 }
 
 function goToCompare(): void {
-  router.push({ name: 'compare' })
+  router.push({ name: "compare" });
 }
 </script>
 
 <template>
   <div class="home">
-
-    <!-- Header -->
     <header class="home-header">
       <div class="header-left">
         <h1 class="home-title font-display">Mercado Argentino</h1>
@@ -114,16 +116,13 @@ function goToCompare(): void {
           Bonos, letras y obligaciones negociables · BYMA
         </p>
       </div>
-      <button class="compare-cta" @click="goToCompare">
-        Comparar →
-      </button>
+      <button class="compare-cta" @click="goToCompare">Comparar →</button>
     </header>
 
-    <!-- Controls -->
     <div class="controls">
       <div class="type-filters">
         <button
-          v-for="type in (['ALL', 'BOND', 'LETTER', 'ON'] as const)"
+          v-for="type in ['ALL', 'BOND', 'LETTER', 'ON'] as const"
           :key="type"
           class="type-btn"
           :class="{ active: activeType === type }"
@@ -157,96 +156,115 @@ function goToCompare(): void {
         </thead>
         <tbody>
           <tr v-for="n in 8" :key="n">
-            <td><div class="skeleton" style="height: 0.875rem; width: 60px" /></td>
-            <td><div class="skeleton" style="height: 0.875rem; width: 200px" /></td>
-            <td><div class="skeleton" style="height: 0.875rem; width: 50px" /></td>
-            <td><div class="skeleton" style="height: 0.875rem; width: 40px" /></td>
-            <td><div class="skeleton" style="height: 0.875rem; width: 90px" /></td>
-            <td><div class="skeleton" style="height: 0.875rem; width: 50px" /></td>
+            <td>
+              <div class="skeleton" style="height: 0.875rem; width: 60px" />
+            </td>
+            <td>
+              <div class="skeleton" style="height: 0.875rem; width: 200px" />
+            </td>
+            <td>
+              <div class="skeleton" style="height: 0.875rem; width: 50px" />
+            </td>
+            <td>
+              <div class="skeleton" style="height: 0.875rem; width: 40px" />
+            </td>
+            <td>
+              <div class="skeleton" style="height: 0.875rem; width: 90px" />
+            </td>
+            <td>
+              <div class="skeleton" style="height: 0.875rem; width: 50px" />
+            </td>
             <td></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Error -->
     <div v-else-if="error" class="state-msg">{{ error }}</div>
 
-    <!-- Empty -->
     <div v-else-if="filtered.length === 0" class="state-msg">
       Sin resultados para "{{ search }}".
     </div>
 
-    <!-- Table — grouped by type -->
-    <div v-else-if="grouped" class="table-wrapper card">
-      <table class="market-table">
-        <thead>
-          <tr>
-            <th class="sortable" @click="toggleSort('ticker')">
-              Ticker <span class="sort-icon">{{ sortIcon('ticker') }}</span>
-            </th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th class="sortable" @click="toggleSort('currency')">
-              Moneda <span class="sort-icon">{{ sortIcon('currency') }}</span>
-            </th>
-            <th class="sortable" @click="toggleSort('maturityDate')">
-              Vencimiento <span class="sort-icon">{{ sortIcon('maturityDate') }}</span>
-            </th>
-            <th>Restante</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="(group, type) in grouped" :key="type">
-            <!-- Group separator row -->
-            <tr class="group-row">
-              <td colspan="7">
-                <span class="group-label" :data-type="type">
-                  {{ TYPE_LABELS[type as InstrumentType] ?? type }}
-                </span>
-                <span class="group-count font-mono">{{ group.length }}</span>
-              </td>
-            </tr>
-            <!-- Instrument rows -->
-            <tr
-              v-for="instrument in group"
-              :key="instrument.ticker"
-              class="instrument-row"
-              @click="goToInstrument(instrument.ticker)"
-            >
-              <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
-              <td class="name-cell">{{ instrument.name }}</td>
-              <td>
-                <span class="type-badge" :data-type="instrument.type">
-                  {{ instrument.type }}
-                </span>
-              </td>
-              <td class="font-mono currency-cell">{{ instrument.currency }}</td>
-              <td class="font-mono date-cell">{{ formatDate(instrument.maturityDate) }}</td>
-              <td class="font-mono ttm-cell">{{ formatTimeToMaturity(instrument.maturityDate) }}</td>
-              <td class="arrow-cell">→</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    <!-- Grouped table -->
+    <template v-else-if="grouped">
+      <div v-for="group in grouped" :key="group.type" class="group-block">
+        <div class="group-header">
+          <span class="group-label" :data-type="group.type">
+            {{ TYPE_LABELS[group.type] }}
+          </span>
+          <span class="group-count font-mono">{{
+            group.instruments.length
+          }}</span>
+        </div>
+        <div class="table-wrapper card">
+          <table class="market-table">
+            <thead>
+              <tr>
+                <th class="sortable" @click="toggleSort('ticker')">
+                  Ticker <span class="sort-icon">{{ sortIcon("ticker") }}</span>
+                </th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th class="sortable" @click="toggleSort('currency')">
+                  Moneda
+                  <span class="sort-icon">{{ sortIcon("currency") }}</span>
+                </th>
+                <th class="sortable" @click="toggleSort('maturityDate')">
+                  Vencimiento
+                  <span class="sort-icon">{{ sortIcon("maturityDate") }}</span>
+                </th>
+                <th>Restante</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="instrument in group.instruments"
+                :key="instrument.ticker"
+                class="instrument-row"
+                @click="goToInstrument(instrument.ticker)"
+              >
+                <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
+                <td class="name-cell">{{ instrument.name }}</td>
+                <td>
+                  <span class="type-badge" :data-type="instrument.type">{{
+                    instrument.type
+                  }}</span>
+                </td>
+                <td class="font-mono currency-cell">
+                  {{ instrument.currency }}
+                </td>
+                <td class="font-mono date-cell">
+                  {{ formatDate(instrument.maturityDate) }}
+                </td>
+                <td class="font-mono ttm-cell">
+                  {{ formatTimeToMaturity(instrument.maturityDate) }}
+                </td>
+                <td class="arrow-cell">→</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </template>
 
-    <!-- Table — flat (filtered by type) -->
+    <!-- Flat table -->
     <div v-else class="table-wrapper card">
       <table class="market-table">
         <thead>
           <tr>
             <th class="sortable" @click="toggleSort('ticker')">
-              Ticker <span class="sort-icon">{{ sortIcon('ticker') }}</span>
+              Ticker <span class="sort-icon">{{ sortIcon("ticker") }}</span>
             </th>
             <th>Nombre</th>
             <th>Tipo</th>
             <th class="sortable" @click="toggleSort('currency')">
-              Moneda <span class="sort-icon">{{ sortIcon('currency') }}</span>
+              Moneda <span class="sort-icon">{{ sortIcon("currency") }}</span>
             </th>
             <th class="sortable" @click="toggleSort('maturityDate')">
-              Vencimiento <span class="sort-icon">{{ sortIcon('maturityDate') }}</span>
+              Vencimiento
+              <span class="sort-icon">{{ sortIcon("maturityDate") }}</span>
             </th>
             <th>Restante</th>
             <th></th>
@@ -262,24 +280,26 @@ function goToCompare(): void {
             <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
             <td class="name-cell">{{ instrument.name }}</td>
             <td>
-              <span class="type-badge" :data-type="instrument.type">
-                {{ instrument.type }}
-              </span>
+              <span class="type-badge" :data-type="instrument.type">{{
+                instrument.type
+              }}</span>
             </td>
             <td class="font-mono currency-cell">{{ instrument.currency }}</td>
-            <td class="font-mono date-cell">{{ formatDate(instrument.maturityDate) }}</td>
-            <td class="font-mono ttm-cell">{{ formatTimeToMaturity(instrument.maturityDate) }}</td>
+            <td class="font-mono date-cell">
+              {{ formatDate(instrument.maturityDate) }}
+            </td>
+            <td class="font-mono ttm-cell">
+              {{ formatTimeToMaturity(instrument.maturityDate) }}
+            </td>
             <td class="arrow-cell">→</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Footer count -->
     <p v-if="!loading && !error" class="result-count font-mono">
-      {{ filtered.length }} instrumento{{ filtered.length !== 1 ? 's' : '' }}
+      {{ filtered.length }} instrumento{{ filtered.length !== 1 ? "s" : "" }}
     </p>
-
   </div>
 </template>
 
@@ -291,7 +311,6 @@ function goToCompare(): void {
   padding-top: 1rem;
 }
 
-/* Header */
 .home-header {
   display: flex;
   align-items: flex-end;
@@ -336,7 +355,6 @@ function goToCompare(): void {
   color: #000;
 }
 
-/* Controls */
 .controls {
   display: flex;
   align-items: center;
@@ -383,15 +401,17 @@ function goToCompare(): void {
   width: 260px;
   transition: border-color var(--transition-base);
 }
-.search-input:focus { border-color: var(--color-accent); }
-.search-input::placeholder { color: var(--color-text-dim); }
+.search-input:focus {
+  border-color: var(--color-accent);
+}
+.search-input::placeholder {
+  color: var(--color-text-dim);
+}
 
-/* Table wrapper */
 .table-wrapper {
   overflow-x: auto;
 }
 
-/* Table */
 .market-table {
   width: 100%;
   border-collapse: collapse;
@@ -400,8 +420,7 @@ function goToCompare(): void {
 
 thead tr {
   border-bottom: 2px solid var(--color-border);
-  position: sticky;
-  top: 56px; /* nav height */
+  top: 56px;
   background: var(--color-bg-elevated);
   z-index: 10;
 }
@@ -422,7 +441,9 @@ th.sortable {
   cursor: pointer;
   transition: color var(--transition-base);
 }
-th.sortable:hover { color: var(--color-accent); }
+th.sortable:hover {
+  color: var(--color-accent);
+}
 
 .sort-icon {
   font-size: 0.7rem;
@@ -430,12 +451,17 @@ th.sortable:hover { color: var(--color-accent); }
   margin-left: 0.25rem;
 }
 
-/* Group separator row */
-.group-row td {
-  padding: 0.5rem 1rem;
-  background: var(--color-bg-sunken);
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border-dim);
+.group-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
 }
 
 .group-label {
@@ -443,27 +469,37 @@ th.sortable:hover { color: var(--color-accent); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-right: 0.625rem;
+  margin-right: 0.5rem;
 }
-
-.group-label[data-type='BOND']   { color: #22c55e; }
-.group-label[data-type='LETTER'] { color: #60a5fa; }
-.group-label[data-type='ON']     { color: #f59e0b; }
+.group-label[data-type="BOND"] {
+  color: #22c55e;
+}
+.group-label[data-type="LETTER"] {
+  color: #60a5fa;
+}
+.group-label[data-type="ON"] {
+  color: #f59e0b;
+}
 
 .group-count {
   font-size: 0.68rem;
   color: var(--color-text-dim);
 }
 
-/* Instrument rows */
 .instrument-row {
   border-bottom: 1px solid var(--color-border-dim);
   cursor: pointer;
   transition: background var(--transition-base);
 }
-.instrument-row:last-child { border-bottom: none; }
-.instrument-row:hover td { background: var(--color-bg-sunken); }
-.instrument-row:hover .arrow-cell { color: var(--color-accent); }
+.instrument-row:last-child {
+  border-bottom: none;
+}
+.instrument-row:hover td {
+  background: var(--color-bg-sunken);
+}
+.instrument-row:hover .arrow-cell {
+  color: var(--color-accent);
+}
 
 td {
   padding: 0.875rem 1rem;
@@ -495,9 +531,18 @@ td {
   border-radius: 0.2rem;
   text-transform: uppercase;
 }
-.type-badge[data-type='BOND']   { background: rgba(34,197,94,0.12);  color: #22c55e; }
-.type-badge[data-type='LETTER'] { background: rgba(59,130,246,0.12); color: #60a5fa; }
-.type-badge[data-type='ON']     { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.type-badge[data-type="BOND"] {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+.type-badge[data-type="LETTER"] {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+.type-badge[data-type="ON"] {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
 
 .currency-cell {
   font-size: 0.75rem;
@@ -524,7 +569,6 @@ td {
   text-align: right;
 }
 
-/* Footer */
 .result-count {
   font-size: 0.72rem;
   color: var(--color-text-dim);
@@ -532,7 +576,6 @@ td {
   margin: 0;
 }
 
-/* States */
 .state-msg {
   padding: 3rem 0;
   color: var(--color-text-secondary);
