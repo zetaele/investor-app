@@ -1,30 +1,34 @@
-import { eq, and } from 'drizzle-orm'
-import { db } from '../../db/index.js'
-import { cashflows, instruments } from '../../db/schema.js'
-import type { Cashflow, Instrument } from '@investor-app/shared'
+import { eq, and, gt } from "drizzle-orm";
+import { db } from "../../db/index.js";
+import { cashflows, instruments } from "../../db/schema.js";
+import type { Cashflow, Instrument } from "@investor-app/shared";
 
 /**
  * Fetches all active instruments, optionally filtered by type and/or currency.
  */
 export async function findAllInstruments(filters?: {
-  type?: Instrument['type']
-  currency?: Instrument['currency']
+  type?: Instrument["type"];
+  currency?: Instrument["currency"];
 }): Promise<Instrument[]> {
-  const conditions = [eq(instruments.isActive, true)]
+  const today = new Date().toISOString().split("T")[0] ?? "";
+  const conditions = [
+    eq(instruments.isActive, true),
+    gt(instruments.maturityDate, today), // excluye vencidos
+  ];
 
   if (filters?.type !== undefined) {
-    conditions.push(eq(instruments.type, filters.type))
+    conditions.push(eq(instruments.type, filters.type));
   }
 
   if (filters?.currency !== undefined) {
-    conditions.push(eq(instruments.currency, filters.currency))
+    conditions.push(eq(instruments.currency, filters.currency));
   }
 
   return db
     .select()
     .from(instruments)
     .where(and(...conditions))
-    .orderBy(instruments.type, instruments.ticker)
+    .orderBy(instruments.type, instruments.ticker);
 }
 
 /**
@@ -38,9 +42,9 @@ export async function findInstrumentByTicker(
     .select()
     .from(instruments)
     .where(and(eq(instruments.ticker, ticker), eq(instruments.isActive, true)))
-    .limit(1)
+    .limit(1);
 
-  return result[0]
+  return result[0];
 }
 
 /**
@@ -53,5 +57,5 @@ export async function findCashflowsByInstrumentId(
     .select()
     .from(cashflows)
     .where(eq(cashflows.instrumentId, instrumentId))
-    .orderBy(cashflows.paymentDate)
+    .orderBy(cashflows.paymentDate);
 }
