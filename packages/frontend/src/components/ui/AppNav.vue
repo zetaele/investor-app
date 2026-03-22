@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { RouterLink, useRoute } from 'vue-router'
-import { useThemeStore } from '@/stores/themeStore'
-import { useCurrencyStore } from '@/stores/currencyStore'
+import { RouterLink, useRoute } from "vue-router";
+import { useThemeStore } from "@/stores/themeStore";
+import { useCurrencyStore } from "@/stores/currencyStore";
 
-const route = useRoute()
-const themeStore = useThemeStore()
-const currencyStore = useCurrencyStore()
+const route = useRoute();
+const themeStore = useThemeStore();
+const currencyStore = useCurrencyStore();
 </script>
 
 <template>
   <nav class="app-nav">
     <div class="nav-inner">
-
       <!-- Logo -->
       <RouterLink to="/" class="nav-logo">
         <span class="logo-mark">▲</span>
-        <span class="logo-text">Inversor<span class="logo-accent">AR</span></span>
+        <span class="logo-text"
+          >Inversor<span class="logo-accent">AR</span></span
+        >
       </RouterLink>
 
       <!-- Nav links -->
@@ -38,11 +39,19 @@ const currencyStore = useCurrencyStore()
             Comparar
           </RouterLink>
         </li>
+        <li>
+          <RouterLink
+            to="/calendar"
+            class="nav-link"
+            :class="{ active: route.name === 'calendar' }"
+          >
+            Calendario
+          </RouterLink>
+        </li>
       </ul>
 
       <!-- Controls -->
       <div class="nav-controls">
-
         <!-- Currency toggle -->
         <button
           class="control-btn currency-btn"
@@ -63,7 +72,6 @@ const currencyStore = useCurrencyStore()
           <span v-if="themeStore.isDark()">☀︎</span>
           <span v-else>◑</span>
         </button>
-
       </div>
     </div>
   </nav>
@@ -128,7 +136,9 @@ const currencyStore = useCurrencyStore()
   font-weight: 500;
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color var(--transition-base), background-color var(--transition-base);
+  transition:
+    color var(--transition-base),
+    background-color var(--transition-base);
 }
 
 .nav-link:hover,
