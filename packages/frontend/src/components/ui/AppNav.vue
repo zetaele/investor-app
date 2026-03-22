@@ -1,0 +1,180 @@
+<script setup lang="ts">
+import { RouterLink, useRoute } from 'vue-router'
+import { useThemeStore } from '@/stores/themeStore'
+import { useCurrencyStore } from '@/stores/currencyStore'
+
+const route = useRoute()
+const themeStore = useThemeStore()
+const currencyStore = useCurrencyStore()
+</script>
+
+<template>
+  <nav class="app-nav">
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <RouterLink to="/" class="nav-logo">
+        <span class="logo-mark">▲</span>
+        <span class="logo-text">Inversor<span class="logo-accent">AR</span></span>
+      </RouterLink>
+
+      <!-- Nav links -->
+      <ul class="nav-links">
+        <li>
+          <RouterLink
+            to="/"
+            class="nav-link"
+            :class="{ active: route.name === 'home' }"
+          >
+            Instrumentos
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink
+            to="/compare"
+            class="nav-link"
+            :class="{ active: route.name === 'compare' }"
+          >
+            Comparar
+          </RouterLink>
+        </li>
+      </ul>
+
+      <!-- Controls -->
+      <div class="nav-controls">
+
+        <!-- Currency toggle -->
+        <button
+          class="control-btn currency-btn"
+          :title="`Cambiar a ${currencyStore.currency === 'USD' ? 'ARS' : 'USD'}`"
+          @click="currencyStore.toggle()"
+        >
+          <span class="font-mono text-sm font-semibold">
+            {{ currencyStore.currency }}
+          </span>
+        </button>
+
+        <!-- Theme toggle -->
+        <button
+          class="control-btn theme-btn"
+          :title="`Cambiar a modo ${themeStore.isDark() ? 'claro' : 'oscuro'}`"
+          @click="themeStore.toggle()"
+        >
+          <span v-if="themeStore.isDark()">☀︎</span>
+          <span v-else>◑</span>
+        </button>
+
+      </div>
+    </div>
+  </nav>
+</template>
+
+<style scoped>
+.app-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(8px);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 56px;
+}
+
+/* Logo */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.logo-mark {
+  color: var(--color-accent);
+  font-size: 0.9rem;
+}
+
+.logo-accent {
+  color: var(--color-accent);
+}
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-base), background-color var(--transition-base);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-sunken);
+}
+
+.nav-link.active {
+  color: var(--color-accent);
+}
+
+/* Controls */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: 1rem;
+}
+
+.control-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+}
+
+.currency-btn {
+  width: auto;
+  padding: 0 0.625rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+</style>
