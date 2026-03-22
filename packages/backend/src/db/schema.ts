@@ -1,66 +1,119 @@
-import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /** Tradeable instruments: sovereign bonds, treasury letters, and corporate bonds (ONs). */
-export const instruments = sqliteTable('instruments', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  ticker: text('ticker').notNull().unique(),
-  name: text('name').notNull(),
-  type: text('type', { enum: ['BOND', 'LETTER', 'ON'] }).notNull(),
-  currency: text('currency', { enum: ['ARS', 'USD', 'USD_LINKED'] }).notNull(),
-  market: text('market').notNull().default('BYMA'),
-  issuer: text('issuer'),
-  maturityDate: text('maturity_date').notNull(),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
-  updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
-})
+export const instruments = sqliteTable("instruments", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  ticker: text("ticker").notNull().unique(),
+  name: text("name").notNull(),
+  type: text("type", { enum: ["BOND", "LETTER", "ON"] }).notNull(),
+  currency: text("currency", { enum: ["ARS", "USD", "USD_LINKED"] }).notNull(),
+  market: text("market").notNull().default("BYMA"),
+  issuer: text("issuer"),
+  maturityDate: text("maturity_date").notNull(),
+  flowType: text("flow_type", {
+    enum: [
+      "BULLET",
+      "AMORTIZABLE",
+      "ZERO_COUPON",
+      "CAPITALIZABLE",
+      "CER",
+      "USD_LINKED",
+    ],
+  })
+    .notNull()
+    .default("BULLET"),
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+});
 
 /** Scheduled cash flows (coupons + amortizations) for each instrument. */
-export const cashflows = sqliteTable('cashflows', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  instrumentId: integer('instrument_id')
+export const cashflows = sqliteTable("cashflows", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  instrumentId: integer("instrument_id")
     .notNull()
     .references(() => instruments.id),
-  paymentDate: text('payment_date').notNull(),
-  coupon: real('coupon').notNull().default(0),
-  amortization: real('amortization').notNull().default(0),
+  paymentDate: text("payment_date").notNull(),
+  coupon: real("coupon").notNull().default(0),
+  amortization: real("amortization").notNull().default(0),
   /** Remaining capital percentage (0–1) after this payment. */
-  residual: real('residual').notNull(),
-})
+  residual: real("residual").notNull(),
+});
 
 /** Short-lived cache for market prices fetched from BYMA. */
-export const priceCache = sqliteTable('price_cache', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  ticker: text('ticker').notNull(),
-  price: real('price').notNull(),
-  currency: text('currency', { enum: ['ARS', 'USD'] }).notNull(),
-  fetchedAt: text('fetched_at').notNull(),
-  expiresAt: text('expires_at').notNull(),
-})
+export const priceCache = sqliteTable("price_cache", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  ticker: text("ticker").notNull(),
+  price: real("price").notNull(),
+  currency: text("currency", { enum: ["ARS", "USD"] }).notNull(),
+  fetchedAt: text("fetched_at").notNull(),
+  expiresAt: text("expires_at").notNull(),
+});
 
 /** Short-lived cache for ARS/USD exchange rates. */
-export const fxCache = sqliteTable('fx_cache', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  pair: text('pair').notNull(),
-  rate: real('rate').notNull(),
-  fetchedAt: text('fetched_at').notNull(),
-  expiresAt: text('expires_at').notNull(),
-})
+export const fxCache = sqliteTable("fx_cache", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  pair: text("pair").notNull(),
+  rate: real("rate").notNull(),
+  fetchedAt: text("fetched_at").notNull(),
+  expiresAt: text("expires_at").notNull(),
+});
+
+/**
+ * Per-instrument configuration parameters used to generate cash flows.
+ * The relevant fields depend on the instrument's flowType.
+ */
+export const instrumentConfig = sqliteTable("instrument_config", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  instrumentId: integer("instrument_id")
+    .notNull()
+    .references(() => instruments.id),
+
+  // Coupon settings
+  couponRate: real("coupon_rate"), // Annual rate (decimal). e.g. 0.085 = 8.5%
+  couponFrequency: integer("coupon_frequency"), // Payments per year: 1, 2, 4, 12
+  firstCouponDate: text("first_coupon_date"), // ISO 8601 date of first payment
+
+  // Amortization settings (AMORTIZABLE)
+  amortizationSchedule: text("amortization_schedule", { mode: "json" }), // JSON array of {date, pct}
+
+  // Capitalization settings (CAPITALIZABLE)
+  capitalizationRate: real("capitalization_rate"), // Annual TNA (decimal)
+
+  // Adjustment settings (CER / USD_LINKED)
+  adjustmentCoefficient: real("adjustment_coefficient"), // Manual coefficient, updated periodically
+  adjustmentBase: real("adjustment_base"), // Base value at issuance
+
+  createdAt: text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+});
 
 // ── Phase 2: auth & subscriptions (defined now, unused in Phase 1) ────────────
 
-export const users = sqliteTable('users', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  email: text('email').notNull().unique(),
-  passwordHash: text('password_hash'),
-  plan: text('plan', { enum: ['FREE', 'PRO', 'ADVANCED'] }).notNull().default('FREE'),
-  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
-})
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash"),
+  plan: text("plan", { enum: ["FREE", "PRO", "ADVANCED"] })
+    .notNull()
+    .default("FREE"),
+  createdAt: text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+});
 
-export const sessions = sqliteTable('sessions', {
-  id: text('id').primaryKey(), // UUID
-  userId: integer('user_id')
+export const sessions = sqliteTable("sessions", {
+  id: text("id").primaryKey(), // UUID
+  userId: integer("user_id")
     .notNull()
     .references(() => users.id),
-  expiresAt: text('expires_at').notNull(),
-})
+  expiresAt: text("expires_at").notNull(),
+});
