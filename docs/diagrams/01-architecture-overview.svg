@@ -1,0 +1,102 @@
+<svg width="100%" viewBox="0 0 680 560" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .box { fill: #f5f5f5; stroke: #ccc; }
+      .box-purple { fill: #EEEDFE; stroke: #7F77DD; }
+      .box-teal { fill: #E1F5EE; stroke: #1D9E75; }
+      .box-amber { fill: #FAEEDA; stroke: #BA7517; }
+      .box-coral { fill: #FAECE7; stroke: #D85A30; }
+      .box-blue { fill: #E6F1FB; stroke: #378ADD; }
+      .box-gray { fill: #F1EFE8; stroke: #888780; }
+      .label { font-size: 14px; font-weight: 500; fill: #1a1a1a; }
+      .sublabel { font-size: 12px; fill: #555; }
+      .arr { stroke: #999; stroke-width: 1.2; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke: #bbb; stroke-width: 0.8; stroke-dasharray: 4 3; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Browser -->
+  <rect x="40" y="40" width="160" height="44" rx="8" class="box-teal"/>
+  <text x="120" y="57" text-anchor="middle" class="label">Browser</text>
+  <text x="120" y="74" text-anchor="middle" class="sublabel">Vue 3 + Pinia</text>
+
+  <line x1="200" y1="62" x2="258" y2="62" class="arr"/>
+  <text x="229" y="56" text-anchor="middle" class="sublabel">/api/v1</text>
+
+  <!-- Backend container -->
+  <rect x="260" y="20" width="380" height="420" rx="16" class="box-purple"/>
+  <text x="450" y="46" text-anchor="middle" class="label">Backend — Fastify</text>
+
+  <!-- Instruments -->
+  <rect x="280" y="64" width="160" height="56" rx="8" class="box-gray"/>
+  <text x="360" y="84" text-anchor="middle" class="label">Instruments</text>
+  <text x="360" y="102" text-anchor="middle" class="sublabel">List, detail, cashflows</text>
+
+  <!-- Bonds -->
+  <rect x="460" y="64" width="160" height="56" rx="8" class="box-gray"/>
+  <text x="540" y="84" text-anchor="middle" class="label">Bonds</text>
+  <text x="540" y="102" text-anchor="middle" class="sublabel">YTM, duration, analysis</text>
+
+  <!-- Compare -->
+  <rect x="280" y="140" width="160" height="56" rx="8" class="box-gray"/>
+  <text x="360" y="160" text-anchor="middle" class="label">Compare</text>
+  <text x="360" y="178" text-anchor="middle" class="sublabel">Multi-instrument</text>
+
+  <!-- Calendar -->
+  <rect x="460" y="140" width="160" height="56" rx="8" class="box-gray"/>
+  <text x="540" y="160" text-anchor="middle" class="label">Calendar</text>
+  <text x="540" y="178" text-anchor="middle" class="sublabel">Upcoming payments</text>
+
+  <!-- FX -->
+  <rect x="280" y="216" width="160" height="56" rx="8" class="box-gray"/>
+  <text x="360" y="236" text-anchor="middle" class="label">FX</text>
+  <text x="360" y="254" text-anchor="middle" class="sublabel">ARS/USD rates</text>
+
+  <!-- Admin -->
+  <rect x="460" y="216" width="160" height="56" rx="8" class="box-coral"/>
+  <text x="540" y="236" text-anchor="middle" class="label">Admin</text>
+  <text x="540" y="254" text-anchor="middle" class="sublabel">Token-protected CRUD</text>
+
+  <!-- Flow generator -->
+  <rect x="280" y="292" width="160" height="56" rx="8" class="box-gray"/>
+  <text x="360" y="312" text-anchor="middle" class="label">Flow generator</text>
+  <text x="360" y="330" text-anchor="middle" class="sublabel">6 flow types</text>
+
+  <!-- BYMA client -->
+  <rect x="460" y="292" width="160" height="56" rx="8" class="box-amber"/>
+  <text x="540" y="312" text-anchor="middle" class="label">BYMA client</text>
+  <text x="540" y="330" text-anchor="middle" class="sublabel">Mock → Official</text>
+
+  <!-- Drizzle ORM -->
+  <rect x="350" y="368" width="200" height="44" rx="8" class="box-blue"/>
+  <text x="450" y="385" text-anchor="middle" class="label">Drizzle ORM</text>
+  <text x="450" y="402" text-anchor="middle" class="sublabel">Schema + migrations</text>
+
+  <line x1="450" y1="412" x2="450" y2="456" class="arr"/>
+
+  <!-- SQLite -->
+  <rect x="350" y="458" width="200" height="44" rx="8" class="box-blue"/>
+  <text x="450" y="475" text-anchor="middle" class="label">SQLite</text>
+  <text x="450" y="492" text-anchor="middle" class="sublabel">instruments, cashflows, cache</text>
+
+  <!-- Shared package -->
+  <rect x="40" y="160" width="160" height="56" rx="8" class="box-teal"/>
+  <text x="120" y="180" text-anchor="middle" class="label">Shared</text>
+  <text x="120" y="198" text-anchor="middle" class="sublabel">Types + Zod schemas</text>
+
+  <line x1="120" y1="160" x2="120" y2="84" class="dashed"/>
+  <line x1="200" y1="188" x2="258" y2="188" class="dashed"/>
+
+  <!-- Legend -->
+  <rect x="40" y="460" width="12" height="12" rx="2" class="box-teal"/>
+  <text x="58" y="471" class="sublabel">Frontend / Shared</text>
+  <rect x="40" y="480" width="12" height="12" rx="2" class="box-purple"/>
+  <text x="58" y="491" class="sublabel">Backend</text>
+  <rect x="40" y="500" width="12" height="12" rx="2" class="box-coral"/>
+  <text x="58" y="511" class="sublabel">Admin (protegido)</text>
+  <rect x="40" y="520" width="12" height="12" rx="2" class="box-amber"/>
+  <text x="58" y="531" class="sublabel">Externo / reemplazable</text>
+</svg>
