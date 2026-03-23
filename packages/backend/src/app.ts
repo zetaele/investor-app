@@ -14,6 +14,7 @@ import { bondsRouter } from "./modules/bonds/bonds.router.js";
 import { fxRouter } from "./modules/fx/fx.router.js";
 import { compareRouter } from "./modules/compare/compare.router.js";
 import { calendarRouter } from "./modules/calendar/calendar.router.js";
+import { adminRouter } from "./modules/admin/admin.router.js";
 
 const app = Fastify({
   logger: { level: env.NODE_ENV === "production" ? "warn" : "info" },
@@ -25,6 +26,7 @@ await app.register(helmet);
 await app.register(cors, { origin: env.CORS_ORIGIN, methods: ["GET"] });
 await app.register(rateLimit, { max: 60, timeWindow: "1 minute" });
 await app.register(calendarRouter, { prefix: "/api/v1/calendar" });
+await app.register(adminRouter, { prefix: "/api/v1/admin" });
 
 // ── Dependency injection ──────────────────────────────────────────────────────
 

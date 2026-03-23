@@ -42,21 +42,15 @@ export type FlowType =
 /** Parameters required to generate cash flows, vary by FlowType. */
 export interface FlowGeneratorParams {
   flowType: FlowType;
-  issueDate: string; // ISO 8601
-  maturityDate: string; // ISO 8601
-  faceValue: number; // Nominal value (typically 100)
+  issueDate: string;
+  maturityDate: string;
+  faceValue: number;
 
-  // BULLET / AMORTIZABLE / CER / USD_LINKED
-  couponRate?: number; // Annual rate (decimal)
-  couponFrequency?: number; // Payments per year: 1=annual, 2=semi, 4=quarterly, 12=monthly
-  firstCouponDate?: string; // ISO 8601
-
-  // AMORTIZABLE
-  amortizationSchedule?: { date: string; pct: number }[]; // pct = fraction of face value
-
-  // CAPITALIZABLE
-  capitalizationRate?: number; // Annual TNA (decimal)
-
-  // CER / USD_LINKED
-  adjustmentCoefficient?: number; // Manual coefficient applied to all flows
+  couponRate?: number | undefined;
+  couponFrequency?: number | undefined;
+  firstCouponDate?: string | undefined;
+  amortizationSchedule?: { date: string; pct: number }[] | undefined;
+  capitalizationRate?: number | undefined;
+  adjustmentCoefficient?: number | undefined;
+  adjustmentBase?: number | undefined;
 }
