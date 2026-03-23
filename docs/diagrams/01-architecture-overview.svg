@@ -1,102 +1,106 @@
-<svg width="100%" viewBox="0 0 680 560" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+<svg width="100%" viewBox="0 0 680 580" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
     <style>
-      .box { fill: #f5f5f5; stroke: #ccc; }
       .box-purple { fill: #EEEDFE; stroke: #7F77DD; }
-      .box-teal { fill: #E1F5EE; stroke: #1D9E75; }
-      .box-amber { fill: #FAEEDA; stroke: #BA7517; }
-      .box-coral { fill: #FAECE7; stroke: #D85A30; }
-      .box-blue { fill: #E6F1FB; stroke: #378ADD; }
-      .box-gray { fill: #F1EFE8; stroke: #888780; }
-      .label { font-size: 14px; font-weight: 500; fill: #1a1a1a; }
-      .sublabel { font-size: 12px; fill: #555; }
-      .arr { stroke: #999; stroke-width: 1.2; fill: none; marker-end: url(#arrow); }
-      .dashed { stroke: #bbb; stroke-width: 0.8; stroke-dasharray: 4 3; fill: none; }
+      .box-teal   { fill: #E1F5EE; stroke: #1D9E75; }
+      .box-amber  { fill: #FAEEDA; stroke: #BA7517; }
+      .box-coral  { fill: #FAECE7; stroke: #D85A30; }
+      .box-blue   { fill: #E6F1FB; stroke: #378ADD; }
+      .box-gray   { fill: #F1EFE8; stroke: #888780; }
+      .label    { font-size: 14px; font-weight: 500; fill: #1a1a1a; }
+      .sublabel { font-size: 11px; fill: #555; }
+      .arr  { stroke: #999; stroke-width: 1.2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #bbb; stroke-width: 0.8; stroke-dasharray: 4 3; fill: none; }
     </style>
   </defs>
 
-  <!-- Browser -->
-  <rect x="40" y="40" width="160" height="44" rx="8" class="box-teal"/>
-  <text x="120" y="57" text-anchor="middle" class="label">Browser</text>
-  <text x="120" y="74" text-anchor="middle" class="sublabel">Vue 3 + Pinia</text>
+  <!-- Frontend container -->
+  <rect x="20" y="30" width="170" height="210" rx="12" class="box-teal"/>
+  <text x="105" y="52" text-anchor="middle" class="label">Frontend</text>
+  <text x="36" y="76"  class="sublabel">views/</text>
+  <text x="44" y="93"  class="sublabel">HomeView</text>
+  <text x="44" y="109" class="sublabel">InstrumentView</text>
+  <text x="44" y="125" class="sublabel">CompareView</text>
+  <text x="44" y="141" class="sublabel">CalendarView</text>
+  <text x="44" y="157" class="sublabel">AdminView</text>
+  <text x="36" y="176" class="sublabel">stores/  theme · currency</text>
+  <text x="36" y="192" class="sublabel">services/  api · adminApi</text>
+  <text x="36" y="208" class="sublabel">composables/  useFormat</text>
 
-  <line x1="200" y1="62" x2="258" y2="62" class="arr"/>
-  <text x="229" y="56" text-anchor="middle" class="sublabel">/api/v1</text>
+  <line x1="190" y1="130" x2="228" y2="130" class="arr"/>
+  <text x="209" y="122" text-anchor="middle" class="sublabel">/api/v1</text>
 
   <!-- Backend container -->
-  <rect x="260" y="20" width="380" height="420" rx="16" class="box-purple"/>
-  <text x="450" y="46" text-anchor="middle" class="label">Backend — Fastify</text>
+  <rect x="230" y="20" width="430" height="450" rx="14" class="box-purple"/>
+  <text x="445" y="44" text-anchor="middle" class="label">Backend — Fastify (app.ts)</text>
 
-  <!-- Instruments -->
-  <rect x="280" y="64" width="160" height="56" rx="8" class="box-gray"/>
-  <text x="360" y="84" text-anchor="middle" class="label">Instruments</text>
-  <text x="360" y="102" text-anchor="middle" class="sublabel">List, detail, cashflows</text>
+  <!-- instruments -->
+  <rect x="248" y="62" width="185" height="66" rx="8" class="box-gray"/>
+  <text x="340" y="82" text-anchor="middle" class="label">instruments</text>
+  <text x="340" y="98" text-anchor="middle" class="sublabel">repository · service · router</text>
+  <text x="340" y="114" text-anchor="middle" class="sublabel">GET /instruments</text>
 
-  <!-- Bonds -->
-  <rect x="460" y="64" width="160" height="56" rx="8" class="box-gray"/>
-  <text x="540" y="84" text-anchor="middle" class="label">Bonds</text>
-  <text x="540" y="102" text-anchor="middle" class="sublabel">YTM, duration, analysis</text>
+  <!-- bonds -->
+  <rect x="453" y="62" width="185" height="66" rx="8" class="box-gray"/>
+  <text x="545" y="82" text-anchor="middle" class="label">bonds</text>
+  <text x="545" y="98" text-anchor="middle" class="sublabel">calculator · service · router</text>
+  <text x="545" y="114" text-anchor="middle" class="sublabel">GET /instruments/:ticker/analysis</text>
 
-  <!-- Compare -->
-  <rect x="280" y="140" width="160" height="56" rx="8" class="box-gray"/>
-  <text x="360" y="160" text-anchor="middle" class="label">Compare</text>
-  <text x="360" y="178" text-anchor="middle" class="sublabel">Multi-instrument</text>
+  <!-- compare -->
+  <rect x="248" y="148" width="185" height="54" rx="8" class="box-gray"/>
+  <text x="340" y="168" text-anchor="middle" class="label">compare</text>
+  <text x="340" y="185" text-anchor="middle" class="sublabel">GET /compare?tickers=</text>
 
-  <!-- Calendar -->
-  <rect x="460" y="140" width="160" height="56" rx="8" class="box-gray"/>
-  <text x="540" y="160" text-anchor="middle" class="label">Calendar</text>
-  <text x="540" y="178" text-anchor="middle" class="sublabel">Upcoming payments</text>
+  <!-- calendar -->
+  <rect x="453" y="148" width="185" height="54" rx="8" class="box-gray"/>
+  <text x="545" y="168" text-anchor="middle" class="label">calendar</text>
+  <text x="545" y="185" text-anchor="middle" class="sublabel">GET /calendar</text>
 
-  <!-- FX -->
-  <rect x="280" y="216" width="160" height="56" rx="8" class="box-gray"/>
-  <text x="360" y="236" text-anchor="middle" class="label">FX</text>
-  <text x="360" y="254" text-anchor="middle" class="sublabel">ARS/USD rates</text>
+  <!-- fx -->
+  <rect x="248" y="222" width="185" height="54" rx="8" class="box-gray"/>
+  <text x="340" y="242" text-anchor="middle" class="label">fx</text>
+  <text x="340" y="259" text-anchor="middle" class="sublabel">GET /fx/rates · bluelytics</text>
 
-  <!-- Admin -->
-  <rect x="460" y="216" width="160" height="56" rx="8" class="box-coral"/>
-  <text x="540" y="236" text-anchor="middle" class="label">Admin</text>
-  <text x="540" y="254" text-anchor="middle" class="sublabel">Token-protected CRUD</text>
+  <!-- admin -->
+  <rect x="453" y="222" width="185" height="54" rx="8" class="box-coral"/>
+  <text x="545" y="242" text-anchor="middle" class="label">admin</text>
+  <text x="545" y="259" text-anchor="middle" class="sublabel">auth · service · router</text>
 
-  <!-- Flow generator -->
-  <rect x="280" y="292" width="160" height="56" rx="8" class="box-gray"/>
-  <text x="360" y="312" text-anchor="middle" class="label">Flow generator</text>
-  <text x="360" y="330" text-anchor="middle" class="sublabel">6 flow types</text>
+  <!-- byma -->
+  <rect x="248" y="296" width="185" height="66" rx="8" class="box-amber"/>
+  <text x="340" y="316" text-anchor="middle" class="label">byma</text>
+  <text x="340" y="333" text-anchor="middle" class="sublabel">mock.client · official.client</text>
+  <text x="340" y="349" text-anchor="middle" class="sublabel">price-cache.service</text>
 
-  <!-- BYMA client -->
-  <rect x="460" y="292" width="160" height="56" rx="8" class="box-amber"/>
-  <text x="540" y="312" text-anchor="middle" class="label">BYMA client</text>
-  <text x="540" y="330" text-anchor="middle" class="sublabel">Mock → Official</text>
+  <!-- flow-generator -->
+  <rect x="453" y="296" width="185" height="66" rx="8" class="box-gray"/>
+  <text x="545" y="316" text-anchor="middle" class="label">flow-generator</text>
+  <text x="545" y="333" text-anchor="middle" class="sublabel">BULLET · AMORTIZABLE · ZERO_COUPON</text>
+  <text x="545" y="349" text-anchor="middle" class="sublabel">CAPITALIZABLE · CER · USD_LINKED</text>
 
-  <!-- Drizzle ORM -->
-  <rect x="350" y="368" width="200" height="44" rx="8" class="box-blue"/>
-  <text x="450" y="385" text-anchor="middle" class="label">Drizzle ORM</text>
-  <text x="450" y="402" text-anchor="middle" class="sublabel">Schema + migrations</text>
+  <!-- db -->
+  <rect x="318" y="382" width="254" height="52" rx="8" class="box-blue"/>
+  <text x="445" y="402" text-anchor="middle" class="label">db/ — Drizzle ORM + SQLite</text>
+  <text x="445" y="420" text-anchor="middle" class="sublabel">schema · migrations · seed · index</text>
 
-  <line x1="450" y1="412" x2="450" y2="456" class="arr"/>
+  <!-- Shared -->
+  <rect x="20" y="265" width="170" height="54" rx="8" class="box-teal"/>
+  <text x="105" y="285" text-anchor="middle" class="label">shared</text>
+  <text x="105" y="302" text-anchor="middle" class="sublabel">types/ · schemas/ · index.ts</text>
 
-  <!-- SQLite -->
-  <rect x="350" y="458" width="200" height="44" rx="8" class="box-blue"/>
-  <text x="450" y="475" text-anchor="middle" class="label">SQLite</text>
-  <text x="450" y="492" text-anchor="middle" class="sublabel">instruments, cashflows, cache</text>
-
-  <!-- Shared package -->
-  <rect x="40" y="160" width="160" height="56" rx="8" class="box-teal"/>
-  <text x="120" y="180" text-anchor="middle" class="label">Shared</text>
-  <text x="120" y="198" text-anchor="middle" class="sublabel">Types + Zod schemas</text>
-
-  <line x1="120" y1="160" x2="120" y2="84" class="dashed"/>
-  <line x1="200" y1="188" x2="258" y2="188" class="dashed"/>
+  <line x1="105" y1="265" x2="105" y2="130" class="dash"/>
+  <line x1="190" y1="292" x2="228" y2="292" class="dash"/>
 
   <!-- Legend -->
-  <rect x="40" y="460" width="12" height="12" rx="2" class="box-teal"/>
-  <text x="58" y="471" class="sublabel">Frontend / Shared</text>
-  <rect x="40" y="480" width="12" height="12" rx="2" class="box-purple"/>
-  <text x="58" y="491" class="sublabel">Backend</text>
-  <rect x="40" y="500" width="12" height="12" rx="2" class="box-coral"/>
-  <text x="58" y="511" class="sublabel">Admin (protegido)</text>
-  <rect x="40" y="520" width="12" height="12" rx="2" class="box-amber"/>
-  <text x="58" y="531" class="sublabel">Externo / reemplazable</text>
+  <rect x="20" y="495" width="12" height="12" rx="2" class="box-teal"/>
+  <text x="38" y="505" class="sublabel">Frontend / Shared</text>
+  <rect x="20" y="515" width="12" height="12" rx="2" class="box-purple"/>
+  <text x="38" y="525" class="sublabel">Backend</text>
+  <rect x="20" y="535" width="12" height="12" rx="2" class="box-coral"/>
+  <text x="38" y="545" class="sublabel">Admin (token protegido)</text>
+  <rect x="20" y="555" width="12" height="12" rx="2" class="box-amber"/>
+  <text x="38" y="565" class="sublabel">BYMA (mock → oficial en Fase 2)</text>
 </svg>
