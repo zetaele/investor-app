@@ -33,12 +33,10 @@ export async function instrumentsRouter(app: FastifyInstance): Promise<void> {
     const query = listQuerySchema.safeParse(request.query);
 
     if (!query.success) {
-      return reply
-        .status(400)
-        .send({
-          error: "Invalid query parameters",
-          details: query.error.flatten(),
-        });
+      return reply.status(400).send({
+        error: "Invalid query parameters",
+        details: query.error.flatten(),
+      });
     }
 
     const filters = {

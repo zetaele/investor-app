@@ -18,6 +18,7 @@ import { adminRouter } from "./modules/admin/admin.router.js";
 
 const app = Fastify({
   logger: { level: env.NODE_ENV === "production" ? "warn" : "info" },
+  bodyLimit: 1048576, // 1MB
 });
 
 // ── Security plugins ──────────────────────────────────────────────────────────
