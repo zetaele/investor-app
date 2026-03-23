@@ -43,6 +43,14 @@ const flowParamsSchema = z.object({
   capitalizationRate: z.number().positive().max(1).optional(),
 
   adjustmentCoefficient: z.number().positive().optional(),
+
+  couponSchedule: z
+    .array(
+      z.object({
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      }),
+    )
+    .optional(),
 });
 
 const createInstrumentSchema = z.object({
@@ -127,6 +135,40 @@ export async function adminRouter(app: FastifyInstance): Promise<void> {
   });
 
   /**
+   * POST /admin/instruments/preview-flows
+   * Returns the cash flows that would be generated for given params, without persisting.
+   * Use this in the admin UI before confirming instrument creation.
+   */
+  app.post("/instruments/preview-flows", async (request, reply) => {
+    const body = flowParamsSchema.safeParse(request.body);
+
+    if (!body.success) {
+      return reply.status(400).send({
+        error: "Invalid flow parameters",
+        details: body.error.flatten(),
+      });
+    }
+
+    try {
+      const flows = previewFlows(body.data);
+      return reply.send({
+        data: flows,
+        count: flows.length,
+        totalCoupon:
+          Math.round(flows.reduce((s, f) => s + f.coupon, 0) * 10000) / 10000,
+        totalAmortization:
+          Math.round(flows.reduce((s, f) => s + f.amortization, 0) * 10000) /
+          10000,
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        return reply.status(400).send({ error: err.message });
+      }
+      throw err;
+    }
+  });
+
+  /**
    * PUT /admin/instruments/:ticker
    * Updates instrument metadata and optionally regenerates cash flows.
    */
@@ -179,40 +221,6 @@ export async function adminRouter(app: FastifyInstance): Promise<void> {
     } catch (err) {
       if (err instanceof AdminError) {
         return reply.status(err.statusCode).send({ error: err.message });
-      }
-      throw err;
-    }
-  });
-
-  /**
-   * POST /admin/instruments/preview-flows
-   * Returns the cash flows that would be generated for given params, without persisting.
-   * Use this in the admin UI before confirming instrument creation.
-   */
-  app.post("/instruments/preview-flows", async (request, reply) => {
-    const body = flowParamsSchema.safeParse(request.body);
-
-    if (!body.success) {
-      return reply.status(400).send({
-        error: "Invalid flow parameters",
-        details: body.error.flatten(),
-      });
-    }
-
-    try {
-      const flows = previewFlows(body.data);
-      return reply.send({
-        data: flows,
-        count: flows.length,
-        totalCoupon:
-          Math.round(flows.reduce((s, f) => s + f.coupon, 0) * 10000) / 10000,
-        totalAmortization:
-          Math.round(flows.reduce((s, f) => s + f.amortization, 0) * 10000) /
-          10000,
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        return reply.status(400).send({ error: err.message });
       }
       throw err;
     }

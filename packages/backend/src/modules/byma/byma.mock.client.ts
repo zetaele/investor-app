@@ -1,5 +1,5 @@
-import type { BymaMarketPrice, IBYMAClient } from './byma.types.js'
-import { BymaInstrumentNotFoundError } from './byma.types.js'
+import type { BymaMarketPrice, IBYMAClient } from "./byma.types.js";
+import { BymaInstrumentNotFoundError } from "./byma.types.js";
 
 /**
  * Realistic market prices as of March 2026 (USD unless noted).
@@ -8,29 +8,30 @@ import { BymaInstrumentNotFoundError } from './byma.types.js'
  */
 const MOCK_PRICES: Record<string, number> = {
   // Sovereign bonds — USD (Ley Argentina)
-  AL30: 62.50,
-  AL35: 57.20,
-  AL41: 55.80,
+  AL30: 62.5,
+  AL35: 57.2,
+  AL41: 55.8,
+  AO27D: 102.0,
 
   // Sovereign bonds — USD (Ley Nueva York)
-  GD30: 64.10,
-  GD35: 59.40,
-  GD41: 57.90,
-  GD46: 56.30,
+  GD30: 64.1,
+  GD35: 59.4,
+  GD41: 57.9,
+  GD46: 56.3,
 
   // Sovereign bonds — ARS
-  T2X5: 98.50,
+  T2X5: 98.5,
 
   // Treasury letters — ARS (prices as % of face value)
-  S31O5: 96.20,
-  S28N5: 94.80,
-  S31D5: 93.10,
+  S31O5: 96.2,
+  S28N5: 94.8,
+  S31D5: 93.1,
 
   // Corporate bonds / ONs — USD
-  YPF24: 97.50,
-  PAMP27: 94.20,
-  TECO27: 91.80,
-}
+  YPF24: 97.5,
+  PAMP27: 94.2,
+  TECO27: 91.8,
+};
 
 /**
  * Mock implementation of IBYMAClient.
@@ -47,8 +48,8 @@ export class MockBymaClient implements IBYMAClient {
    * Variation is within ±0.5% of the base price.
    */
   private simulatePriceVariation(basePrice: number): number {
-    const variationPct = (Math.random() - 0.5) * 0.01 // ±0.5%
-    return Math.round(basePrice * (1 + variationPct) * 100) / 100
+    const variationPct = (Math.random() - 0.5) * 0.01; // ±0.5%
+    return Math.round(basePrice * (1 + variationPct) * 100) / 100;
   }
 
   private buildMarketPrice(ticker: string, basePrice: number): BymaMarketPrice {
@@ -57,34 +58,38 @@ export class MockBymaClient implements IBYMAClient {
       price: this.simulatePriceVariation(basePrice),
       volume: Math.floor(Math.random() * 500_000) + 100_000,
       updatedAt: new Date().toISOString(),
-    }
+    };
   }
 
   async getPrice(ticker: string): Promise<BymaMarketPrice> {
-    const basePrice = MOCK_PRICES[ticker]
+    const basePrice = MOCK_PRICES[ticker];
 
     if (basePrice === undefined) {
-      throw new BymaInstrumentNotFoundError(ticker)
+      throw new BymaInstrumentNotFoundError(ticker);
     }
 
     // Simulate a realistic network delay (50–150ms)
-    await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100))
+    await new Promise((resolve) =>
+      setTimeout(resolve, 50 + Math.random() * 100),
+    );
 
-    return this.buildMarketPrice(ticker, basePrice)
+    return this.buildMarketPrice(ticker, basePrice);
   }
 
   async getPrices(tickers: string[]): Promise<Map<string, BymaMarketPrice>> {
-    await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100))
+    await new Promise((resolve) =>
+      setTimeout(resolve, 50 + Math.random() * 100),
+    );
 
-    const result = new Map<string, BymaMarketPrice>()
+    const result = new Map<string, BymaMarketPrice>();
 
     for (const ticker of tickers) {
-      const basePrice = MOCK_PRICES[ticker]
+      const basePrice = MOCK_PRICES[ticker];
       if (basePrice !== undefined) {
-        result.set(ticker, this.buildMarketPrice(ticker, basePrice))
+        result.set(ticker, this.buildMarketPrice(ticker, basePrice));
       }
     }
 
-    return result
+    return result;
   }
 }

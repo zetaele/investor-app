@@ -29,6 +29,11 @@ const router = createRouter({
       name: "calendar",
       component: () => import("@/views/CalendarView.vue"),
     },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("@/views/AdminView.vue"),
+    },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     if (savedPosition) return savedPosition;

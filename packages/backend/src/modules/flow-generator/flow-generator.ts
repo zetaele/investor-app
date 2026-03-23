@@ -1,4 +1,3 @@
-import type { Cashflow } from "@investor-app/shared";
 import type { FlowGeneratorParams } from "@investor-app/shared";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -14,6 +13,26 @@ export interface GeneratedCashflow {
 // ── Date helpers ──────────────────────────────────────────────────────────────
 
 /**
+ * Parses an ISO date string (YYYY-MM-DD) as a local date.
+ * Avoids UTC offset issues caused by new Date("YYYY-MM-DD") which treats
+ * the string as UTC midnight and shifts the date in negative-offset timezones.
+ */
+function parseLocalDate(iso: string): Date {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(year!, month! - 1, day!);
+}
+
+/**
+ * Formats a Date to an ISO 8601 date string (YYYY-MM-DD) using local time.
+ */
+function toISO(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/**
  * Adds a number of months to a date, preserving the day-of-month where possible.
  * Handles month-end edge cases (e.g. Jan 31 + 1 month = Feb 28).
  */
@@ -21,7 +40,6 @@ function addMonths(date: Date, months: number): Date {
   const result = new Date(date);
   const day = result.getDate();
   result.setMonth(result.getMonth() + months);
-  // If day overflowed (e.g. Mar 31 → Apr 31 → May 1), snap back to end of month
   if (result.getDate() !== day) {
     result.setDate(0);
   }
@@ -29,15 +47,9 @@ function addMonths(date: Date, months: number): Date {
 }
 
 /**
- * Formats a Date to an ISO 8601 date string (YYYY-MM-DD).
- */
-function toISO(date: Date): string {
-  return date.toISOString().split("T")[0] ?? "";
-}
-
-/**
  * Generates a series of payment dates starting from firstDate,
  * advancing by (12 / frequency) months each time, until maturity.
+ * Always ensures the maturity date is the last payment.
  */
 function generatePaymentDates(
   firstDate: Date,
@@ -53,7 +65,6 @@ function generatePaymentDates(
     current = addMonths(current, monthStep);
   }
 
-  // Always ensure maturity date is the last payment
   const lastDate = dates[dates.length - 1];
   if (lastDate === undefined || toISO(lastDate) !== toISO(maturityDate)) {
     dates.push(new Date(maturityDate));
@@ -62,32 +73,46 @@ function generatePaymentDates(
   return dates;
 }
 
+/**
+ * Resolves the list of coupon payment dates for an instrument.
+ *
+ * If an explicit couponSchedule is provided, uses those exact dates — useful
+ * for instruments with irregular calendars (e.g. AO27, CER bonds with BCRA holidays).
+ *
+ * Otherwise, auto-generates dates from firstCouponDate advancing by
+ * (12 / couponFrequency) months until maturity.
+ */
+function resolvePaymentDates(params: FlowGeneratorParams): Date[] {
+  if (params.couponSchedule !== undefined && params.couponSchedule.length > 0) {
+    return params.couponSchedule.map((s) => parseLocalDate(s.date));
+  }
+
+  if (
+    params.firstCouponDate === undefined ||
+    params.couponFrequency === undefined
+  )
+    return [];
+
+  const first = parseLocalDate(params.firstCouponDate);
+  const maturity = parseLocalDate(params.maturityDate);
+  return generatePaymentDates(first, maturity, params.couponFrequency);
+}
+
 // ── Generators ────────────────────────────────────────────────────────────────
 
 /**
  * BULLET — periodic coupons at a fixed rate, full principal returned at maturity.
- *
- * Example: GD30, AL35 (before amortization starts), most corporate ONs.
- *
- * couponRate:      annual rate (decimal)
- * couponFrequency: payments per year
- * faceValue:       nominal value (typically 100)
+ * Example: GD46, AL35, most corporate ONs.
  */
 function generateBullet(params: FlowGeneratorParams): GeneratedCashflow[] {
-  const {
-    maturityDate,
-    faceValue,
-    couponRate = 0,
-    couponFrequency = 2,
-    firstCouponDate,
-  } = params;
+  const { faceValue, couponRate = 0, couponFrequency = 2 } = params;
 
-  if (couponRate === 0 || firstCouponDate === undefined) return [];
+  if (couponRate === 0) return [];
 
-  const maturity = new Date(maturityDate);
-  const first = new Date(firstCouponDate);
+  const dates = resolvePaymentDates(params);
+  if (dates.length === 0) return [];
+
   const periodRate = couponRate / couponFrequency;
-  const dates = generatePaymentDates(first, maturity, couponFrequency);
 
   return dates.map((date, i) => {
     const isLast = i === dates.length - 1;
@@ -102,30 +127,23 @@ function generateBullet(params: FlowGeneratorParams): GeneratedCashflow[] {
 
 /**
  * AMORTIZABLE — periodic coupons on residual capital + scheduled amortizations.
- *
- * Example: AL30, GD30 (post step-up), some CER bonds.
- *
- * amortizationSchedule: array of { date, pct } where pct is fraction of face value.
- * Coupon is calculated on the residual capital at each period.
+ * Example: AL30, GD30, some CER bonds.
  */
 function generateAmortizable(params: FlowGeneratorParams): GeneratedCashflow[] {
   const {
     faceValue,
     couponRate = 0,
     couponFrequency = 2,
-    firstCouponDate,
     amortizationSchedule = [],
   } = params;
 
-  if (firstCouponDate === undefined || amortizationSchedule.length === 0)
-    return [];
+  if (amortizationSchedule.length === 0) return [];
 
-  const maturity = new Date(params.maturityDate);
-  const first = new Date(firstCouponDate);
+  const dates = resolvePaymentDates(params);
+  if (dates.length === 0) return [];
+
   const periodRate = couponRate / couponFrequency;
-  const dates = generatePaymentDates(first, maturity, couponFrequency);
 
-  // Build amortization lookup: date → pct
   const amortMap = new Map<string, number>(
     amortizationSchedule.map((item: { date: string; pct: number }) => [
       item.date,
@@ -155,32 +173,22 @@ function generateAmortizable(params: FlowGeneratorParams): GeneratedCashflow[] {
 
 /**
  * ZERO_COUPON — no periodic coupons, issued at a discount, redeemed at face value.
- *
- * Example: LECER (treasury letters), short CER bonds.
- *
- * A single cash flow at maturity for the full face value.
+ * Example: LECER, short CER bonds.
  */
 function generateZeroCoupon(params: FlowGeneratorParams): GeneratedCashflow[] {
-  const { maturityDate, faceValue } = params;
-
   return [
     {
-      paymentDate: maturityDate,
+      paymentDate: params.maturityDate,
       coupon: 0,
-      amortization: faceValue,
+      amortization: params.faceValue,
       residual: 0,
     },
   ];
 }
 
 /**
- * CAPITALIZABLE — no periodic cash flows; capital grows at the capitalization rate.
- * The investor receives face value × (1 + TNA/frequency)^n at maturity.
- *
+ * CAPITALIZABLE — capital grows at TNA, single payment at maturity.
  * Example: LECAP, BONCAP, some Bonte.
- *
- * capitalizationRate: annual TNA (decimal)
- * couponFrequency:    capitalization periods per year
  */
 function generateCapitalizable(
   params: FlowGeneratorParams,
@@ -193,13 +201,12 @@ function generateCapitalizable(
     couponFrequency = 12,
   } = params;
 
-  const issue = new Date(issueDate);
-  const maturity = new Date(maturityDate);
+  const issue = parseLocalDate(issueDate);
+  const maturity = parseLocalDate(maturityDate);
   const msPerDay = 1000 * 60 * 60 * 24;
   const days = Math.round((maturity.getTime() - issue.getTime()) / msPerDay);
   const periods = days / (365 / couponFrequency);
   const periodRate = capitalizationRate / couponFrequency;
-
   const finalValue =
     Math.round(faceValue * Math.pow(1 + periodRate, periods) * 100) / 100;
 
@@ -214,36 +221,23 @@ function generateCapitalizable(
 }
 
 /**
- * CER — cash flows are identical to the base structure (bullet or amortizable)
- * but multiplied by the CER adjustment coefficient at display time.
- *
- * In this phase: the coefficient is stored manually and applied to nominal flows.
- * Future: fetch real-time CER from INDEC API at analysis time.
- *
- * The generator stores nominal flows (coefficient = 1.0 baseline).
- * The adjustmentCoefficient is stored in instrument_config for runtime use.
+ * CER — nominal flows identical to bullet or amortizable.
+ * Adjustment coefficient is applied at analysis time, not here.
  */
 function generateCER(params: FlowGeneratorParams): GeneratedCashflow[] {
-  // CER bonds can be bullet or amortizable — delegate to the appropriate generator
-  if ((params.amortizationSchedule ?? []).length > 0) {
-    return generateAmortizable(params);
-  }
-  return generateBullet(params);
+  return (params.amortizationSchedule ?? []).length > 0
+    ? generateAmortizable(params)
+    : generateBullet(params);
 }
 
 /**
- * USD_LINKED — flows denominated in ARS but indexed to the official USD exchange rate.
- *
- * Structure is identical to bullet or amortizable in nominal terms.
- * The adjustmentCoefficient (TC oficial) is applied at analysis time, not here.
- *
- * Same delegation pattern as CER.
+ * USD_LINKED — ARS flows indexed to official USD rate.
+ * Adjustment coefficient is applied at analysis time, not here.
  */
 function generateUSDLinked(params: FlowGeneratorParams): GeneratedCashflow[] {
-  if ((params.amortizationSchedule ?? []).length > 0) {
-    return generateAmortizable(params);
-  }
-  return generateBullet(params);
+  return (params.amortizationSchedule ?? []).length > 0
+    ? generateAmortizable(params)
+    : generateBullet(params);
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────────
@@ -251,9 +245,6 @@ function generateUSDLinked(params: FlowGeneratorParams): GeneratedCashflow[] {
 /**
  * Generates the nominal cash flow schedule for any supported Argentine
  * fixed income instrument based on its structural parameters.
- *
- * Returns an array of GeneratedCashflow ready to be inserted into the
- * cashflows table after an instrumentId is assigned.
  *
  * @throws Error if required parameters for the given flowType are missing.
  */
@@ -291,7 +282,7 @@ function validateParams(params: FlowGeneratorParams): void {
     throw new Error("issueDate and maturityDate are required");
   }
 
-  if (new Date(maturityDate) <= new Date(issueDate)) {
+  if (parseLocalDate(maturityDate) <= parseLocalDate(issueDate)) {
     throw new Error("maturityDate must be after issueDate");
   }
 
@@ -304,18 +295,20 @@ function validateParams(params: FlowGeneratorParams): void {
     flowType === "CER" ||
     flowType === "USD_LINKED"
   ) {
-    if (!params.couponRate || !params.firstCouponDate) {
-      if (
-        flowType === "BULLET" ||
-        flowType === "CER" ||
-        flowType === "USD_LINKED"
-      ) {
-        if (!params.couponRate || !params.firstCouponDate) {
-          throw new Error(
-            `${flowType} requires couponRate and firstCouponDate`,
-          );
-        }
-      }
+    const hasSchedule =
+      params.couponSchedule !== undefined && params.couponSchedule.length > 0;
+    const hasAutoParams =
+      params.couponRate !== undefined &&
+      params.couponRate > 0 &&
+      params.firstCouponDate !== undefined &&
+      params.firstCouponDate !== "";
+    if (!hasSchedule && !hasAutoParams) {
+      throw new Error(
+        `${flowType} requires either (couponRate + firstCouponDate) or couponSchedule`,
+      );
+    }
+    if (!params.couponRate || params.couponRate <= 0) {
+      throw new Error(`${flowType} requires couponRate`);
     }
   }
 
