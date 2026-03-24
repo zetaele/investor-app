@@ -4,6 +4,7 @@ import type {
   Instrument,
   Cashflow,
   InstrumentAnalysis,
+  SimulationResult,
   Currency,
   InstrumentType,
 } from "@investor-app/shared";
@@ -50,6 +51,25 @@ async function get<T>(
 }
 
 // ── Instruments ───────────────────────────────────────────────────────────────
+
+/** Simulates bond metrics at a hypothetical price or YTM. */
+export async function fetchSimulation(
+  ticker: string,
+  input: { price: number } | { ytm: number },
+  displayCurrency: Currency = "USD",
+): Promise<SimulationResult> {
+  const params: Record<string, string> = { displayCurrency };
+  if ("price" in input) {
+    params["price"] = String(input.price);
+  } else {
+    params["ytm"] = String(input.ytm);
+  }
+  const res = await get<{ data: SimulationResult }>(
+    `/instruments/${ticker}/simulate`,
+    params,
+  );
+  return res.data;
+}
 
 /** Returns all active instruments, optionally filtered. */
 export async function fetchInstruments(filters?: {

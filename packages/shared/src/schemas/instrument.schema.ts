@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import { z } from "zod";
 
-export const instrumentTypeSchema = z.enum(['BOND', 'LETTER', 'ON'])
-export const currencySchema = z.enum(['ARS', 'USD', 'USD_LINKED'])
+export const instrumentTypeSchema = z.enum(["BOND", "LETTER", "ON"]);
+export const currencySchema = z.enum(["ARS", "USD", "USD_LINKED"]);
 
 export const instrumentSchema = z.object({
   id: z.number().int().positive(),
@@ -11,32 +11,49 @@ export const instrumentSchema = z.object({
   currency: currencySchema,
   market: z.string(),
   issuer: z.string().nullable(),
-  maturityDate: z.string().datetime({ offset: true }).or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+  maturityDate: z
+    .string()
+    .datetime({ offset: true })
+    .or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
   isActive: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),
-})
+});
 
 /** Validates ticker strings from URL params. Allows only uppercase alphanumeric. */
 export const tickerParamSchema = z.object({
-  ticker: z.string().regex(/^[A-Z0-9]{2,10}$/, 'Invalid ticker format'),
-})
+  ticker: z.string().regex(/^[A-Z0-9]{2,10}$/, "Invalid ticker format"),
+});
 
 /** Query params for the analysis endpoint. */
 export const analysisQuerySchema = z.object({
-  displayCurrency: currencySchema.optional().default('USD'),
-})
+  displayCurrency: currencySchema.optional().default("USD"),
+});
+
+/**
+ * Query params for the simulate endpoint.
+ * Exactly one of `price` or `ytm` must be provided.
+ */
+export const simulateQuerySchema = z
+  .object({
+    price: z.coerce.number().positive().optional(),
+    ytm: z.coerce.number().min(-0.999).max(100).optional(),
+    displayCurrency: currencySchema.optional().default("USD"),
+  })
+  .refine((d) => (d.price !== undefined) !== (d.ytm !== undefined), {
+    message: "Provide exactly one of: price or ytm",
+  });
 
 /** Query params for the compare endpoint. */
 export const compareQuerySchema = z.object({
   tickers: z
     .string()
-    .transform((val) => val.split(','))
+    .transform((val) => val.split(","))
     .pipe(
       z
         .array(z.string().regex(/^[A-Z0-9]{2,10}$/))
-        .min(2, 'At least 2 tickers required')
-        .max(5, 'Maximum 5 tickers allowed'),
+        .min(2, "At least 2 tickers required")
+        .max(5, "Maximum 5 tickers allowed"),
     ),
-  displayCurrency: currencySchema.optional().default('USD'),
-})
+  displayCurrency: currencySchema.optional().default("USD"),
+});
