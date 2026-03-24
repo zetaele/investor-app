@@ -1,32 +1,34 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import type { Instrument, InstrumentType } from "@investor-app/shared";
 import { fetchInstruments } from "@/services/api";
 import { formatDate, formatTimeToMaturity } from "@/composables/useFormat";
 import ErrorBanner from "@/components/ui/ErrorBanner.vue";
 
+const props = defineProps<{ type: InstrumentType }>();
 const router = useRouter();
 
 const instruments = ref<Instrument[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 const search = ref("");
-const activeType = ref<InstrumentType | "ALL">("ALL");
 const sortKey = ref<"ticker" | "maturityDate" | "currency">("maturityDate");
 const sortDir = ref<"asc" | "desc">("asc");
 
-const TYPE_LABELS: Record<InstrumentType | "ALL", string> = {
-  ALL: "Todos",
-  BOND: "Bonos",
-  LETTER: "Letras",
-  ON: "ONs",
-};
-
-const TYPE_ORDER: Record<InstrumentType, number> = {
-  LETTER: 0,
-  BOND: 1,
-  ON: 2,
+const SECTION_CONFIG: Record<InstrumentType, { title: string; subtitle: string }> = {
+  BOND: {
+    title: "Bonos Soberanos",
+    subtitle: "Bonos del Tesoro Nacional · BYMA",
+  },
+  LETTER: {
+    title: "Letras del Tesoro",
+    subtitle: "Letras a descuento, CER y dólar-linked · BYMA",
+  },
+  ON: {
+    title: "Obligaciones Negociables",
+    subtitle: "Bonos corporativos · BYMA",
+  },
 };
 
 async function load(): Promise<void> {
@@ -43,49 +45,36 @@ async function load(): Promise<void> {
 
 onMounted(load);
 
+// Reset filters when switching sections (component is reused across routes)
+watch(
+  () => props.type,
+  () => {
+    search.value = "";
+    sortKey.value = "maturityDate";
+    sortDir.value = "asc";
+  },
+);
+
 const filtered = computed(() => {
-  let list = instruments.value.filter((i) => {
-    const matchesType = activeType.value === "ALL" || i.type === activeType.value;
+  const list = instruments.value.filter((i) => {
+    if (i.type !== props.type) return false;
     const q = search.value.toLowerCase();
-    const matchesSearch =
+    return (
       q === "" ||
       i.ticker.toLowerCase().includes(q) ||
       i.name.toLowerCase().includes(q) ||
-      (i.issuer ?? "").toLowerCase().includes(q);
-    return matchesType && matchesSearch;
+      (i.issuer ?? "").toLowerCase().includes(q)
+    );
   });
 
-  list = [...list].sort((a, b) => {
+  return [...list].sort((a, b) => {
     let cmp = 0;
-    if (sortKey.value === "ticker") {
-      cmp = a.ticker.localeCompare(b.ticker);
-    } else if (sortKey.value === "maturityDate") {
-      cmp = a.maturityDate.localeCompare(b.maturityDate);
-    } else if (sortKey.value === "currency") {
-      cmp = a.currency.localeCompare(b.currency);
-    }
-    if (cmp === 0) cmp = TYPE_ORDER[a.type] - TYPE_ORDER[b.type];
+    if (sortKey.value === "ticker") cmp = a.ticker.localeCompare(b.ticker);
+    else if (sortKey.value === "maturityDate") cmp = a.maturityDate.localeCompare(b.maturityDate);
+    else if (sortKey.value === "currency") cmp = a.currency.localeCompare(b.currency);
     if (cmp === 0) cmp = a.ticker.localeCompare(b.ticker);
     return sortDir.value === "asc" ? cmp : -cmp;
   });
-
-  return list;
-});
-
-const grouped = computed(() => {
-  if (activeType.value !== "ALL") return null;
-
-  const list = filtered.value; // explicit dependency on filtered
-  if (list.length === 0) return null;
-
-  const order: InstrumentType[] = ["LETTER", "BOND", "ON"];
-
-  return order
-    .map((type) => ({
-      type,
-      instruments: list.filter((i) => i.type === type),
-    }))
-    .filter((g) => g.instruments.length > 0);
 });
 
 function toggleSort(key: typeof sortKey.value): void {
@@ -112,27 +101,16 @@ function goToCompare(): void {
 </script>
 
 <template>
-  <div class="home">
-    <header class="home-header">
+  <div class="market-view">
+    <header class="market-header">
       <div class="header-left">
-        <h1 class="home-title font-display">Mercado Argentino</h1>
-        <p class="home-subtitle">Bonos, letras y obligaciones negociables · BYMA</p>
+        <h1 class="market-title font-display">{{ SECTION_CONFIG[type].title }}</h1>
+        <p class="market-subtitle">{{ SECTION_CONFIG[type].subtitle }}</p>
       </div>
       <button class="compare-cta" @click="goToCompare">Comparar →</button>
     </header>
 
     <div class="controls">
-      <div class="type-filters">
-        <button
-          v-for="type in ['ALL', 'BOND', 'LETTER', 'ON'] as const"
-          :key="type"
-          class="type-btn"
-          :class="{ active: activeType === type }"
-          @click="activeType = type"
-        >
-          {{ TYPE_LABELS[type] }}
-        </button>
-      </div>
       <input
         v-model="search"
         class="search-input"
@@ -149,7 +127,6 @@ function goToCompare(): void {
           <tr>
             <th>Ticker</th>
             <th>Nombre</th>
-            <th>Tipo</th>
             <th>Moneda</th>
             <th>Vencimiento</th>
             <th>Restante</th>
@@ -157,25 +134,12 @@ function goToCompare(): void {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="n in 8" :key="n">
-            <td>
-              <div class="skeleton" style="height: 0.875rem; width: 60px" />
-            </td>
-            <td>
-              <div class="skeleton" style="height: 0.875rem; width: 200px" />
-            </td>
-            <td>
-              <div class="skeleton" style="height: 0.875rem; width: 50px" />
-            </td>
-            <td>
-              <div class="skeleton" style="height: 0.875rem; width: 40px" />
-            </td>
-            <td>
-              <div class="skeleton" style="height: 0.875rem; width: 90px" />
-            </td>
-            <td>
-              <div class="skeleton" style="height: 0.875rem; width: 50px" />
-            </td>
+          <tr v-for="n in 6" :key="n">
+            <td><div class="skeleton" style="height: 0.875rem; width: 60px" /></td>
+            <td><div class="skeleton" style="height: 0.875rem; width: 220px" /></td>
+            <td><div class="skeleton" style="height: 0.875rem; width: 40px" /></td>
+            <td><div class="skeleton" style="height: 0.875rem; width: 90px" /></td>
+            <td><div class="skeleton" style="height: 0.875rem; width: 50px" /></td>
             <td></td>
           </tr>
         </tbody>
@@ -188,66 +152,6 @@ function goToCompare(): void {
       Sin resultados para "{{ search }}".
     </div>
 
-    <!-- Grouped table -->
-    <template v-else-if="grouped">
-      <div v-for="group in grouped" :key="group.type" class="group-block">
-        <div class="group-header">
-          <span class="group-label" :data-type="group.type">
-            {{ TYPE_LABELS[group.type] }}
-          </span>
-          <span class="group-count font-mono">{{ group.instruments.length }}</span>
-        </div>
-        <div class="table-wrapper card">
-          <table class="market-table">
-            <thead>
-              <tr>
-                <th class="sortable" @click="toggleSort('ticker')">
-                  Ticker <span class="sort-icon">{{ sortIcon("ticker") }}</span>
-                </th>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th class="sortable" @click="toggleSort('currency')">
-                  Moneda
-                  <span class="sort-icon">{{ sortIcon("currency") }}</span>
-                </th>
-                <th class="sortable" @click="toggleSort('maturityDate')">
-                  Vencimiento
-                  <span class="sort-icon">{{ sortIcon("maturityDate") }}</span>
-                </th>
-                <th>Restante</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="instrument in group.instruments"
-                :key="instrument.ticker"
-                class="instrument-row"
-                @click="goToInstrument(instrument.ticker)"
-              >
-                <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
-                <td class="name-cell">{{ instrument.name }}</td>
-                <td>
-                  <span class="type-badge" :data-type="instrument.type">{{ instrument.type }}</span>
-                </td>
-                <td class="font-mono currency-cell">
-                  {{ instrument.currency }}
-                </td>
-                <td class="font-mono date-cell">
-                  {{ formatDate(instrument.maturityDate) }}
-                </td>
-                <td class="font-mono ttm-cell">
-                  {{ formatTimeToMaturity(instrument.maturityDate) }}
-                </td>
-                <td class="arrow-cell">→</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </template>
-
-    <!-- Flat table -->
     <div v-else class="table-wrapper card">
       <table class="market-table">
         <thead>
@@ -256,7 +160,6 @@ function goToCompare(): void {
               Ticker <span class="sort-icon">{{ sortIcon("ticker") }}</span>
             </th>
             <th>Nombre</th>
-            <th>Tipo</th>
             <th class="sortable" @click="toggleSort('currency')">
               Moneda <span class="sort-icon">{{ sortIcon("currency") }}</span>
             </th>
@@ -277,13 +180,8 @@ function goToCompare(): void {
           >
             <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
             <td class="name-cell">{{ instrument.name }}</td>
-            <td>
-              <span class="type-badge" :data-type="instrument.type">{{ instrument.type }}</span>
-            </td>
             <td class="font-mono currency-cell">{{ instrument.currency }}</td>
-            <td class="font-mono date-cell">
-              {{ formatDate(instrument.maturityDate) }}
-            </td>
+            <td class="font-mono date-cell">{{ formatDate(instrument.maturityDate) }}</td>
             <td class="font-mono ttm-cell">
               {{ formatTimeToMaturity(instrument.maturityDate) }}
             </td>
@@ -300,14 +198,14 @@ function goToCompare(): void {
 </template>
 
 <style scoped>
-.home {
+.market-view {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   padding-top: 1rem;
 }
 
-.home-header {
+.market-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -315,7 +213,7 @@ function goToCompare(): void {
   padding: 1.5rem 0 0;
 }
 
-.home-title {
+.market-title {
   font-size: clamp(2rem, 5vw, 3.25rem);
   font-weight: 400;
   letter-spacing: -0.03em;
@@ -323,7 +221,7 @@ function goToCompare(): void {
   margin: 0 0 0.5rem;
 }
 
-.home-subtitle {
+.market-subtitle {
   font-size: 0.85rem;
   color: var(--color-text-secondary);
   margin: 0;
@@ -354,35 +252,6 @@ function goToCompare(): void {
 .controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.type-filters {
-  display: flex;
-  gap: 0.375rem;
-}
-
-.type-btn {
-  padding: 0.375rem 0.875rem;
-  border-radius: 2rem;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-.type-btn:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-.type-btn.active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: #000;
-  font-weight: 600;
 }
 
 .search-input {
@@ -394,7 +263,7 @@ function goToCompare(): void {
   font-family: var(--font-body);
   font-size: 0.875rem;
   outline: none;
-  width: 260px;
+  width: 300px;
   transition: border-color var(--transition-base);
 }
 .search-input:focus {
@@ -416,9 +285,7 @@ function goToCompare(): void {
 
 thead tr {
   border-bottom: 2px solid var(--color-border);
-  top: 56px;
   background: var(--color-bg-elevated);
-  z-index: 10;
 }
 
 th {
@@ -445,41 +312,6 @@ th.sortable:hover {
   font-size: 0.7rem;
   opacity: 0.6;
   margin-left: 0.25rem;
-}
-
-.group-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.group-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.25rem;
-}
-
-.group-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-right: 0.5rem;
-}
-.group-label[data-type="BOND"] {
-  color: #22c55e;
-}
-.group-label[data-type="LETTER"] {
-  color: #60a5fa;
-}
-.group-label[data-type="ON"] {
-  color: #f59e0b;
-}
-
-.group-count {
-  font-size: 0.68rem;
-  color: var(--color-text-dim);
 }
 
 .instrument-row {
@@ -512,32 +344,11 @@ td {
 
 .name-cell {
   color: var(--color-text-secondary);
-  max-width: 340px;
+  max-width: 380px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.82rem;
-}
-
-.type-badge {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 0.2rem 0.45rem;
-  border-radius: 0.2rem;
-  text-transform: uppercase;
-}
-.type-badge[data-type="BOND"] {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
-}
-.type-badge[data-type="LETTER"] {
-  background: rgba(59, 130, 246, 0.12);
-  color: #60a5fa;
-}
-.type-badge[data-type="ON"] {
-  background: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
 }
 
 .currency-cell {
@@ -583,7 +394,7 @@ td {
     width: 100%;
   }
 
-  .home-header {
+  .market-header {
     flex-direction: column;
     align-items: flex-start;
   }

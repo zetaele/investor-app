@@ -56,7 +56,7 @@ const ytmClass = computed(() => {
 
 <template>
   <div class="instrument-view">
-    <button class="back-btn" @click="router.push('/')">← Instrumentos</button>
+    <button class="back-btn" @click="router.back()">← Volver</button>
 
     <!-- Loading -->
     <template v-if="loading">

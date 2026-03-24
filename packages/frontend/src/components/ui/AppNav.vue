@@ -20,8 +20,18 @@ const currencyStore = useCurrencyStore();
       <!-- Nav links -->
       <ul class="nav-links">
         <li>
-          <RouterLink to="/" class="nav-link" :class="{ active: route.name === 'home' }">
-            Instrumentos
+          <RouterLink to="/bonos" class="nav-link" :class="{ active: route.name === 'bonos' }">
+            Bonos
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/letras" class="nav-link" :class="{ active: route.name === 'letras' }">
+            Letras
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/ons" class="nav-link" :class="{ active: route.name === 'ons' }">
+            ONs
           </RouterLink>
         </li>
         <li>
@@ -42,8 +52,9 @@ const currencyStore = useCurrencyStore();
 
       <!-- Controls -->
       <div class="nav-controls">
-        <!-- Currency toggle -->
+        <!-- Currency toggle: hidden on Letras (always ARS) -->
         <button
+          v-if="route.name !== 'letras'"
           class="control-btn currency-btn"
           :title="`Cambiar a ${currencyStore.currency === 'USD' ? 'ARS' : 'USD'}`"
           @click="currencyStore.toggle()"

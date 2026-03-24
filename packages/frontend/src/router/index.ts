@@ -1,12 +1,27 @@
 import { createRouter, createWebHistory } from "vue-router";
+import type { InstrumentType } from "@investor-app/shared";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { path: "/", redirect: "/bonos" },
     {
-      path: "/",
-      name: "home",
-      component: () => import("@/views/HomeView.vue"),
+      path: "/bonos",
+      name: "bonos",
+      component: () => import("@/views/MarketView.vue"),
+      props: { type: "BOND" as InstrumentType },
+    },
+    {
+      path: "/letras",
+      name: "letras",
+      component: () => import("@/views/MarketView.vue"),
+      props: { type: "LETTER" as InstrumentType },
+    },
+    {
+      path: "/ons",
+      name: "ons",
+      component: () => import("@/views/MarketView.vue"),
+      props: { type: "ON" as InstrumentType },
     },
     {
       path: "/instrument/:ticker",
@@ -20,11 +35,6 @@ const router = createRouter({
       component: () => import("@/views/CompareView.vue"),
     },
     {
-      path: "/:pathMatch(.*)*",
-      name: "not-found",
-      component: () => import("@/views/NotFoundView.vue"),
-    },
-    {
       path: "/calendar",
       name: "calendar",
       component: () => import("@/views/CalendarView.vue"),
@@ -33,6 +43,11 @@ const router = createRouter({
       path: "/admin",
       name: "admin",
       component: () => import("@/views/AdminView.vue"),
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: () => import("@/views/NotFoundView.vue"),
     },
   ],
   scrollBehavior(_to, _from, savedPosition) {
