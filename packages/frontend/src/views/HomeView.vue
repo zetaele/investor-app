@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import type { Instrument, InstrumentType } from "@investor-app/shared";
 import { fetchInstruments } from "@/services/api";
 import { formatDate, formatTimeToMaturity } from "@/composables/useFormat";
+import ErrorBanner from "@/components/ui/ErrorBanner.vue";
 
 const router = useRouter();
 
@@ -28,7 +29,9 @@ const TYPE_ORDER: Record<InstrumentType, number> = {
   ON: 2,
 };
 
-onMounted(async () => {
+async function load(): Promise<void> {
+  loading.value = true;
+  error.value = null;
   try {
     instruments.value = await fetchInstruments();
   } catch {
@@ -36,7 +39,9 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(load);
 
 const filtered = computed(() => {
   let list = instruments.value.filter((i) => {
@@ -180,7 +185,7 @@ function goToCompare(): void {
       </table>
     </div>
 
-    <div v-else-if="error" class="state-msg">{{ error }}</div>
+    <ErrorBanner v-else-if="error" :message="error" :on-retry="load" />
 
     <div v-else-if="filtered.length === 0" class="state-msg">
       Sin resultados para "{{ search }}".

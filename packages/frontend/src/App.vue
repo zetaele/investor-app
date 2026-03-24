@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import AppNav from '@/components/ui/AppNav.vue'
-import { useThemeStore } from '@/stores/themeStore'
+import { RouterView } from "vue-router";
+import AppNav from "@/components/ui/AppNav.vue";
+import ToastContainer from "@/components/ui/ToastContainer.vue";
+import { useThemeStore } from "@/stores/themeStore";
 
 // Initialize theme store on app mount — applies the stored/system theme
-useThemeStore()
+useThemeStore();
 </script>
 
 <template>
   <div class="app-shell">
     <AppNav />
+    <ToastContainer />
     <main class="app-main">
       <RouterView v-slot="{ Component }">
         <Transition name="page" mode="out-in">
@@ -38,7 +40,9 @@ useThemeStore()
 /* Page transition */
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
 }
 
 .page-enter-from {

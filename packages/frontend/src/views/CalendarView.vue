@@ -1,52 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { fetchCalendar } from '@/services/api'
-import type { CalendarMonth } from '@/services/api'
-import { formatDate, formatNumber } from '@/composables/useFormat'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { fetchCalendar } from "@/services/api";
+import type { CalendarMonth } from "@/services/api";
+import { formatDate, formatNumber } from "@/composables/useFormat";
+import ErrorBanner from "@/components/ui/ErrorBanner.vue";
 
-const router = useRouter()
-const months = ref<CalendarMonth[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
-const daysAhead = ref(730)
+const router = useRouter();
+const months = ref<CalendarMonth[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+const daysAhead = ref(730);
 
 async function load(): Promise<void> {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    months.value = await fetchCalendar(daysAhead.value)
+    months.value = await fetchCalendar(daysAhead.value);
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Error al cargar el calendario.'
+    error.value =
+      err instanceof Error ? err.message : "Error al cargar el calendario.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
-onMounted(load)
+onMounted(load);
 
 const TYPE_LABELS: Record<string, string> = {
-  BOND:   'Bono',
-  LETTER: 'Letra',
-  ON:     'ON',
-}
+  BOND: "Bono",
+  LETTER: "Letra",
+  ON: "ON",
+};
 
 const HORIZON_OPTIONS = [
-  { label: '6 meses',  days: 180 },
-  { label: '1 año',    days: 365 },
-  { label: '2 años',   days: 730 },
-  { label: '5 años',   days: 1825 },
-]
+  { label: "6 meses", days: 180 },
+  { label: "1 año", days: 365 },
+  { label: "2 años", days: 730 },
+  { label: "5 años", days: 1825 },
+];
 
 function setHorizon(days: number): void {
-  daysAhead.value = days
-  load()
+  daysAhead.value = days;
+  load();
 }
 </script>
 
 <template>
   <div class="calendar-view">
-
     <!-- Header -->
     <header class="calendar-header">
       <div>
@@ -73,17 +74,20 @@ function setHorizon(days: number): void {
     <!-- Loading -->
     <div v-if="loading" class="months-list">
       <div v-for="n in 3" :key="n" class="month-block">
-        <div class="skeleton" style="height: 1.25rem; width: 140px; margin-bottom: 1rem" />
-        <div class="skeleton" style="height: 48px; border-radius: 0.5rem; margin-bottom: 0.5rem" />
+        <div
+          class="skeleton"
+          style="height: 1.25rem; width: 140px; margin-bottom: 1rem"
+        />
+        <div
+          class="skeleton"
+          style="height: 48px; border-radius: 0.5rem; margin-bottom: 0.5rem"
+        />
         <div class="skeleton" style="height: 48px; border-radius: 0.5rem" />
       </div>
     </div>
 
     <!-- Error -->
-    <div v-else-if="error" class="error-state">
-      <p class="font-mono" style="color: var(--color-negative)">ERROR</p>
-      <p>{{ error }}</p>
-    </div>
+    <ErrorBanner v-else-if="error" :message="error" :on-retry="load" />
 
     <!-- Empty -->
     <div v-else-if="months.length === 0" class="empty-state">
@@ -92,16 +96,14 @@ function setHorizon(days: number): void {
 
     <!-- Calendar -->
     <div v-else class="months-list">
-      <div
-        v-for="month in months"
-        :key="month.month"
-        class="month-block"
-      >
+      <div v-for="month in months" :key="month.month" class="month-block">
         <!-- Month header -->
         <div class="month-header">
           <h2 class="month-label">{{ month.label }}</h2>
           <span class="month-count font-mono">
-            {{ month.payments.length }} pago{{ month.payments.length !== 1 ? 's' : '' }}
+            {{ month.payments.length }} pago{{
+              month.payments.length !== 1 ? "s" : ""
+            }}
           </span>
         </div>
 
@@ -119,9 +121,14 @@ function setHorizon(days: number): void {
                 {{ formatDate(payment.paymentDate) }}
               </span>
               <div class="payment-instrument">
-                <span class="payment-ticker font-mono">{{ payment.ticker }}</span>
+                <span class="payment-ticker font-mono">{{
+                  payment.ticker
+                }}</span>
                 <span class="payment-type" :data-type="payment.instrumentType">
-                  {{ TYPE_LABELS[payment.instrumentType] ?? payment.instrumentType }}
+                  {{
+                    TYPE_LABELS[payment.instrumentType] ??
+                    payment.instrumentType
+                  }}
                 </span>
               </div>
             </div>
@@ -134,10 +141,14 @@ function setHorizon(days: number): void {
                   {{ payment.currency }} {{ formatNumber(payment.coupon, 4) }}
                 </span>
               </span>
-              <span v-if="payment.amortization > 0" class="flow-item amortization">
+              <span
+                v-if="payment.amortization > 0"
+                class="flow-item amortization"
+              >
                 <span class="flow-label">Amort.</span>
                 <span class="flow-value font-mono">
-                  {{ payment.currency }} {{ formatNumber(payment.amortization, 2) }}
+                  {{ payment.currency }}
+                  {{ formatNumber(payment.amortization, 2) }}
                 </span>
               </span>
             </div>
@@ -148,19 +159,14 @@ function setHorizon(days: number): void {
               <span class="total-value font-mono">
                 {{ payment.currency }} {{ formatNumber(payment.totalFlow, 4) }}
               </span>
-              <span
-                v-if="payment.amortization > 0"
-                class="amort-badge"
-              >
-                {{ payment.residualAfter === 0 ? 'Vencimiento' : 'Amortiza' }}
+              <span v-if="payment.amortization > 0" class="amort-badge">
+                {{ payment.residualAfter === 0 ? "Vencimiento" : "Amortiza" }}
               </span>
             </div>
-
           </button>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -280,7 +286,9 @@ function setHorizon(days: number): void {
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-dim);
   cursor: pointer;
-  transition: border-color var(--transition-base), background var(--transition-base);
+  transition:
+    border-color var(--transition-base),
+    background var(--transition-base);
   box-sizing: border-box;
   width: 100%;
   text-align: left;
@@ -326,9 +334,18 @@ function setHorizon(days: number): void {
   text-transform: uppercase;
 }
 
-.payment-type[data-type='BOND']   { background: rgba(34,197,94,0.12);  color: #22c55e; }
-.payment-type[data-type='LETTER'] { background: rgba(59,130,246,0.12); color: #60a5fa; }
-.payment-type[data-type='ON']     { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.payment-type[data-type="BOND"] {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+.payment-type[data-type="LETTER"] {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+.payment-type[data-type="ON"] {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
 
 /* Center */
 .payment-flows {
@@ -357,8 +374,12 @@ function setHorizon(days: number): void {
   font-weight: 500;
 }
 
-.flow-item.coupon .flow-value    { color: var(--color-accent); }
-.flow-item.amortization .flow-value { color: var(--color-positive); }
+.flow-item.coupon .flow-value {
+  color: var(--color-accent);
+}
+.flow-item.amortization .flow-value {
+  color: var(--color-positive);
+}
 
 /* Right */
 .payment-right {
@@ -387,7 +408,7 @@ function setHorizon(days: number): void {
   letter-spacing: 0.06em;
   padding: 0.15rem 0.4rem;
   border-radius: 0.2rem;
-  background: rgba(34,197,94,0.12);
+  background: rgba(34, 197, 94, 0.12);
   color: var(--color-positive);
   text-transform: uppercase;
 }
