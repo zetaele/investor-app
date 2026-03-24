@@ -2,13 +2,13 @@
  * Represents a real-time market price returned by any BYMA data source.
  */
 export interface BymaMarketPrice {
-  ticker: string
+  ticker: string;
   /** Last traded price in the instrument's native currency. */
-  price: number
+  price: number;
   /** 24h trading volume. */
-  volume: number | null
+  volume: number | null;
   /** Last update timestamp from the data source. */
-  updatedAt: string
+  updatedAt: string;
 }
 
 /**
@@ -20,13 +20,13 @@ export interface IBYMAClient {
    * Fetches the current market price for a single instrument.
    * Throws BymaInstrumentNotFoundError if the ticker is unknown to the source.
    */
-  getPrice(ticker: string): Promise<BymaMarketPrice>
+  getPrice(ticker: string): Promise<BymaMarketPrice>;
 
   /**
    * Fetches current market prices for multiple instruments in a single call.
    * Returns a map of ticker → price. Missing tickers are omitted from the result.
    */
-  getPrices(tickers: string[]): Promise<Map<string, BymaMarketPrice>>
+  getPrices(tickers: string[]): Promise<Map<string, BymaMarketPrice>>;
 }
 
 /**
@@ -34,8 +34,8 @@ export interface IBYMAClient {
  */
 export class BymaInstrumentNotFoundError extends Error {
   constructor(ticker: string) {
-    super(`Ticker not found in BYMA data source: ${ticker}`)
-    this.name = 'BymaInstrumentNotFoundError'
+    super(`Ticker not found in BYMA data source: ${ticker}`);
+    this.name = "BymaInstrumentNotFoundError";
   }
 }
 
@@ -43,8 +43,11 @@ export class BymaInstrumentNotFoundError extends Error {
  * Thrown when the BYMA data source is unreachable or returns an unexpected response.
  */
 export class BymaClientError extends Error {
-  constructor(message: string, public readonly cause?: unknown) {
-    super(message)
-    this.name = 'BymaClientError'
+  constructor(
+    message: string,
+    public readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = "BymaClientError";
   }
 }

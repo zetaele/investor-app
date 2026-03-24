@@ -45,8 +45,7 @@ onMounted(load);
 
 const filtered = computed(() => {
   let list = instruments.value.filter((i) => {
-    const matchesType =
-      activeType.value === "ALL" || i.type === activeType.value;
+    const matchesType = activeType.value === "ALL" || i.type === activeType.value;
     const q = search.value.toLowerCase();
     const matchesSearch =
       q === "" ||
@@ -117,9 +116,7 @@ function goToCompare(): void {
     <header class="home-header">
       <div class="header-left">
         <h1 class="home-title font-display">Mercado Argentino</h1>
-        <p class="home-subtitle">
-          Bonos, letras y obligaciones negociables · BYMA
-        </p>
+        <p class="home-subtitle">Bonos, letras y obligaciones negociables · BYMA</p>
       </div>
       <button class="compare-cta" @click="goToCompare">Comparar →</button>
     </header>
@@ -198,9 +195,7 @@ function goToCompare(): void {
           <span class="group-label" :data-type="group.type">
             {{ TYPE_LABELS[group.type] }}
           </span>
-          <span class="group-count font-mono">{{
-            group.instruments.length
-          }}</span>
+          <span class="group-count font-mono">{{ group.instruments.length }}</span>
         </div>
         <div class="table-wrapper card">
           <table class="market-table">
@@ -233,9 +228,7 @@ function goToCompare(): void {
                 <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
                 <td class="name-cell">{{ instrument.name }}</td>
                 <td>
-                  <span class="type-badge" :data-type="instrument.type">{{
-                    instrument.type
-                  }}</span>
+                  <span class="type-badge" :data-type="instrument.type">{{ instrument.type }}</span>
                 </td>
                 <td class="font-mono currency-cell">
                   {{ instrument.currency }}
@@ -285,9 +278,7 @@ function goToCompare(): void {
             <td class="ticker-cell font-mono">{{ instrument.ticker }}</td>
             <td class="name-cell">{{ instrument.name }}</td>
             <td>
-              <span class="type-badge" :data-type="instrument.type">{{
-                instrument.type
-              }}</span>
+              <span class="type-badge" :data-type="instrument.type">{{ instrument.type }}</span>
             </td>
             <td class="font-mono currency-cell">{{ instrument.currency }}</td>
             <td class="font-mono date-cell">

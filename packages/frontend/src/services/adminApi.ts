@@ -29,10 +29,7 @@ export class AdminApiError extends Error {
   }
 }
 
-async function adminFetch<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+async function adminFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getAdminToken();
   if (token === null) throw new AdminApiError(401, "No admin token set");
 
@@ -54,13 +51,8 @@ async function adminFetch<T>(
   });
 
   if (!response.ok) {
-    const body = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new AdminApiError(
-      response.status,
-      (body as { error: string }).error ?? "Unknown error",
-    );
+    const body = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new AdminApiError(response.status, (body as { error: string }).error ?? "Unknown error");
   }
 
   return response.json() as Promise<T>;

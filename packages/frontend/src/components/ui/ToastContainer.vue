@@ -22,9 +22,7 @@ const ICONS: Record<string, string> = {
           :class="`toast--${toast.type}`"
           role="alert"
         >
-          <span class="toast-icon" aria-hidden="true">{{
-            ICONS[toast.type]
-          }}</span>
+          <span class="toast-icon" aria-hidden="true">{{ ICONS[toast.type] }}</span>
           <span class="toast-message">{{ toast.message }}</span>
           <button
             class="toast-close"

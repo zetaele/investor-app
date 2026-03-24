@@ -31,8 +31,7 @@ async function load(): Promise<void> {
   try {
     analysis.value = await fetchAnalysis(props.ticker, currencyStore.currency);
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : "Error al cargar el instrumento.";
+    error.value = err instanceof Error ? err.message : "Error al cargar el instrumento.";
   } finally {
     loading.value = false;
   }
@@ -63,10 +62,7 @@ const ytmClass = computed(() => {
     <template v-if="loading">
       <div class="header-skeleton">
         <div class="skeleton" style="height: 2.5rem; width: 160px" />
-        <div
-          class="skeleton"
-          style="height: 1rem; width: 320px; margin-top: 0.75rem"
-        />
+        <div class="skeleton" style="height: 1rem; width: 320px; margin-top: 0.75rem" />
       </div>
       <div class="metrics-grid">
         <div v-for="n in 6" :key="n" class="skeleton metric-skeleton" />
@@ -86,9 +82,7 @@ const ytmClass = computed(() => {
             <span class="type-badge" :data-type="analysis.type">
               {{ TYPE_LABELS[analysis.type] ?? analysis.type }}
             </span>
-            <span class="currency-badge font-mono">{{
-              analysis.currency
-            }}</span>
+            <span class="currency-badge font-mono">{{ analysis.currency }}</span>
           </div>
           <p class="instrument-name">{{ analysis.name }}</p>
           <p class="instrument-meta">
@@ -131,32 +125,17 @@ const ytmClass = computed(() => {
           />
           <MetricCard
             label="Precio limpio"
-            :value="
-              formatPrice(
-                analysis.calculations.cleanPrice,
-                analysis.displayCurrency,
-              )
-            "
+            :value="formatPrice(analysis.calculations.cleanPrice, analysis.displayCurrency)"
             tooltip="Precio sin el interés corrido acumulado"
           />
           <MetricCard
             label="Precio sucio"
-            :value="
-              formatPrice(
-                analysis.calculations.dirtyPrice,
-                analysis.displayCurrency,
-              )
-            "
+            :value="formatPrice(analysis.calculations.dirtyPrice, analysis.displayCurrency)"
             tooltip="Precio que efectivamente paga el comprador (incluye interés corrido)"
           />
           <MetricCard
             label="Interés corrido"
-            :value="
-              formatPrice(
-                analysis.calculations.accruedInterest,
-                analysis.displayCurrency,
-              )
-            "
+            :value="formatPrice(analysis.calculations.accruedInterest, analysis.displayCurrency)"
             tooltip="Cupón devengado desde el último pago de intereses"
           />
           <MetricCard
@@ -176,38 +155,26 @@ const ytmClass = computed(() => {
       <section class="simulator-section">
         <h2 class="section-title">Simulador</h2>
         <p class="section-subtitle">
-          Ingresá un precio para calcular la TIR, o una TIR para calcular el
-          precio teórico
+          Ingresá un precio para calcular la TIR, o una TIR para calcular el precio teórico
         </p>
         <div class="card simulator-card">
-          <SimulatorPanel
-            :ticker="analysis.ticker"
-            :display-currency="analysis.displayCurrency"
-          />
+          <SimulatorPanel :ticker="analysis.ticker" :display-currency="analysis.displayCurrency" />
         </div>
       </section>
 
       <!-- Cashflow chart -->
       <section class="chart-section">
         <h2 class="section-title">Flujo de pagos</h2>
-        <p class="section-subtitle">
-          Cupones y amortizaciones programados hasta el vencimiento
-        </p>
+        <p class="section-subtitle">Cupones y amortizaciones programados hasta el vencimiento</p>
         <div class="chart-wrapper card">
-          <CashflowChart
-            :cashflows="analysis.cashflows"
-            :currency="analysis.displayCurrency"
-          />
+          <CashflowChart :cashflows="analysis.cashflows" :currency="analysis.displayCurrency" />
         </div>
       </section>
 
       <!-- Cashflow table -->
       <section class="table-section">
         <h2 class="section-title">Detalle de flujos</h2>
-        <CashflowTable
-          :cashflows="analysis.cashflows"
-          :currency="analysis.displayCurrency"
-        />
+        <CashflowTable :cashflows="analysis.cashflows" :currency="analysis.displayCurrency" />
       </section>
     </template>
   </div>

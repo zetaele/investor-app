@@ -1,5 +1,5 @@
-import type { CompareEntry, Currency } from '@investor-app/shared'
-import type { BondsService } from '../bonds/bonds.service.js'
+import type { CompareEntry, Currency } from "@investor-app/shared";
+import type { BondsService } from "../bonds/bonds.service.js";
 
 /**
  * Runs a full financial analysis for multiple instruments in parallel
@@ -17,36 +17,34 @@ export class CompareService {
     displayCurrency: Currency,
   ): Promise<{ entries: CompareEntry[]; failed: string[] }> {
     const results = await Promise.allSettled(
-      tickers.map((ticker) =>
-        this.bondsService.analyzeInstrument(ticker, displayCurrency),
-      ),
-    )
+      tickers.map((ticker) => this.bondsService.analyzeInstrument(ticker, displayCurrency)),
+    );
 
-    const entries: CompareEntry[] = []
-    const failed: string[] = []
+    const entries: CompareEntry[] = [];
+    const failed: string[] = [];
 
     results.forEach((result, index) => {
-      const ticker = tickers[index] ?? ''
+      const ticker = tickers[index] ?? "";
 
-      if (result.status === 'fulfilled') {
-        const a = result.value
+      if (result.status === "fulfilled") {
+        const a = result.value;
         entries.push({
-          ticker:      a.ticker,
-          name:        a.name,
-          type:        a.type,
-          currency:    a.currency,
+          ticker: a.ticker,
+          name: a.name,
+          type: a.type,
+          currency: a.currency,
           maturityDate: a.maturityDate,
-          price:       a.market.price,
+          price: a.market.price,
           calculations: a.calculations,
-        })
+        });
       } else {
-        failed.push(ticker)
+        failed.push(ticker);
       }
-    })
+    });
 
     // Sort by YTM descending so highest-yielding instruments appear first
-    entries.sort((a, b) => b.calculations.ytm - a.calculations.ytm)
+    entries.sort((a, b) => b.calculations.ytm - a.calculations.ytm);
 
-    return { entries, failed }
+    return { entries, failed };
   }
 }

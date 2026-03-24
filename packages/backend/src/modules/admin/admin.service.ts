@@ -67,9 +67,7 @@ export async function createInstrument(
   const flows = generateFlows(input.flowParams);
 
   if (flows.length === 0) {
-    throw new AdminError(
-      "Flow generation produced no cash flows. Check the parameters.",
-    );
+    throw new AdminError("Flow generation produced no cash flows. Check the parameters.");
   }
 
   // Insert instrument
@@ -137,11 +135,7 @@ export async function updateInstrument(
   }
 
   // Update metadata
-  if (
-    input.name !== undefined ||
-    input.issuer !== undefined ||
-    input.isActive !== undefined
-  ) {
+  if (input.name !== undefined || input.issuer !== undefined || input.isActive !== undefined) {
     await db
       .update(instruments)
       .set({
@@ -158,16 +152,12 @@ export async function updateInstrument(
     const flows = generateFlows(input.flowParams);
 
     if (flows.length === 0) {
-      throw new AdminError(
-        "Flow generation produced no cash flows. Check the parameters.",
-      );
+      throw new AdminError("Flow generation produced no cash flows. Check the parameters.");
     }
 
     // Delete existing flows and config
     await db.delete(cashflows).where(eq(cashflows.instrumentId, existing.id));
-    await db
-      .delete(instrumentConfig)
-      .where(eq(instrumentConfig.instrumentId, existing.id));
+    await db.delete(instrumentConfig).where(eq(instrumentConfig.instrumentId, existing.id));
 
     // Insert fresh flows and config
     await db.insert(cashflows).values(
@@ -222,8 +212,6 @@ export async function deactivateInstrument(ticker: string): Promise<void> {
  * Previews the cash flows that would be generated for a given set of params,
  * without persisting anything. Used by the admin UI before confirming.
  */
-export function previewFlows(
-  params: FlowGeneratorParams,
-): ReturnType<typeof generateFlows> {
+export function previewFlows(params: FlowGeneratorParams): ReturnType<typeof generateFlows> {
   return generateFlows(params);
 }

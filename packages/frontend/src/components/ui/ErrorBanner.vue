@@ -15,9 +15,7 @@ defineProps<{
         <p class="error-message">{{ message }}</p>
       </div>
     </div>
-    <button v-if="onRetry !== undefined" class="retry-btn" @click="onRetry()">
-      Reintentar
-    </button>
+    <button v-if="onRetry !== undefined" class="retry-btn" @click="onRetry()">Reintentar</button>
   </div>
 </template>
 

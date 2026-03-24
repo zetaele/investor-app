@@ -16,10 +16,7 @@ import {
   AdminApiError,
 } from "@/services/adminApi";
 import type { GeneratedCashflow, FlowType } from "@/services/adminTypes";
-import {
-  FLOW_TYPE_LABELS,
-  FLOW_TYPE_DESCRIPTIONS,
-} from "@/services/adminTypes";
+import { FLOW_TYPE_LABELS, FLOW_TYPE_DESCRIPTIONS } from "@/services/adminTypes";
 
 const router = useRouter();
 
@@ -146,9 +143,7 @@ function resetForm(): void {
 const needsCoupon = computed(() =>
   ["BULLET", "AMORTIZABLE", "CER", "USD_LINKED"].includes(form.value.flowType),
 );
-const needsAmortSchedule = computed(
-  () => form.value.flowType === "AMORTIZABLE",
-);
+const needsAmortSchedule = computed(() => form.value.flowType === "AMORTIZABLE");
 const needsCapRate = computed(() => form.value.flowType === "CAPITALIZABLE");
 
 // ── Flow preview ──────────────────────────────────────────────────────────────
@@ -213,8 +208,7 @@ function buildFlowParams(): FlowGeneratorParams | null {
 async function runPreview(): Promise<void> {
   const params = buildFlowParams();
   if (params === null) {
-    previewError.value =
-      "Completá los campos requeridos antes de previsualizar.";
+    previewError.value = "Completá los campos requeridos antes de previsualizar.";
     return;
   }
 
@@ -225,8 +219,7 @@ async function runPreview(): Promise<void> {
   try {
     previewResult.value = await adminPreviewFlows(params);
   } catch (err) {
-    previewError.value =
-      err instanceof AdminApiError ? err.message : "Error al previsualizar.";
+    previewError.value = err instanceof AdminApiError ? err.message : "Error al previsualizar.";
   } finally {
     previewLoading.value = false;
   }
@@ -279,10 +272,7 @@ async function submit(): Promise<void> {
     showForm.value = false;
     await loadInstruments();
   } catch (err) {
-    formError.value =
-      err instanceof AdminApiError
-        ? err.message
-        : "Error al crear el instrumento.";
+    formError.value = err instanceof AdminApiError ? err.message : "Error al crear el instrumento.";
   } finally {
     formLoading.value = false;
   }
@@ -304,11 +294,7 @@ async function submit(): Promise<void> {
             placeholder="Token de admin"
             @keyup.enter="login"
           />
-          <button
-            class="btn-primary"
-            :disabled="authLoading || !tokenInput"
-            @click="login"
-          >
+          <button class="btn-primary" :disabled="authLoading || !tokenInput" @click="login">
             {{ authLoading ? "Verificando..." : "Ingresar" }}
           </button>
         </div>
@@ -324,12 +310,8 @@ async function submit(): Promise<void> {
           <p class="admin-subtitle">Gestión de instrumentos financieros</p>
         </div>
         <div class="header-actions">
-          <button class="btn-secondary" @click="router.push('/')">
-            ← Volver al sitio
-          </button>
-          <button class="btn-danger-outline" @click="logout">
-            Cerrar sesión
-          </button>
+          <button class="btn-secondary" @click="router.push('/')">← Volver al sitio</button>
+          <button class="btn-danger-outline" @click="logout">Cerrar sesión</button>
         </div>
       </header>
 
@@ -372,9 +354,7 @@ async function submit(): Promise<void> {
                 <td class="font-mono ticker-cell">{{ i.ticker }}</td>
                 <td class="name-cell">{{ i.name }}</td>
                 <td>
-                  <span class="type-badge" :data-type="i.type">{{
-                    i.type
-                  }}</span>
+                  <span class="type-badge" :data-type="i.type">{{ i.type }}</span>
                 </td>
                 <td class="font-mono text-sm">{{ i.type }}</td>
                 <td class="font-mono text-sm">{{ i.currency }}</td>
@@ -382,19 +362,12 @@ async function submit(): Promise<void> {
                   {{ formatDate(i.maturityDate) }}
                 </td>
                 <td>
-                  <span
-                    class="status-badge"
-                    :class="i.isActive ? 'active' : 'inactive'"
-                  >
+                  <span class="status-badge" :class="i.isActive ? 'active' : 'inactive'">
                     {{ i.isActive ? "Activo" : "Inactivo" }}
                   </span>
                 </td>
                 <td>
-                  <button
-                    v-if="i.isActive"
-                    class="btn-danger-sm"
-                    @click="deactivate(i.ticker)"
-                  >
+                  <button v-if="i.isActive" class="btn-danger-sm" @click="deactivate(i.ticker)">
                     Desactivar
                   </button>
                 </td>
@@ -411,11 +384,7 @@ async function submit(): Promise<void> {
         <div class="form-grid">
           <div class="form-group">
             <label class="field-label">Ticker *</label>
-            <input
-              v-model="form.ticker"
-              class="field-input"
-              placeholder="Ej: GD46"
-            />
+            <input v-model="form.ticker" class="field-input" placeholder="Ej: GD46" />
           </div>
 
           <div class="form-group form-group--wide">
@@ -447,11 +416,7 @@ async function submit(): Promise<void> {
 
           <div class="form-group form-group--wide">
             <label class="field-label">Emisor</label>
-            <input
-              v-model="form.issuer"
-              class="field-input"
-              placeholder="Ej: Tesoro Nacional"
-            />
+            <input v-model="form.issuer" class="field-input" placeholder="Ej: Tesoro Nacional" />
           </div>
 
           <div class="form-group">
@@ -461,11 +426,7 @@ async function submit(): Promise<void> {
 
           <div class="form-group">
             <label class="field-label">Fecha de vencimiento *</label>
-            <input
-              v-model="form.maturityDate"
-              class="field-input"
-              type="date"
-            />
+            <input v-model="form.maturityDate" class="field-input" type="date" />
           </div>
 
           <!-- Flow type selector -->
@@ -480,9 +441,7 @@ async function submit(): Promise<void> {
                 @click="form.flowType = type as FlowType"
               >
                 <span class="flow-type-name">{{ label }}</span>
-                <span class="flow-type-desc">{{
-                  FLOW_TYPE_DESCRIPTIONS[type as FlowType]
-                }}</span>
+                <span class="flow-type-desc">{{ FLOW_TYPE_DESCRIPTIONS[type as FlowType] }}</span>
               </button>
             </div>
           </div>
@@ -510,18 +469,14 @@ async function submit(): Promise<void> {
             </div>
             <div class="form-group">
               <label class="field-label"> Fecha primer cupón </label>
-              <input
-                v-model="form.firstCouponDate"
-                class="field-input"
-                type="date"
-              />
+              <input v-model="form.firstCouponDate" class="field-input" type="date" />
             </div>
             <div class="form-group form-group--full">
               <label class="field-label">
                 Fechas exactas de cupón — JSON (opcional)
                 <span class="field-hint">
-                  Para calendarios irregulares (feriados, fin de mes).
-                  Sobreescribe la generación automática. Formato:
+                  Para calendarios irregulares (feriados, fin de mes). Sobreescribe la generación
+                  automática. Formato:
                   [{"date":"2026-03-31"},{"date":"2026-09-30"},{"date":"2027-03-31"}]
                 </span>
               </label>
@@ -563,8 +518,7 @@ async function submit(): Promise<void> {
               <label class="field-label">
                 Schedule de amortización — JSON *
                 <span class="field-hint">
-                  Array de {date, pct}. La suma de pct debe ser exactamente 1.
-                  Ej:
+                  Array de {date, pct}. La suma de pct debe ser exactamente 1. Ej:
                   [{"date":"2027-01-09","pct":0.16},{"date":"2027-07-09","pct":0.84}]
                 </span>
               </label>
@@ -578,16 +532,12 @@ async function submit(): Promise<void> {
           </template>
 
           <!-- CER / USD_LINKED adjustment -->
-          <template
-            v-if="form.flowType === 'CER' || form.flowType === 'USD_LINKED'"
-          >
+          <template v-if="form.flowType === 'CER' || form.flowType === 'USD_LINKED'">
             <div class="form-group">
               <label class="field-label">
                 Coeficiente de ajuste
                 <span class="field-hint">{{
-                  form.flowType === "CER"
-                    ? "Coeficiente CER actual"
-                    : "TC oficial actual (ARS/USD)"
+                  form.flowType === "CER" ? "Coeficiente CER actual" : "TC oficial actual (ARS/USD)"
                 }}</span>
               </label>
               <input
@@ -604,11 +554,7 @@ async function submit(): Promise<void> {
         <div class="preview-section">
           <div class="preview-header">
             <h3 class="preview-title">Preview de flujos</h3>
-            <button
-              class="btn-secondary"
-              :disabled="previewLoading"
-              @click="runPreview"
-            >
+            <button class="btn-secondary" :disabled="previewLoading" @click="runPreview">
               {{ previewLoading ? "Calculando..." : "Previsualizar flujos" }}
             </button>
           </div>
@@ -619,12 +565,10 @@ async function submit(): Promise<void> {
             <div class="preview-summary">
               <span class="font-mono">{{ previewResult.count }} flujos</span>
               <span class="font-mono"
-                >Cupones totales:
-                {{ previewResult.totalCoupon.toFixed(4) }}</span
+                >Cupones totales: {{ previewResult.totalCoupon.toFixed(4) }}</span
               >
               <span class="font-mono"
-                >Amortización total:
-                {{ previewResult.totalAmortization.toFixed(2) }}</span
+                >Amortización total: {{ previewResult.totalAmortization.toFixed(2) }}</span
               >
             </div>
             <div class="table-wrapper card">
@@ -639,32 +583,18 @@ async function submit(): Promise<void> {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="cf in previewResult.data"
-                    :key="cf.paymentDate"
-                    class="table-row"
-                  >
+                  <tr v-for="cf in previewResult.data" :key="cf.paymentDate" class="table-row">
                     <td class="font-mono">{{ formatDate(cf.paymentDate) }}</td>
-                    <td
-                      class="font-mono text-right"
-                      style="color: var(--color-accent)"
-                    >
+                    <td class="font-mono text-right" style="color: var(--color-accent)">
                       {{ cf.coupon > 0 ? cf.coupon.toFixed(4) : "—" }}
                     </td>
-                    <td
-                      class="font-mono text-right"
-                      style="color: var(--color-positive)"
-                    >
-                      {{
-                        cf.amortization > 0 ? cf.amortization.toFixed(2) : "—"
-                      }}
+                    <td class="font-mono text-right" style="color: var(--color-positive)">
+                      {{ cf.amortization > 0 ? cf.amortization.toFixed(2) : "—" }}
                     </td>
                     <td class="font-mono text-right">
                       {{ (cf.coupon + cf.amortization).toFixed(4) }}
                     </td>
-                    <td class="font-mono text-right">
-                      {{ (cf.residual * 100).toFixed(0) }}%
-                    </td>
+                    <td class="font-mono text-right">{{ (cf.residual * 100).toFixed(0) }}%</td>
                   </tr>
                 </tbody>
               </table>
@@ -684,11 +614,7 @@ async function submit(): Promise<void> {
           >
             Cancelar
           </button>
-          <button
-            class="btn-primary"
-            :disabled="formLoading || !previewResult"
-            @click="submit"
-          >
+          <button class="btn-primary" :disabled="formLoading || !previewResult" @click="submit">
             {{ formLoading ? "Guardando..." : "Crear instrumento" }}
           </button>
         </div>

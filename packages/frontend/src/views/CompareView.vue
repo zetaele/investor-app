@@ -54,15 +54,11 @@ async function runCompare(): Promise<void> {
   error.value = null;
 
   try {
-    const result = await fetchCompare(
-      selectedTickers.value,
-      currencyStore.currency,
-    );
+    const result = await fetchCompare(selectedTickers.value, currencyStore.currency);
     entries.value = result.entries;
     failed.value = result.failed ?? [];
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : "Error al comparar instrumentos.";
+    error.value = err instanceof Error ? err.message : "Error al comparar instrumentos.";
   } finally {
     loadingCompare.value = false;
   }
@@ -94,8 +90,8 @@ const hasResults = computed(() => entries.value.length > 0);
     <header class="compare-header">
       <h1 class="compare-title font-display">Comparar instrumentos</h1>
       <p class="compare-subtitle">
-        Seleccioná entre 2 y 5 instrumentos para comparar rendimientos,
-        vencimientos y flujos de pago.
+        Seleccioná entre 2 y 5 instrumentos para comparar rendimientos, vencimientos y flujos de
+        pago.
       </p>
     </header>
 
@@ -110,10 +106,7 @@ const hasResults = computed(() => entries.value.length > 0);
     />
 
     <!-- Hint -->
-    <div
-      v-if="selectedTickers.length < 2 && selectedTickers.length > 0"
-      class="hint"
-    >
+    <div v-if="selectedTickers.length < 2 && selectedTickers.length > 0" class="hint">
       Agregá al menos un instrumento más para comparar.
     </div>
     <div v-else-if="selectedTickers.length === 0" class="hint">
@@ -122,12 +115,7 @@ const hasResults = computed(() => entries.value.length > 0);
 
     <!-- Loading compare -->
     <div v-if="loadingCompare" class="loading-compare">
-      <div
-        v-for="n in 3"
-        :key="n"
-        class="skeleton"
-        style="height: 48px; border-radius: 0.5rem"
-      />
+      <div v-for="n in 3" :key="n" class="skeleton" style="height: 48px; border-radius: 0.5rem" />
     </div>
 
     <!-- Error -->
@@ -136,9 +124,7 @@ const hasResults = computed(() => entries.value.length > 0);
     <!-- Failed tickers warning -->
     <div v-if="failed.length > 0 && !loadingCompare" class="failed-warning">
       No se pudieron resolver:
-      <span v-for="t in failed" :key="t" class="failed-ticker font-mono">{{
-        t
-      }}</span>
+      <span v-for="t in failed" :key="t" class="failed-ticker font-mono">{{ t }}</span>
     </div>
 
     <!-- Results -->

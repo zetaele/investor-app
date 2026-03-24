@@ -1,14 +1,14 @@
-import type { Cashflow, Instrument } from '@investor-app/shared'
+import type { Cashflow, Instrument } from "@investor-app/shared";
 import {
   findAllInstruments,
   findCashflowsByInstrumentId,
   findInstrumentByTicker,
-} from './instruments.repository.js'
+} from "./instruments.repository.js";
 
 export class InstrumentNotFoundError extends Error {
   constructor(ticker: string) {
-    super(`Instrument not found: ${ticker}`)
-    this.name = 'InstrumentNotFoundError'
+    super(`Instrument not found: ${ticker}`);
+    this.name = "InstrumentNotFoundError";
   }
 }
 
@@ -17,10 +17,10 @@ export class InstrumentNotFoundError extends Error {
  * Accepts optional filters for type and currency.
  */
 export async function listInstruments(filters?: {
-  type?: Instrument['type']
-  currency?: Instrument['currency']
+  type?: Instrument["type"];
+  currency?: Instrument["currency"];
 }): Promise<Instrument[]> {
-  return findAllInstruments(filters)
+  return findAllInstruments(filters);
 }
 
 /**
@@ -28,13 +28,13 @@ export async function listInstruments(filters?: {
  * Throws InstrumentNotFoundError if the ticker does not exist or is inactive.
  */
 export async function getInstrument(ticker: string): Promise<Instrument> {
-  const instrument = await findInstrumentByTicker(ticker)
+  const instrument = await findInstrumentByTicker(ticker);
 
   if (instrument === undefined) {
-    throw new InstrumentNotFoundError(ticker)
+    throw new InstrumentNotFoundError(ticker);
   }
 
-  return instrument
+  return instrument;
 }
 
 /**
@@ -42,6 +42,6 @@ export async function getInstrument(ticker: string): Promise<Instrument> {
  * Throws InstrumentNotFoundError if the ticker does not exist.
  */
 export async function getInstrumentCashflows(ticker: string): Promise<Cashflow[]> {
-  const instrument = await getInstrument(ticker)
-  return findCashflowsByInstrumentId(instrument.id)
+  const instrument = await getInstrument(ticker);
+  return findCashflowsByInstrumentId(instrument.id);
 }

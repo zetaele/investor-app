@@ -240,9 +240,7 @@ async function seed(): Promise<void> {
   // Insert instruments
   const inserted = await db
     .insert(instruments)
-    .values(
-      instrumentsData.map((i) => ({ ...i, market: "BYMA", isActive: true })),
-    )
+    .values(instrumentsData.map((i) => ({ ...i, market: "BYMA", isActive: true })))
     .returning({ id: instruments.id, ticker: instruments.ticker });
 
   console.log(`✓ Inserted ${inserted.length} instruments`);
@@ -251,18 +249,13 @@ async function seed(): Promise<void> {
   const tickerToId = new Map(inserted.map((r) => [r.ticker, r.id]));
 
   // Helper: insert cash flows for a given ticker
-  const insertCashflows = async (
-    ticker: string,
-    flows: typeof al30Cashflows,
-  ): Promise<void> => {
+  const insertCashflows = async (ticker: string, flows: typeof al30Cashflows): Promise<void> => {
     const instrumentId = tickerToId.get(ticker);
     if (instrumentId === undefined) {
       console.warn(`⚠ Ticker ${ticker} not found, skipping cashflows`);
       return;
     }
-    await db
-      .insert(cashflows)
-      .values(flows.map((cf) => ({ ...cf, instrumentId })));
+    await db.insert(cashflows).values(flows.map((cf) => ({ ...cf, instrumentId })));
     console.log(`  ✓ ${ticker}: ${flows.length} cashflows`);
   };
 

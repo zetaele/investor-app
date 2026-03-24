@@ -35,9 +35,7 @@ export async function findAllInstruments(filters?: {
  * Fetches a single instrument by ticker (case-sensitive).
  * Returns undefined if not found or inactive.
  */
-export async function findInstrumentByTicker(
-  ticker: string,
-): Promise<Instrument | undefined> {
+export async function findInstrumentByTicker(ticker: string): Promise<Instrument | undefined> {
   const result = await db
     .select()
     .from(instruments)
@@ -50,9 +48,7 @@ export async function findInstrumentByTicker(
 /**
  * Fetches all scheduled cash flows for a given instrument, ordered by payment date.
  */
-export async function findCashflowsByInstrumentId(
-  instrumentId: number,
-): Promise<Cashflow[]> {
+export async function findCashflowsByInstrumentId(instrumentId: number): Promise<Cashflow[]> {
   return db
     .select()
     .from(cashflows)

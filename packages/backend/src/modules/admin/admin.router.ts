@@ -17,22 +17,13 @@ const amortScheduleItemSchema = z.object({
 });
 
 const flowParamsSchema = z.object({
-  flowType: z.enum([
-    "BULLET",
-    "AMORTIZABLE",
-    "ZERO_COUPON",
-    "CAPITALIZABLE",
-    "CER",
-    "USD_LINKED",
-  ]),
+  flowType: z.enum(["BULLET", "AMORTIZABLE", "ZERO_COUPON", "CAPITALIZABLE", "CER", "USD_LINKED"]),
   issueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   maturityDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   faceValue: z.number().positive().default(100),
 
   couponRate: z.number().positive().max(1).optional(),
-  couponFrequency: z
-    .union([z.literal(1), z.literal(2), z.literal(4), z.literal(12)])
-    .optional(),
+  couponFrequency: z.union([z.literal(1), z.literal(2), z.literal(4), z.literal(12)]).optional(),
   firstCouponDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -54,22 +45,10 @@ const flowParamsSchema = z.object({
 });
 
 const createInstrumentSchema = z.object({
-  ticker: z
-    .string()
-    .regex(
-      /^[A-Z0-9]{2,10}$/,
-      "Ticker must be 2-10 uppercase alphanumeric chars",
-    ),
+  ticker: z.string().regex(/^[A-Z0-9]{2,10}$/, "Ticker must be 2-10 uppercase alphanumeric chars"),
   name: z.string().min(3).max(200),
   type: z.enum(["BOND", "LETTER", "ON"]),
-  flowType: z.enum([
-    "BULLET",
-    "AMORTIZABLE",
-    "ZERO_COUPON",
-    "CAPITALIZABLE",
-    "CER",
-    "USD_LINKED",
-  ]),
+  flowType: z.enum(["BULLET", "AMORTIZABLE", "ZERO_COUPON", "CAPITALIZABLE", "CER", "USD_LINKED"]),
   currency: z.enum(["ARS", "USD", "USD_LINKED"]),
   market: z.string().optional(),
   issuer: z.string().optional(),
@@ -154,11 +133,9 @@ export async function adminRouter(app: FastifyInstance): Promise<void> {
       return reply.send({
         data: flows,
         count: flows.length,
-        totalCoupon:
-          Math.round(flows.reduce((s, f) => s + f.coupon, 0) * 10000) / 10000,
+        totalCoupon: Math.round(flows.reduce((s, f) => s + f.coupon, 0) * 10000) / 10000,
         totalAmortization:
-          Math.round(flows.reduce((s, f) => s + f.amortization, 0) * 10000) /
-          10000,
+          Math.round(flows.reduce((s, f) => s + f.amortization, 0) * 10000) / 10000,
       });
     } catch (err) {
       if (err instanceof Error) {

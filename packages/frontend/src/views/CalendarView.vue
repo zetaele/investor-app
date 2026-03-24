@@ -18,8 +18,7 @@ async function load(): Promise<void> {
   try {
     months.value = await fetchCalendar(daysAhead.value);
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : "Error al cargar el calendario.";
+    error.value = err instanceof Error ? err.message : "Error al cargar el calendario.";
   } finally {
     loading.value = false;
   }
@@ -74,14 +73,8 @@ function setHorizon(days: number): void {
     <!-- Loading -->
     <div v-if="loading" class="months-list">
       <div v-for="n in 3" :key="n" class="month-block">
-        <div
-          class="skeleton"
-          style="height: 1.25rem; width: 140px; margin-bottom: 1rem"
-        />
-        <div
-          class="skeleton"
-          style="height: 48px; border-radius: 0.5rem; margin-bottom: 0.5rem"
-        />
+        <div class="skeleton" style="height: 1.25rem; width: 140px; margin-bottom: 1rem" />
+        <div class="skeleton" style="height: 48px; border-radius: 0.5rem; margin-bottom: 0.5rem" />
         <div class="skeleton" style="height: 48px; border-radius: 0.5rem" />
       </div>
     </div>
@@ -101,9 +94,7 @@ function setHorizon(days: number): void {
         <div class="month-header">
           <h2 class="month-label">{{ month.label }}</h2>
           <span class="month-count font-mono">
-            {{ month.payments.length }} pago{{
-              month.payments.length !== 1 ? "s" : ""
-            }}
+            {{ month.payments.length }} pago{{ month.payments.length !== 1 ? "s" : "" }}
           </span>
         </div>
 
@@ -121,14 +112,9 @@ function setHorizon(days: number): void {
                 {{ formatDate(payment.paymentDate) }}
               </span>
               <div class="payment-instrument">
-                <span class="payment-ticker font-mono">{{
-                  payment.ticker
-                }}</span>
+                <span class="payment-ticker font-mono">{{ payment.ticker }}</span>
                 <span class="payment-type" :data-type="payment.instrumentType">
-                  {{
-                    TYPE_LABELS[payment.instrumentType] ??
-                    payment.instrumentType
-                  }}
+                  {{ TYPE_LABELS[payment.instrumentType] ?? payment.instrumentType }}
                 </span>
               </div>
             </div>
@@ -141,10 +127,7 @@ function setHorizon(days: number): void {
                   {{ payment.currency }} {{ formatNumber(payment.coupon, 4) }}
                 </span>
               </span>
-              <span
-                v-if="payment.amortization > 0"
-                class="flow-item amortization"
-              >
+              <span v-if="payment.amortization > 0" class="flow-item amortization">
                 <span class="flow-label">Amort.</span>
                 <span class="flow-value font-mono">
                   {{ payment.currency }}

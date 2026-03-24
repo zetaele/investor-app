@@ -1,8 +1,4 @@
-import type {
-  BondCalculations,
-  Cashflow,
-  CashflowWithPV,
-} from "@investor-app/shared";
+import type { BondCalculations, Cashflow, CashflowWithPV } from "@investor-app/shared";
 
 const DAYS_IN_YEAR = 365;
 const MAX_ITERATIONS = 100;
@@ -38,10 +34,7 @@ function yearsUntil(settlement: Date, paymentDate: Date): number {
  * @param settlement - The trade settlement date.
  * @returns Accrued interest amount (in the instrument's currency units).
  */
-export function calcAccruedInterest(
-  cashflows: Cashflow[],
-  settlement: Date,
-): number {
+export function calcAccruedInterest(cashflows: Cashflow[], settlement: Date): number {
   if (cashflows.length === 0) return 0;
 
   // Find the next upcoming coupon payment
@@ -58,8 +51,7 @@ export function calcAccruedInterest(
   const nextCouponAmount = nextCoupon.coupon;
 
   // Determine the previous payment date (or issue approximation)
-  const prevCoupon =
-    nextCouponIndex > 0 ? cashflows[nextCouponIndex - 1] : undefined;
+  const prevCoupon = nextCouponIndex > 0 ? cashflows[nextCouponIndex - 1] : undefined;
   const prevPaymentDate =
     prevCoupon !== undefined
       ? new Date(prevCoupon.paymentDate)
@@ -90,11 +82,7 @@ export function calcAccruedInterest(
  * @param ytm        - Annual yield to maturity (decimal, e.g. 0.15 = 15%).
  * @returns Theoretical dirty price.
  */
-function calcTheoreticalPrice(
-  cashflows: Cashflow[],
-  settlement: Date,
-  ytm: number,
-): number {
+function calcTheoreticalPrice(cashflows: Cashflow[], settlement: Date, ytm: number): number {
   return cashflows
     .filter((cf) => new Date(cf.paymentDate) > settlement)
     .reduce((sum, cf) => {
@@ -108,11 +96,7 @@ function calcTheoreticalPrice(
  * Calculates the derivative of the price function with respect to yield.
  * Used internally by the Newton-Raphson solver.
  */
-function calcPriceDerivative(
-  cashflows: Cashflow[],
-  settlement: Date,
-  ytm: number,
-): number {
+function calcPriceDerivative(cashflows: Cashflow[], settlement: Date, ytm: number): number {
   return cashflows
     .filter((cf) => new Date(cf.paymentDate) > settlement)
     .reduce((sum, cf) => {
@@ -136,14 +120,8 @@ function calcPriceDerivative(
  * @param settlement - Settlement date.
  * @returns YTM as a decimal (e.g. 0.1823 = 18.23%), or NaN if no convergence.
  */
-export function calcYTM(
-  cashflows: Cashflow[],
-  dirtyPrice: number,
-  settlement: Date,
-): number {
-  const futureCashflows = cashflows.filter(
-    (cf) => new Date(cf.paymentDate) > settlement,
-  );
+export function calcYTM(cashflows: Cashflow[], dirtyPrice: number, settlement: Date): number {
+  const futureCashflows = cashflows.filter((cf) => new Date(cf.paymentDate) > settlement);
 
   if (futureCashflows.length === 0 || dirtyPrice <= 0) return NaN;
 
@@ -186,9 +164,7 @@ export function calcModifiedDuration(
 ): number {
   if (dirtyPrice <= 0 || isNaN(ytm)) return NaN;
 
-  const futureCashflows = cashflows.filter(
-    (cf) => new Date(cf.paymentDate) > settlement,
-  );
+  const futureCashflows = cashflows.filter((cf) => new Date(cf.paymentDate) > settlement);
 
   const weightedSum = futureCashflows.reduce((sum, cf) => {
     const t = yearsUntil(settlement, new Date(cf.paymentDate));
@@ -244,15 +220,9 @@ export function calcCashflowsWithPV(
  * @param ytm        - Target annual yield (decimal, e.g. 0.15 = 15%).
  * @returns Theoretical dirty price, or NaN if ytm is NaN.
  */
-export function calcPriceFromYTM(
-  cashflows: Cashflow[],
-  settlement: Date,
-  ytm: number,
-): number {
+export function calcPriceFromYTM(cashflows: Cashflow[], settlement: Date, ytm: number): number {
   if (isNaN(ytm)) return NaN;
-  const future = cashflows.filter(
-    (cf) => new Date(cf.paymentDate) > settlement,
-  );
+  const future = cashflows.filter((cf) => new Date(cf.paymentDate) > settlement);
   if (future.length === 0) return NaN;
   return calcTheoreticalPrice(future, settlement, ytm);
 }
@@ -275,19 +245,12 @@ export function calcBondAnalysis(
   const accruedInterest = calcAccruedInterest(cashflows, settlement);
   const cleanPrice = dirtyPrice - accruedInterest;
   const ytm = calcYTM(cashflows, dirtyPrice, settlement);
-  const modifiedDuration = calcModifiedDuration(
-    cashflows,
-    dirtyPrice,
-    settlement,
-    ytm,
-  );
+  const modifiedDuration = calcModifiedDuration(cashflows, dirtyPrice, settlement, ytm);
   const cashflowsWithPV = calcCashflowsWithPV(cashflows, settlement, ytm);
 
   return {
     ytm: isNaN(ytm) ? 0 : Math.round(ytm * 1e7) / 1e7,
-    modifiedDuration: isNaN(modifiedDuration)
-      ? 0
-      : Math.round(modifiedDuration * 10000) / 10000,
+    modifiedDuration: isNaN(modifiedDuration) ? 0 : Math.round(modifiedDuration * 10000) / 10000,
     cleanPrice: Math.round(cleanPrice * 10000) / 10000,
     dirtyPrice: Math.round(dirtyPrice * 10000) / 10000,
     accruedInterest: Math.round(accruedInterest * 10000) / 10000,

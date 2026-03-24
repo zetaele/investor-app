@@ -58,12 +58,8 @@
           "name": "cashflows_instrument_id_instruments_id_fk",
           "tableFrom": "cashflows",
           "tableTo": "instruments",
-          "columnsFrom": [
-            "instrument_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["instrument_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -204,12 +200,8 @@
           "name": "instrument_config_instrument_id_instruments_id_fk",
           "tableFrom": "instrument_config",
           "tableTo": "instruments",
-          "columnsFrom": [
-            "instrument_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["instrument_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -312,9 +304,7 @@
       "indexes": {
         "instruments_ticker_unique": {
           "name": "instruments_ticker_unique",
-          "columns": [
-            "ticker"
-          ],
+          "columns": ["ticker"],
           "isUnique": true
         }
       },
@@ -406,12 +396,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -463,9 +449,7 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },

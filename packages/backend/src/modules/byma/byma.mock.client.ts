@@ -69,17 +69,13 @@ export class MockBymaClient implements IBYMAClient {
     }
 
     // Simulate a realistic network delay (50–150ms)
-    await new Promise((resolve) =>
-      setTimeout(resolve, 50 + Math.random() * 100),
-    );
+    await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100));
 
     return this.buildMarketPrice(ticker, basePrice);
   }
 
   async getPrices(tickers: string[]): Promise<Map<string, BymaMarketPrice>> {
-    await new Promise((resolve) =>
-      setTimeout(resolve, 50 + Math.random() * 100),
-    );
+    await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100));
 
     const result = new Map<string, BymaMarketPrice>();
 

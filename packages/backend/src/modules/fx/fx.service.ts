@@ -1,8 +1,8 @@
-import { and, gt } from 'drizzle-orm'
-import { db } from '../../db/index.js'
-import { fxCache } from '../../db/schema.js'
-import { env } from '../../config/env.js'
-import type { FxRates } from '@investor-app/shared'
+import { and, gt } from "drizzle-orm";
+import { db } from "../../db/index.js";
+import { fxCache } from "../../db/schema.js";
+import { env } from "../../config/env.js";
+import type { FxRates } from "@investor-app/shared";
 
 /**
  * Provides ARS/USD exchange rates (official, MEP, CCL) with SQLite caching.
@@ -14,56 +14,56 @@ import type { FxRates } from '@investor-app/shared'
  * if needed — the rest of the service remains unchanged.
  */
 export class FxService {
-  private readonly PAIRS = ['ARS/USD_OFFICIAL', 'ARS/USD_MEP', 'ARS/USD_CCL'] as const
+  private readonly PAIRS = ["ARS/USD_OFFICIAL", "ARS/USD_MEP", "ARS/USD_CCL"] as const;
 
   /**
    * Returns the latest ARS/USD rates.
    * Serves from cache if available and fresh; otherwise fetches from the provider.
    */
   async getRates(): Promise<FxRates> {
-    const cached = await this.getFromCache()
-    if (cached !== null) return cached
+    const cached = await this.getFromCache();
+    if (cached !== null) return cached;
 
-    const fresh = await this.fetchFreshRates()
-    await this.saveToCache(fresh)
-    return fresh
+    const fresh = await this.fetchFreshRates();
+    await this.saveToCache(fresh);
+    return fresh;
   }
 
   // ── Private helpers ──────────────────────────────────────────────────────────
 
   private async getFromCache(): Promise<FxRates | null> {
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
 
     const rows = await db
       .select()
       .from(fxCache)
       .where(and(gt(fxCache.expiresAt, now)))
       .orderBy(fxCache.fetchedAt)
-      .limit(3)
+      .limit(3);
 
-    if (rows.length < 3) return null
+    if (rows.length < 3) return null;
 
-    const official = rows.find((r) => r.pair === 'ARS/USD_OFFICIAL')
-    const mep = rows.find((r) => r.pair === 'ARS/USD_MEP')
-    const ccl = rows.find((r) => r.pair === 'ARS/USD_CCL')
+    const official = rows.find((r) => r.pair === "ARS/USD_OFFICIAL");
+    const mep = rows.find((r) => r.pair === "ARS/USD_MEP");
+    const ccl = rows.find((r) => r.pair === "ARS/USD_CCL");
 
-    if (official === undefined || mep === undefined || ccl === undefined) return null
+    if (official === undefined || mep === undefined || ccl === undefined) return null;
 
-    const fetchedAt = official.fetchedAt
+    const fetchedAt = official.fetchedAt;
 
     return {
       official: { pair: official.pair, rate: official.rate, fetchedAt },
-      mep:      { pair: mep.pair,      rate: mep.rate,      fetchedAt },
-      ccl:      { pair: ccl.pair,      rate: ccl.rate,      fetchedAt },
-    }
+      mep: { pair: mep.pair, rate: mep.rate, fetchedAt },
+      ccl: { pair: ccl.pair, rate: ccl.rate, fetchedAt },
+    };
   }
 
   private async saveToCache(rates: FxRates): Promise<void> {
-    const now = new Date()
-    const expiresAt = new Date(now.getTime() + env.CACHE_TTL_FX_SECONDS * 1000)
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + env.CACHE_TTL_FX_SECONDS * 1000);
 
     // Delete stale entries before inserting fresh ones
-    await db.delete(fxCache)
+    await db.delete(fxCache);
 
     await db.insert(fxCache).values([
       {
@@ -84,7 +84,7 @@ export class FxService {
         fetchedAt: now.toISOString(),
         expiresAt: expiresAt.toISOString(),
       },
-    ])
+    ]);
   }
 
   /**
@@ -94,39 +94,39 @@ export class FxService {
    * We use it as a proxy for MEP and CCL since these are publicly available.
    */
   private async fetchFreshRates(): Promise<FxRates> {
-    let data: BluelyticsResponse
+    let data: BluelyticsResponse;
 
     try {
-      const response = await fetch('https://api.bluelytics.com.ar/v2/latest')
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-      data = (await response.json()) as BluelyticsResponse
+      const response = await fetch("https://api.bluelytics.com.ar/v2/latest");
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      data = (await response.json()) as BluelyticsResponse;
     } catch (err) {
       // Fallback to hardcoded rates if the provider is unreachable
-      console.warn('FxService: bluelytics unreachable, using fallback rates', err)
-      return this.fallbackRates()
+      console.warn("FxService: bluelytics unreachable, using fallback rates", err);
+      return this.fallbackRates();
     }
 
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
 
     return {
       official: {
-        pair: 'ARS/USD_OFFICIAL',
+        pair: "ARS/USD_OFFICIAL",
         rate: data.oficial.value_sell,
         fetchedAt: now,
       },
       mep: {
-        pair: 'ARS/USD_MEP',
+        pair: "ARS/USD_MEP",
         // Bluelytics doesn't provide MEP directly; use blue as proxy for now
         // TODO: replace with a dedicated MEP source (e.g. IOL or RAVA)
         rate: data.blue.value_sell * 0.97,
         fetchedAt: now,
       },
       ccl: {
-        pair: 'ARS/USD_CCL',
+        pair: "ARS/USD_CCL",
         rate: data.blue.value_sell,
         fetchedAt: now,
       },
-    }
+    };
   }
 
   /**
@@ -134,23 +134,23 @@ export class FxService {
    * Update these periodically to stay roughly accurate during development.
    */
   private fallbackRates(): FxRates {
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
     return {
-      official: { pair: 'ARS/USD_OFFICIAL', rate: 1050,  fetchedAt: now },
-      mep:      { pair: 'ARS/USD_MEP',      rate: 1180,  fetchedAt: now },
-      ccl:      { pair: 'ARS/USD_CCL',      rate: 1200,  fetchedAt: now },
-    }
+      official: { pair: "ARS/USD_OFFICIAL", rate: 1050, fetchedAt: now },
+      mep: { pair: "ARS/USD_MEP", rate: 1180, fetchedAt: now },
+      ccl: { pair: "ARS/USD_CCL", rate: 1200, fetchedAt: now },
+    };
   }
 }
 
 // ── Bluelytics response shape ─────────────────────────────────────────────────
 
 interface BluelyticsRate {
-  value_buy: number
-  value_sell: number
+  value_buy: number;
+  value_sell: number;
 }
 
 interface BluelyticsResponse {
-  oficial: BluelyticsRate
-  blue: BluelyticsRate
+  oficial: BluelyticsRate;
+  blue: BluelyticsRate;
 }

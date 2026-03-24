@@ -1,64 +1,61 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Instrument } from '@investor-app/shared'
+import { ref, computed } from "vue";
+import type { Instrument } from "@investor-app/shared";
 
 const props = defineProps<{
-  instruments: Instrument[]
-  selected: string[]
-  loading: boolean
-  canAddMore: boolean
-}>()
+  instruments: Instrument[];
+  selected: string[];
+  loading: boolean;
+  canAddMore: boolean;
+}>();
 
 const emit = defineEmits<{
-  add: [ticker: string]
-  remove: [ticker: string]
-}>()
+  add: [ticker: string];
+  remove: [ticker: string];
+}>();
 
-const search = ref('')
-const showDropdown = ref(false)
+const search = ref("");
+const showDropdown = ref(false);
 
 const filtered = computed(() => {
-  if (search.value.trim().length < 1) return []
-  const q = search.value.toLowerCase()
+  if (search.value.trim().length < 1) return [];
+  const q = search.value.toLowerCase();
   return props.instruments
     .filter(
       (i) =>
         !props.selected.includes(i.ticker) &&
         (i.ticker.toLowerCase().includes(q) ||
           i.name.toLowerCase().includes(q) ||
-          (i.issuer ?? '').toLowerCase().includes(q)),
+          (i.issuer ?? "").toLowerCase().includes(q)),
     )
-    .slice(0, 8)
-})
+    .slice(0, 8);
+});
 
 function select(ticker: string): void {
-  emit('add', ticker)
-  search.value = ''
-  showDropdown.value = false
+  emit("add", ticker);
+  search.value = "";
+  showDropdown.value = false;
 }
 
 function onBlur(): void {
   // Delay to allow click on dropdown item to fire first
-  setTimeout(() => { showDropdown.value = false }, 150)
+  setTimeout(() => {
+    showDropdown.value = false;
+  }, 150);
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  BOND:   '#22c55e',
-  LETTER: '#60a5fa',
-  ON:     '#f59e0b',
-}
+  BOND: "#22c55e",
+  LETTER: "#60a5fa",
+  ON: "#f59e0b",
+};
 </script>
 
 <template>
   <div class="selector">
-
     <!-- Selected chips -->
     <div v-if="selected.length > 0" class="chips">
-      <div
-        v-for="ticker in selected"
-        :key="ticker"
-        class="chip font-mono"
-      >
+      <div v-for="ticker in selected" :key="ticker" class="chip font-mono">
         {{ ticker }}
         <button class="chip-remove" @click="emit('remove', ticker)">×</button>
       </div>
@@ -88,10 +85,7 @@ const TYPE_COLORS: Record<string, string> = {
           @mousedown.prevent="select(instrument.ticker)"
         >
           <span class="item-ticker font-mono">{{ instrument.ticker }}</span>
-          <span
-            class="item-type"
-            :style="{ color: TYPE_COLORS[instrument.type] ?? 'inherit' }"
-          >
+          <span class="item-type" :style="{ color: TYPE_COLORS[instrument.type] ?? 'inherit' }">
             {{ instrument.type }}
           </span>
           <span class="item-name">{{ instrument.name }}</span>
@@ -103,10 +97,7 @@ const TYPE_COLORS: Record<string, string> = {
       </div>
     </div>
 
-    <p v-else class="max-reached">
-      Máximo 5 instrumentos. Remové uno para agregar otro.
-    </p>
-
+    <p v-else class="max-reached">Máximo 5 instrumentos. Remové uno para agregar otro.</p>
   </div>
 </template>
 
@@ -148,7 +139,9 @@ const TYPE_COLORS: Record<string, string> = {
   opacity: 0.7;
   transition: opacity var(--transition-base);
 }
-.chip-remove:hover { opacity: 1; }
+.chip-remove:hover {
+  opacity: 1;
+}
 
 .chip-count {
   font-size: 0.72rem;
@@ -175,9 +168,16 @@ const TYPE_COLORS: Record<string, string> = {
   outline: none;
   transition: border-color var(--transition-base);
 }
-.search-input:focus { border-color: var(--color-accent); }
-.search-input::placeholder { color: var(--color-text-dim); }
-.search-input:disabled { opacity: 0.5; cursor: not-allowed; }
+.search-input:focus {
+  border-color: var(--color-accent);
+}
+.search-input::placeholder {
+  color: var(--color-text-dim);
+}
+.search-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* Dropdown */
 .dropdown {
@@ -205,7 +205,9 @@ const TYPE_COLORS: Record<string, string> = {
   transition: background var(--transition-base);
   box-sizing: border-box;
 }
-.dropdown-item:hover { background: var(--color-bg-sunken); }
+.dropdown-item:hover {
+  background: var(--color-bg-sunken);
+}
 
 .item-ticker {
   font-size: 0.82rem;

@@ -6,9 +6,7 @@ type Theme = "dark" | "light";
 const STORAGE_KEY = "investor-app-theme";
 
 function getSystemTheme(): Theme {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function getStoredTheme(): Theme | null {

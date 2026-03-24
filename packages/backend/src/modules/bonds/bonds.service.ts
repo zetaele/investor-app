@@ -1,8 +1,4 @@
-import type {
-  Currency,
-  InstrumentAnalysis,
-  SimulationResult,
-} from "@investor-app/shared";
+import type { Currency, InstrumentAnalysis, SimulationResult } from "@investor-app/shared";
 import { calcBondAnalysis, calcPriceFromYTM } from "./bonds.calculator.js";
 import { PriceCacheService } from "../byma/byma.price-cache.service.js";
 import {
@@ -30,10 +26,7 @@ export class BondsService {
     private readonly fxService: FxService,
   ) {}
 
-  async analyzeInstrument(
-    ticker: string,
-    displayCurrency: Currency,
-  ): Promise<InstrumentAnalysis> {
+  async analyzeInstrument(ticker: string, displayCurrency: Currency): Promise<InstrumentAnalysis> {
     // 1. Load static data (throws InstrumentNotFoundError if not found)
     const [instrument, cashflows] = await Promise.all([
       getInstrument(ticker),
@@ -159,12 +152,7 @@ export class BondsService {
 
   // ── Private helpers ──────────────────────────────────────────────────────────
 
-  private convertPrice(
-    price: number,
-    from: Currency,
-    to: Currency,
-    arsPerUsd: number,
-  ): number {
+  private convertPrice(price: number, from: Currency, to: Currency, arsPerUsd: number): number {
     if (from === to) return price;
     if (from === "USD" && to === "ARS") return price * arsPerUsd;
     if (from === "ARS" && to === "USD") return price / arsPerUsd;

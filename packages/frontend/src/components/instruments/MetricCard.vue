@@ -1,10 +1,10 @@
 <script setup lang="ts">
 defineProps<{
-  label: string
-  value: string
-  valueClass?: string
-  tooltip?: string
-}>()
+  label: string;
+  value: string;
+  valueClass?: string;
+  tooltip?: string;
+}>();
 </script>
 
 <template>

@@ -12,11 +12,7 @@ export function formatYield(value: number, decimals = 2): string {
  * Formats a price with the appropriate currency symbol.
  * e.g. formatPrice(62.50, 'USD') → "USD 62.50"
  */
-export function formatPrice(
-  value: number,
-  currency: Currency,
-  decimals = 2,
-): string {
+export function formatPrice(value: number, currency: Currency, decimals = 2): string {
   const symbol = currency === "ARS" ? "ARS" : "USD";
   return `${symbol} ${value.toFixed(decimals)}`;
 }

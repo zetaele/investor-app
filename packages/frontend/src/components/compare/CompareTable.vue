@@ -1,80 +1,80 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import type { CompareEntry, Currency } from '@investor-app/shared'
+import { useRouter } from "vue-router";
+import type { CompareEntry, Currency } from "@investor-app/shared";
 import {
   formatYield,
   formatPrice,
   formatNumber,
   formatDate,
   formatTimeToMaturity,
-} from '@/composables/useFormat'
+} from "@/composables/useFormat";
 
 const props = defineProps<{
-  entries: CompareEntry[]
-  currency: Currency
-}>()
+  entries: CompareEntry[];
+  currency: Currency;
+}>();
 
-const router = useRouter()
+const router = useRouter();
 
 interface Row {
-  label: string
-  tooltip: string
-  getValue: (e: CompareEntry) => string
-  getClass?: (e: CompareEntry) => string
+  label: string;
+  tooltip: string;
+  getValue: (e: CompareEntry) => string;
+  getClass?: (e: CompareEntry) => string;
 }
 
 const rows: Row[] = [
   {
-    label: 'Precio mercado',
-    tooltip: 'Último precio de cierre',
+    label: "Precio mercado",
+    tooltip: "Último precio de cierre",
     getValue: (e) => formatPrice(e.price, e.currency),
   },
   {
-    label: 'TIR (YTM)',
-    tooltip: 'Tasa Interna de Retorno anual al vencimiento',
+    label: "TIR (YTM)",
+    tooltip: "Tasa Interna de Retorno anual al vencimiento",
     getValue: (e) => formatYield(e.calculations.ytm),
     getClass: (e) => {
-      if (e.calculations.ytm > 0.15) return 'num-positive'
-      if (e.calculations.ytm > 0.08) return 'num-neutral'
-      return 'num-negative'
+      if (e.calculations.ytm > 0.15) return "num-positive";
+      if (e.calculations.ytm > 0.08) return "num-neutral";
+      return "num-negative";
     },
   },
   {
-    label: 'Precio limpio',
-    tooltip: 'Precio sin interés corrido',
+    label: "Precio limpio",
+    tooltip: "Precio sin interés corrido",
     getValue: (e) => formatPrice(e.calculations.cleanPrice, props.currency),
   },
   {
-    label: 'Precio sucio',
-    tooltip: 'Precio efectivo del comprador',
+    label: "Precio sucio",
+    tooltip: "Precio efectivo del comprador",
     getValue: (e) => formatPrice(e.calculations.dirtyPrice, props.currency),
   },
   {
-    label: 'Interés corrido',
-    tooltip: 'Cupón devengado desde el último pago',
+    label: "Interés corrido",
+    tooltip: "Cupón devengado desde el último pago",
     getValue: (e) => formatPrice(e.calculations.accruedInterest, props.currency),
   },
   {
-    label: 'Duration mod.',
-    tooltip: 'Sensibilidad del precio al movimiento de tasas',
+    label: "Duration mod.",
+    tooltip: "Sensibilidad del precio al movimiento de tasas",
     getValue: (e) => `${formatNumber(e.calculations.modifiedDuration)} años`,
   },
   {
-    label: 'Paridad',
-    tooltip: 'Precio como % del valor nominal',
+    label: "Paridad",
+    tooltip: "Precio como % del valor nominal",
     getValue: (e) => formatYield(e.calculations.parityPct),
   },
   {
-    label: 'Vencimiento',
-    tooltip: 'Fecha de vencimiento del instrumento',
+    label: "Vencimiento",
+    tooltip: "Fecha de vencimiento del instrumento",
     getValue: (e) => formatDate(e.maturityDate),
   },
   {
-    label: 'Tiempo al venc.',
-    tooltip: 'Tiempo restante hasta el vencimiento',
+    label: "Tiempo al venc.",
+    tooltip: "Tiempo restante hasta el vencimiento",
     getValue: (e) => formatTimeToMaturity(e.maturityDate),
   },
-]
+];
 </script>
 
 <template>
@@ -83,11 +83,7 @@ const rows: Row[] = [
       <thead>
         <tr>
           <th class="row-label-header">Métrica</th>
-          <th
-            v-for="entry in entries"
-            :key="entry.ticker"
-            class="ticker-header"
-          >
+          <th v-for="entry in entries" :key="entry.ticker" class="ticker-header">
             <button
               class="ticker-link font-mono"
               :data-type="entry.type"
@@ -163,7 +159,9 @@ thead tr {
   color: var(--color-text-primary);
 }
 
-.ticker-link:hover { color: var(--color-accent); }
+.ticker-link:hover {
+  color: var(--color-accent);
+}
 
 .type-label {
   display: block;
@@ -181,7 +179,9 @@ tbody tr {
   transition: background var(--transition-base);
 }
 
-tbody tr:last-child { border-bottom: none; }
+tbody tr:last-child {
+  border-bottom: none;
+}
 
 tbody tr:hover td {
   background-color: var(--color-bg-sunken);

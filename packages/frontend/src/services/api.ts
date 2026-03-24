@@ -23,10 +23,7 @@ class ApiError extends Error {
   }
 }
 
-async function get<T>(
-  path: string,
-  params?: Record<string, string>,
-): Promise<T> {
+async function get<T>(path: string, params?: Record<string, string>): Promise<T> {
   const url = new URL(`${BASE_URL}${path}`, window.location.origin);
 
   if (params !== undefined) {
@@ -38,13 +35,8 @@ async function get<T>(
   const response = await fetch(url.toString());
 
   if (!response.ok) {
-    const body = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new ApiError(
-      response.status,
-      (body as { error: string }).error ?? "Unknown error",
-    );
+    const body = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new ApiError(response.status, (body as { error: string }).error ?? "Unknown error");
   }
 
   return response.json() as Promise<T>;
@@ -64,10 +56,7 @@ export async function fetchSimulation(
   } else {
     params["ytm"] = String(input.ytm);
   }
-  const res = await get<{ data: SimulationResult }>(
-    `/instruments/${ticker}/simulate`,
-    params,
-  );
+  const res = await get<{ data: SimulationResult }>(`/instruments/${ticker}/simulate`, params);
   return res.data;
 }
 
@@ -92,9 +81,7 @@ export async function fetchInstrument(ticker: string): Promise<Instrument> {
 
 /** Returns all scheduled cash flows for an instrument. */
 export async function fetchCashflows(ticker: string): Promise<Cashflow[]> {
-  const res = await get<{ data: Cashflow[] }>(
-    `/instruments/${ticker}/cashflows`,
-  );
+  const res = await get<{ data: Cashflow[] }>(`/instruments/${ticker}/cashflows`);
   return res.data;
 }
 
@@ -103,12 +90,9 @@ export async function fetchAnalysis(
   ticker: string,
   displayCurrency: Currency = "USD",
 ): Promise<InstrumentAnalysis> {
-  const res = await get<{ data: InstrumentAnalysis }>(
-    `/instruments/${ticker}/analysis`,
-    {
-      displayCurrency,
-    },
-  );
+  const res = await get<{ data: InstrumentAnalysis }>(`/instruments/${ticker}/analysis`, {
+    displayCurrency,
+  });
   return res.data;
 }
 
@@ -119,13 +103,10 @@ export async function fetchCompare(
   tickers: string[],
   displayCurrency: Currency = "USD",
 ): Promise<{ entries: CompareEntry[]; failed?: string[] }> {
-  const res = await get<{ data: CompareEntry[]; failed?: string[] }>(
-    "/compare",
-    {
-      tickers: tickers.join(","),
-      displayCurrency,
-    },
-  );
+  const res = await get<{ data: CompareEntry[]; failed?: string[] }>("/compare", {
+    tickers: tickers.join(","),
+    displayCurrency,
+  });
   return { entries: res.data, failed: res.failed };
 }
 

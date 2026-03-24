@@ -14,28 +14,18 @@ const currencyStore = useCurrencyStore();
       <!-- Logo -->
       <RouterLink to="/" class="nav-logo">
         <span class="logo-mark">▲</span>
-        <span class="logo-text"
-          >Inversor<span class="logo-accent">AR</span></span
-        >
+        <span class="logo-text">Inversor<span class="logo-accent">AR</span></span>
       </RouterLink>
 
       <!-- Nav links -->
       <ul class="nav-links">
         <li>
-          <RouterLink
-            to="/"
-            class="nav-link"
-            :class="{ active: route.name === 'home' }"
-          >
+          <RouterLink to="/" class="nav-link" :class="{ active: route.name === 'home' }">
             Instrumentos
           </RouterLink>
         </li>
         <li>
-          <RouterLink
-            to="/compare"
-            class="nav-link"
-            :class="{ active: route.name === 'compare' }"
-          >
+          <RouterLink to="/compare" class="nav-link" :class="{ active: route.name === 'compare' }">
             Comparar
           </RouterLink>
         </li>

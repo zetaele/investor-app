@@ -11,14 +11,7 @@ export const instruments = sqliteTable("instruments", {
   issuer: text("issuer"),
   maturityDate: text("maturity_date").notNull(),
   flowType: text("flow_type", {
-    enum: [
-      "BULLET",
-      "AMORTIZABLE",
-      "ZERO_COUPON",
-      "CAPITALIZABLE",
-      "CER",
-      "USD_LINKED",
-    ],
+    enum: ["BULLET", "AMORTIZABLE", "ZERO_COUPON", "CAPITALIZABLE", "CER", "USD_LINKED"],
   })
     .notNull()
     .default("BULLET"),

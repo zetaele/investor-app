@@ -1,9 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import {
-  analysisQuerySchema,
-  simulateQuerySchema,
-  tickerParamSchema,
-} from "@investor-app/shared";
+import { analysisQuerySchema, simulateQuerySchema, tickerParamSchema } from "@investor-app/shared";
 import type { BondsService } from "./bonds.service.js";
 import { InstrumentNotFoundError } from "./bonds.service.js";
 import { BymaInstrumentNotFoundError } from "../byma/byma.types.js";
@@ -81,9 +77,7 @@ export function bondsRouter(bondsService: BondsService) {
       }
 
       const input =
-        query.data.price !== undefined
-          ? { price: query.data.price }
-          : { ytm: query.data.ytm! };
+        query.data.price !== undefined ? { price: query.data.price } : { ytm: query.data.ytm! };
 
       try {
         const result = await bondsService.simulate(

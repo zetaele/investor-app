@@ -11,12 +11,7 @@ import {
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
 /** Constructs a minimal Cashflow (id fields are irrelevant for the calculator). */
-function cf(
-  paymentDate: string,
-  coupon: number,
-  amortization: number,
-  residual: number,
-): Cashflow {
+function cf(paymentDate: string, coupon: number, amortization: number, residual: number): Cashflow {
   return {
     id: 0,
     instrumentId: 0,
@@ -33,10 +28,7 @@ function cf(
  *   - 2026-07-01 (181 days): coupon=5
  *   - 2027-01-01 (365 days): coupon=5 + amortization=100
  */
-const BULLET_10PCT: Cashflow[] = [
-  cf("2026-07-01", 5, 0, 1),
-  cf("2027-01-01", 5, 100, 0),
-];
+const BULLET_10PCT: Cashflow[] = [cf("2026-07-01", 5, 0, 1), cf("2027-01-01", 5, 100, 0)];
 const BULLET_SETTLEMENT = new Date("2026-01-01");
 
 /**
@@ -194,15 +186,11 @@ describe("calcYTM", () => {
 
 describe("calcModifiedDuration", () => {
   it("returns NaN when YTM is NaN", () => {
-    expect(
-      calcModifiedDuration(BULLET_10PCT, 100, BULLET_SETTLEMENT, NaN),
-    ).toBeNaN();
+    expect(calcModifiedDuration(BULLET_10PCT, 100, BULLET_SETTLEMENT, NaN)).toBeNaN();
   });
 
   it("returns NaN when price is 0", () => {
-    expect(
-      calcModifiedDuration(BULLET_10PCT, 0, BULLET_SETTLEMENT, 0.1),
-    ).toBeNaN();
+    expect(calcModifiedDuration(BULLET_10PCT, 0, BULLET_SETTLEMENT, 0.1)).toBeNaN();
   });
 
   it("zero-coupon bond: modified duration = maturity / (1 + YTM)", () => {
@@ -219,12 +207,7 @@ describe("calcModifiedDuration", () => {
   it("coupon bond: modified duration < time to maturity", () => {
     // Coupon payments before maturity reduce duration vs zero-coupon
     const ytm = calcYTM(BULLET_10PCT, 100, BULLET_SETTLEMENT);
-    const duration = calcModifiedDuration(
-      BULLET_10PCT,
-      100,
-      BULLET_SETTLEMENT,
-      ytm,
-    );
+    const duration = calcModifiedDuration(BULLET_10PCT, 100, BULLET_SETTLEMENT, ytm);
     // Maturity = 1 year, duration must be < 1
     expect(duration).toBeGreaterThan(0);
     expect(duration).toBeLessThan(1);
@@ -313,10 +296,7 @@ describe("calcBondAnalysis", () => {
     ];
     const settlement = new Date("2026-03-01");
     const result = calcBondAnalysis(flows, 98.5, settlement);
-    expect(result.cleanPrice).toBeCloseTo(
-      result.dirtyPrice - result.accruedInterest,
-      4,
-    );
+    expect(result.cleanPrice).toBeCloseTo(result.dirtyPrice - result.accruedInterest, 4);
   });
 
   it("parityPct = dirtyPrice / 100", () => {
@@ -333,9 +313,7 @@ describe("calcBondAnalysis", () => {
 
   it("cashflowsWithPV length matches future cashflows count", () => {
     const result = calcBondAnalysis(AL30_FLOWS, 55, AL30_SETTLEMENT);
-    const futureCount = AL30_FLOWS.filter(
-      (c) => new Date(c.paymentDate) > AL30_SETTLEMENT,
-    ).length;
+    const futureCount = AL30_FLOWS.filter((c) => new Date(c.paymentDate) > AL30_SETTLEMENT).length;
     expect(result.cashflowsWithPV).toHaveLength(futureCount);
   });
 

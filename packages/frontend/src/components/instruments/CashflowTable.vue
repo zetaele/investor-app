@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { CashflowWithPV } from '@investor-app/shared'
-import type { Currency } from '@investor-app/shared'
-import { formatDate, formatNumber } from '@/composables/useFormat'
+import type { CashflowWithPV } from "@investor-app/shared";
+import type { Currency } from "@investor-app/shared";
+import { formatDate, formatNumber } from "@/composables/useFormat";
 
 defineProps<{
-  cashflows: CashflowWithPV[]
-  currency: Currency
-}>()
+  cashflows: CashflowWithPV[];
+  currency: Currency;
+}>();
 </script>
 
 <template>
@@ -40,9 +40,7 @@ defineProps<{
           <td class="font-mono text-right">
             {{ currency }} {{ formatNumber(cf.coupon + cf.amortization, 4) }}
           </td>
-          <td class="font-mono text-right">
-            {{ formatNumber(cf.residual * 100, 0) }}%
-          </td>
+          <td class="font-mono text-right">{{ formatNumber(cf.residual * 100, 0) }}%</td>
           <td class="font-mono text-right pv-cell">
             {{ currency }} {{ formatNumber(cf.presentValue, 4) }}
           </td>
@@ -78,7 +76,9 @@ th {
   white-space: nowrap;
 }
 
-th.text-right { text-align: right; }
+th.text-right {
+  text-align: right;
+}
 
 td {
   padding: 0.75rem 1rem;
@@ -87,9 +87,13 @@ td {
   white-space: nowrap;
 }
 
-td.text-right { text-align: right; }
+td.text-right {
+  text-align: right;
+}
 
-tbody tr:last-child td { border-bottom: none; }
+tbody tr:last-child td {
+  border-bottom: none;
+}
 
 tbody tr:hover td {
   background-color: var(--color-bg-sunken);
@@ -106,5 +110,7 @@ tbody tr:hover td {
   font-weight: 500;
 }
 
-.dim { color: var(--color-text-dim); }
+.dim {
+  color: var(--color-text-dim);
+}
 </style>

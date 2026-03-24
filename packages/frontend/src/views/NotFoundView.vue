@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { useRouter } from "vue-router";
+const router = useRouter();
 </script>
 
 <template>
@@ -8,9 +8,7 @@ const router = useRouter()
     <span class="code font-mono">404</span>
     <h1 class="font-display">Página no encontrada</h1>
     <p>El instrumento o página que buscás no existe.</p>
-    <button class="back-btn" @click="router.push('/')">
-      ← Volver al inicio
-    </button>
+    <button class="back-btn" @click="router.push('/')">← Volver al inicio</button>
   </div>
 </template>
 

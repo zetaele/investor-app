@@ -17,29 +17,29 @@ Plataforma web para analizar y comparar instrumentos de renta fija del mercado a
 
 ## Tipos de instrumentos soportados
 
-| Estructura | Ejemplos |
-|---|---|
-| Bullet | Mayoría de Globales/Bonares en USD, ONs corporativas |
-| Amortizable | AL30, GD35 y similares |
-| Cero cupón | LECER, bonos CER cortos |
-| Capitalizable | LECAP, BONCAP, algunos Bonte |
-| CER | TX26, TX28, TZX27/28 |
-| Dólar-linked | TZV26 y similares |
+| Estructura    | Ejemplos                                             |
+| ------------- | ---------------------------------------------------- |
+| Bullet        | Mayoría de Globales/Bonares en USD, ONs corporativas |
+| Amortizable   | AL30, GD35 y similares                               |
+| Cero cupón    | LECER, bonos CER cortos                              |
+| Capitalizable | LECAP, BONCAP, algunos Bonte                         |
+| CER           | TX26, TX28, TZX27/28                                 |
+| Dólar-linked  | TZV26 y similares                                    |
 
 ---
 
 ## Stack tecnológico
 
-| Capa | Tecnología |
-|---|---|
-| Frontend | Vue 3 + TypeScript strict + Tailwind CSS |
-| Gráficos | Chart.js + vue-chartjs |
-| State | Pinia |
-| Backend | Node.js + Fastify |
-| ORM | Drizzle ORM |
-| Base de datos | SQLite |
-| Validación | Zod (compartido entre FE y BE) |
-| Monorepo | pnpm workspaces |
+| Capa          | Tecnología                               |
+| ------------- | ---------------------------------------- |
+| Frontend      | Vue 3 + TypeScript strict + Tailwind CSS |
+| Gráficos      | Chart.js + vue-chartjs                   |
+| State         | Pinia                                    |
+| Backend       | Node.js + Fastify                        |
+| ORM           | Drizzle ORM                              |
+| Base de datos | SQLite                                   |
+| Validación    | Zod (compartido entre FE y BE)           |
+| Monorepo      | pnpm workspaces                          |
 
 ---
 
@@ -141,6 +141,7 @@ pnpm --filter backend db:studio
 El panel de admin está disponible en `http://localhost:5173/admin`. Requiere el token configurado en `ADMIN_TOKEN`.
 
 Desde el admin podés:
+
 - Cargar nuevos instrumentos con su estructura de flujo
 - Previsualizar los flujos de pago antes de confirmar
 - Desactivar instrumentos vencidos o incorrectos

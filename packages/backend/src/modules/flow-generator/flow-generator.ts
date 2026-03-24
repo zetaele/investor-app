@@ -51,11 +51,7 @@ function addMonths(date: Date, months: number): Date {
  * advancing by (12 / frequency) months each time, until maturity.
  * Always ensures the maturity date is the last payment.
  */
-function generatePaymentDates(
-  firstDate: Date,
-  maturityDate: Date,
-  frequency: number,
-): Date[] {
+function generatePaymentDates(firstDate: Date, maturityDate: Date, frequency: number): Date[] {
   const monthStep = 12 / frequency;
   const dates: Date[] = [];
   let current = new Date(firstDate);
@@ -87,11 +83,7 @@ function resolvePaymentDates(params: FlowGeneratorParams): Date[] {
     return params.couponSchedule.map((s) => parseLocalDate(s.date));
   }
 
-  if (
-    params.firstCouponDate === undefined ||
-    params.couponFrequency === undefined
-  )
-    return [];
+  if (params.firstCouponDate === undefined || params.couponFrequency === undefined) return [];
 
   const first = parseLocalDate(params.firstCouponDate);
   const maturity = parseLocalDate(params.maturityDate);
@@ -130,12 +122,7 @@ function generateBullet(params: FlowGeneratorParams): GeneratedCashflow[] {
  * Example: AL30, GD30, some CER bonds.
  */
 function generateAmortizable(params: FlowGeneratorParams): GeneratedCashflow[] {
-  const {
-    faceValue,
-    couponRate = 0,
-    couponFrequency = 2,
-    amortizationSchedule = [],
-  } = params;
+  const { faceValue, couponRate = 0, couponFrequency = 2, amortizationSchedule = [] } = params;
 
   if (amortizationSchedule.length === 0) return [];
 
@@ -145,10 +132,7 @@ function generateAmortizable(params: FlowGeneratorParams): GeneratedCashflow[] {
   const periodRate = couponRate / couponFrequency;
 
   const amortMap = new Map<string, number>(
-    amortizationSchedule.map((item: { date: string; pct: number }) => [
-      item.date,
-      item.pct,
-    ]),
+    amortizationSchedule.map((item: { date: string; pct: number }) => [item.date, item.pct]),
   );
 
   let residual = 1.0;
@@ -156,8 +140,7 @@ function generateAmortizable(params: FlowGeneratorParams): GeneratedCashflow[] {
   return dates.map((date) => {
     const dateStr = toISO(date);
     const amortPct = amortMap.get(dateStr) ?? 0;
-    const coupon =
-      Math.round(faceValue * residual * periodRate * 10000) / 10000;
+    const coupon = Math.round(faceValue * residual * periodRate * 10000) / 10000;
     const amortization = Math.round(faceValue * amortPct * 10000) / 10000;
 
     residual = Math.round((residual - amortPct) * 10000) / 10000;
@@ -190,9 +173,7 @@ function generateZeroCoupon(params: FlowGeneratorParams): GeneratedCashflow[] {
  * CAPITALIZABLE — capital grows at TNA, single payment at maturity.
  * Example: LECAP, BONCAP, some Bonte.
  */
-function generateCapitalizable(
-  params: FlowGeneratorParams,
-): GeneratedCashflow[] {
+function generateCapitalizable(params: FlowGeneratorParams): GeneratedCashflow[] {
   const {
     maturityDate,
     issueDate,
@@ -207,8 +188,7 @@ function generateCapitalizable(
   const days = Math.round((maturity.getTime() - issue.getTime()) / msPerDay);
   const periods = days / (365 / couponFrequency);
   const periodRate = capitalizationRate / couponFrequency;
-  const finalValue =
-    Math.round(faceValue * Math.pow(1 + periodRate, periods) * 100) / 100;
+  const finalValue = Math.round(faceValue * Math.pow(1 + periodRate, periods) * 100) / 100;
 
   return [
     {
@@ -248,9 +228,7 @@ function generateUSDLinked(params: FlowGeneratorParams): GeneratedCashflow[] {
  *
  * @throws Error if required parameters for the given flowType are missing.
  */
-export function generateFlows(
-  params: FlowGeneratorParams,
-): GeneratedCashflow[] {
+export function generateFlows(params: FlowGeneratorParams): GeneratedCashflow[] {
   validateParams(params);
 
   switch (params.flowType) {
@@ -290,13 +268,8 @@ function validateParams(params: FlowGeneratorParams): void {
     throw new Error("faceValue must be positive");
   }
 
-  if (
-    flowType === "BULLET" ||
-    flowType === "CER" ||
-    flowType === "USD_LINKED"
-  ) {
-    const hasSchedule =
-      params.couponSchedule !== undefined && params.couponSchedule.length > 0;
+  if (flowType === "BULLET" || flowType === "CER" || flowType === "USD_LINKED") {
+    const hasSchedule = params.couponSchedule !== undefined && params.couponSchedule.length > 0;
     const hasAutoParams =
       params.couponRate !== undefined &&
       params.couponRate > 0 &&
@@ -313,10 +286,7 @@ function validateParams(params: FlowGeneratorParams): void {
   }
 
   if (flowType === "AMORTIZABLE") {
-    if (
-      !params.amortizationSchedule ||
-      params.amortizationSchedule.length === 0
-    ) {
+    if (!params.amortizationSchedule || params.amortizationSchedule.length === 0) {
       throw new Error("AMORTIZABLE requires amortizationSchedule");
     }
     const totalAmort = params.amortizationSchedule.reduce(
@@ -324,9 +294,7 @@ function validateParams(params: FlowGeneratorParams): void {
       0,
     );
     if (Math.abs(totalAmort - 1) > 0.001) {
-      throw new Error(
-        `Amortization schedule must sum to 1.0 (got ${totalAmort})`,
-      );
+      throw new Error(`Amortization schedule must sum to 1.0 (got ${totalAmort})`);
     }
   }
 

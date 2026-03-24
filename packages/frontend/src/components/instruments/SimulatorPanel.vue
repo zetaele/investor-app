@@ -2,11 +2,7 @@
 import { ref, computed } from "vue";
 import type { Currency, SimulationResult } from "@investor-app/shared";
 import { fetchSimulation } from "@/services/api";
-import {
-  formatYield,
-  formatPrice,
-  formatNumber,
-} from "@/composables/useFormat";
+import { formatYield, formatPrice, formatNumber } from "@/composables/useFormat";
 import MetricCard from "./MetricCard.vue";
 
 const props = defineProps<{
@@ -25,17 +21,11 @@ const error = ref<string | null>(null);
 
 // ── Computed ──────────────────────────────────────────────────────────────────
 
-const inputLabel = computed(() =>
-  mode.value === "price" ? "Precio sucio" : "TIR anual",
-);
+const inputLabel = computed(() => (mode.value === "price" ? "Precio sucio" : "TIR anual"));
 
-const inputSuffix = computed(() =>
-  mode.value === "price" ? props.displayCurrency : "%",
-);
+const inputSuffix = computed(() => (mode.value === "price" ? props.displayCurrency : "%"));
 
-const inputPlaceholder = computed(() =>
-  mode.value === "price" ? "ej. 55.50" : "ej. 15.00",
-);
+const inputPlaceholder = computed(() => (mode.value === "price" ? "ej. 55.50" : "ej. 15.00"));
 
 const ytmClass = computed(() => {
   const ytm = result.value?.calculations.ytm ?? 0;
@@ -67,11 +57,7 @@ async function simulate(): Promise<void> {
 
   loading.value = true;
   try {
-    result.value = await fetchSimulation(
-      props.ticker,
-      input,
-      props.displayCurrency,
-    );
+    result.value = await fetchSimulation(props.ticker, input, props.displayCurrency);
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Error al simular.";
     result.value = null;
@@ -85,18 +71,10 @@ async function simulate(): Promise<void> {
   <div class="simulator">
     <!-- Mode toggle -->
     <div class="mode-toggle" role="group" aria-label="Modo de simulación">
-      <button
-        class="toggle-btn"
-        :class="{ active: mode === 'price' }"
-        @click="switchMode('price')"
-      >
+      <button class="toggle-btn" :class="{ active: mode === 'price' }" @click="switchMode('price')">
         Precio → TIR
       </button>
-      <button
-        class="toggle-btn"
-        :class="{ active: mode === 'ytm' }"
-        @click="switchMode('ytm')"
-      >
+      <button class="toggle-btn" :class="{ active: mode === 'ytm' }" @click="switchMode('ytm')">
         TIR → Precio
       </button>
     </div>
@@ -139,16 +117,12 @@ async function simulate(): Promise<void> {
           />
           <MetricCard
             label="Precio limpio"
-            :value="
-              formatPrice(result.calculations.cleanPrice, displayCurrency)
-            "
+            :value="formatPrice(result.calculations.cleanPrice, displayCurrency)"
             tooltip="Precio sin el interés corrido"
           />
           <MetricCard
             label="Interés corrido"
-            :value="
-              formatPrice(result.calculations.accruedInterest, displayCurrency)
-            "
+            :value="formatPrice(result.calculations.accruedInterest, displayCurrency)"
             tooltip="Cupón devengado hasta la fecha de liquidación"
           />
           <MetricCard
@@ -162,16 +136,12 @@ async function simulate(): Promise<void> {
         <template v-else>
           <MetricCard
             label="Precio sucio"
-            :value="
-              formatPrice(result.calculations.dirtyPrice, displayCurrency)
-            "
+            :value="formatPrice(result.calculations.dirtyPrice, displayCurrency)"
             tooltip="Precio teórico a esa TIR (incluye interés corrido)"
           />
           <MetricCard
             label="Precio limpio"
-            :value="
-              formatPrice(result.calculations.cleanPrice, displayCurrency)
-            "
+            :value="formatPrice(result.calculations.cleanPrice, displayCurrency)"
             tooltip="Precio sin el interés corrido"
           />
           <MetricCard
