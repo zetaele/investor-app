@@ -1,7 +1,7 @@
 import "dotenv/config";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import { cashflows, instruments } from "./schema.js";
+import { cashflows, instrumentConfig, instruments } from "./schema.js";
 
 const client = new Database(process.env["DATABASE_URL"] ?? "./data/app.db");
 const db = drizzle(client);
@@ -311,6 +311,7 @@ const cashflowMap: Record<string, CF[]> = {
 async function seed(): Promise<void> {
   console.log("🌱 Seeding database...");
 
+  await db.delete(instrumentConfig);
   await db.delete(cashflows);
   await db.delete(instruments);
 
