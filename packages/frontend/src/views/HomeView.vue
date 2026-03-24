@@ -586,4 +586,15 @@ td {
   color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
+
+@media (max-width: 640px) {
+  .search-input {
+    width: 100%;
+  }
+
+  .home-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 </style>

@@ -187,4 +187,39 @@ const currencyStore = useCurrencyStore();
   font-weight: 600;
   letter-spacing: 0.05em;
 }
+
+@media (max-width: 640px) {
+  .nav-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 0;
+    gap: 0;
+  }
+
+  .nav-logo {
+    flex: 1;
+    height: 48px;
+    padding: 0 1rem;
+  }
+
+  .nav-controls {
+    height: 48px;
+    padding: 0 1rem;
+  }
+
+  .nav-links {
+    order: 1;
+    width: 100%;
+    flex: none;
+    overflow-x: auto;
+    padding: 0.25rem 0.75rem 0.625rem;
+    border-top: 1px solid var(--color-border-dim);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+}
 </style>

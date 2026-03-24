@@ -396,4 +396,27 @@ const ytmClass = computed(() => {
   padding: 3rem 0;
   color: var(--color-text-secondary);
 }
+
+@media (max-width: 640px) {
+  .instrument-view {
+    gap: 1.75rem;
+  }
+
+  .ticker {
+    font-size: 1.75rem;
+  }
+
+  .header-price {
+    text-align: left;
+  }
+
+  .price-value {
+    font-size: 1.875rem;
+  }
+
+  .simulator-card,
+  .chart-wrapper {
+    padding: 1rem;
+  }
+}
 </style>

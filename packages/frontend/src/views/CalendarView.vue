@@ -420,4 +420,19 @@ function setHorizon(days: number): void {
   color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
+
+@media (max-width: 640px) {
+  .payment-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.75rem 1rem;
+  }
+
+  .payment-flows {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
 </style>

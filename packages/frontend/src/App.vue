@@ -37,6 +37,12 @@ useThemeStore();
   padding: 1.5rem 1.5rem 3rem;
 }
 
+@media (max-width: 640px) {
+  .app-main {
+    padding: 1rem 1rem 2.5rem;
+  }
+}
+
 /* Page transition */
 .page-enter-active,
 .page-leave-active {
