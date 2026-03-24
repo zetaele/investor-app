@@ -2,90 +2,74 @@ import type { BymaMarketPrice, IBYMAClient } from "./byma.types.js";
 import { BymaInstrumentNotFoundError } from "./byma.types.js";
 
 /**
- * Realistic market prices as of March 2026 (USD unless noted).
- * These are approximate mid-market prices for development and testing purposes.
- * Replace with live data when BymaOfficialClient is wired in.
+ * Approximate prices as of March 2026.
+ *
+ * USD-denominated instruments: price as % of face value in USD.
+ * ARS-denominated instruments (letters): price as % of face value in ARS.
+ *   Note: PriceCacheService currently hardcodes currency = "USD"; ARS instruments
+ *   are a known limitation to address when real price feeds are integrated.
+ *
+ * Sources: BYMA / IOL market data, manually updated for development purposes.
  */
 const MOCK_PRICES: Record<string, number> = {
-  // Sovereign bonds — USD (Ley Argentina)
-  AL30: 62.5,
-  AL35: 57.2,
-  AL41: 55.8,
-  AO27D: 102.0,
+  // ── Sovereign bonds — USD ────────────────────────────────────────────────
+  AL30: 68.5,
+  GD30: 72.0,
+  AL35: 61.5,
+  GD35: 64.5,
+  AL41: 56.5,
+  GD41: 59.0,
+  GD46: 54.0,
+  AO27D: 101.5,
 
-  // Sovereign bonds — USD (Ley Nueva York)
-  GD30: 64.1,
-  GD35: 59.4,
-  GD41: 57.9,
-  GD46: 56.3,
+  // ── Treasury letters — ARS (price as % of face value 100, in ARS) ────────
+  S30A6: 97.8, // ~37 days to maturity
+  S29M6: 95.8, // ~66 days
+  S30J6: 93.5, // ~98 days
+  S31L6: 91.2, // ~129 days
 
-  // Sovereign bonds — ARS
-  T2X5: 98.5,
-
-  // Treasury letters — ARS (prices as % of face value)
-  S31O5: 96.2,
-  S28N5: 94.8,
-  S31D5: 93.1,
-
-  // Corporate bonds / ONs — USD
-  YPF24: 97.5,
-  PAMP27: 94.2,
-  TECO27: 91.8,
+  // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
+  YPF24: 99.5, // near maturity Jul 2026
+  PAMP27: 95.5,
+  TECO27: 98.2, // near maturity Mar 2027
 };
 
 /**
- * Mock implementation of IBYMAClient.
+ * Mock IBYMAClient for development.
  *
- * Returns hardcoded realistic prices with a small random variation (±0.5%)
- * to simulate live market behaviour during development.
- *
- * Usage: inject this via the app factory in development/test environments.
- * Switch to BymaOfficialClient in production once credentials are available.
+ * Returns realistic prices with a small random variation (±0.3%) to simulate
+ * live market behaviour. Switch to BymaOfficialClient (or a broker-specific
+ * implementation) in production once a data license is in place.
  */
 export class MockBymaClient implements IBYMAClient {
-  /**
-   * Adds a small random variation to simulate price movement.
-   * Variation is within ±0.5% of the base price.
-   */
-  private simulatePriceVariation(basePrice: number): number {
-    const variationPct = (Math.random() - 0.5) * 0.01; // ±0.5%
-    return Math.round(basePrice * (1 + variationPct) * 100) / 100;
+  private jitter(base: number): number {
+    const pct = (Math.random() - 0.5) * 0.006; // ±0.3%
+    return Math.round(base * (1 + pct) * 100) / 100;
   }
 
-  private buildMarketPrice(ticker: string, basePrice: number): BymaMarketPrice {
+  private build(ticker: string, base: number): BymaMarketPrice {
     return {
       ticker,
-      price: this.simulatePriceVariation(basePrice),
-      volume: Math.floor(Math.random() * 500_000) + 100_000,
+      price: this.jitter(base),
+      volume: Math.floor(Math.random() * 500_000) + 50_000,
       updatedAt: new Date().toISOString(),
     };
   }
 
   async getPrice(ticker: string): Promise<BymaMarketPrice> {
-    const basePrice = MOCK_PRICES[ticker];
-
-    if (basePrice === undefined) {
-      throw new BymaInstrumentNotFoundError(ticker);
-    }
-
-    // Simulate a realistic network delay (50–150ms)
-    await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100));
-
-    return this.buildMarketPrice(ticker, basePrice);
+    const base = MOCK_PRICES[ticker];
+    if (base === undefined) throw new BymaInstrumentNotFoundError(ticker);
+    await new Promise((r) => setTimeout(r, 40 + Math.random() * 80));
+    return this.build(ticker, base);
   }
 
   async getPrices(tickers: string[]): Promise<Map<string, BymaMarketPrice>> {
-    await new Promise((resolve) => setTimeout(resolve, 50 + Math.random() * 100));
-
+    await new Promise((r) => setTimeout(r, 40 + Math.random() * 80));
     const result = new Map<string, BymaMarketPrice>();
-
     for (const ticker of tickers) {
-      const basePrice = MOCK_PRICES[ticker];
-      if (basePrice !== undefined) {
-        result.set(ticker, this.buildMarketPrice(ticker, basePrice));
-      }
+      const base = MOCK_PRICES[ticker];
+      if (base !== undefined) result.set(ticker, this.build(ticker, base));
     }
-
     return result;
   }
 }

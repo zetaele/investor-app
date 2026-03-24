@@ -6,10 +6,63 @@ import { cashflows, instruments } from "./schema.js";
 const client = new Database(process.env["DATABASE_URL"] ?? "./data/app.db");
 const db = drizzle(client);
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+type CF = { paymentDate: string; coupon: number; amortization: number; residual: number };
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+const r4 = (n: number) => Math.round(n * 10000) / 10000;
+
+/**
+ * Generates the Jan-9 / Jul-9 semi-annual payment date sequence used by
+ * all sovereign bonds from the 2020 Argentine debt restructuring.
+ */
+function sovDates(sy: number, sm: 1 | 7, ey: number, em: 1 | 7): string[] {
+  const dates: string[] = [];
+  let y = sy,
+    m: 1 | 7 = sm;
+  for (;;) {
+    dates.push(`${y}-${String(m).padStart(2, "0")}-09`);
+    if (y === ey && m === em) break;
+    m === 1 ? (m = 7) : ((m = 1), y++);
+  }
+  return dates;
+}
+
+/**
+ * Generates cashflows for sovereign bonds:
+ * - Semi-annual coupon on residual capital
+ * - Equal amortization per period after a grace (coupon-only) phase
+ *
+ * Amounts are expressed per $100 face value (absolute, not percentages).
+ * Coupon rates approximate the stepped-up rates reached by March 2026.
+ */
+function sovCashflows(
+  dates: string[],
+  couponRatePerPeriod: number,
+  couponOnlyPeriods: number,
+): CF[] {
+  const amortCount = dates.length - couponOnlyPeriods;
+  const baseAmort = r2(100 / amortCount);
+  const flows: CF[] = [];
+  let residual = 1.0;
+
+  for (let i = 0; i < dates.length; i++) {
+    const coupon = r2(residual * 100 * couponRatePerPeriod);
+    const isLast = i === dates.length - 1;
+    const amortization = i < couponOnlyPeriods ? 0 : isLast ? r2(residual * 100) : baseAmort;
+    const newResidual = isLast ? 0 : r4(residual - amortization / 100);
+
+    flows.push({ paymentDate: dates[i]!, coupon, amortization, residual: newResidual });
+    residual = newResidual;
+  }
+  return flows;
+}
+
 // ── Instruments ───────────────────────────────────────────────────────────────
 
 const instrumentsData = [
-  // Sovereign bonds (USD)
+  // ── Sovereign bonds — USD ────────────────────────────────────────────────
   {
     ticker: "AL30",
     name: "Bono del Tesoro en Dólares 2030 (Ley Argentina)",
@@ -66,44 +119,51 @@ const instrumentsData = [
     issuer: "Tesoro Nacional",
     maturityDate: "2046-07-09",
   },
-  // Sovereign bonds (ARS)
   {
-    ticker: "T2X5",
-    name: "Boncer 2025",
+    ticker: "AO27D",
+    name: "Bono del Tesoro en Dólares 2027 (Ley Argentina)",
     type: "BOND" as const,
-    currency: "ARS" as const,
+    currency: "USD" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2025-08-13",
+    maturityDate: "2027-07-09",
   },
-  // Treasury letters (ARS)
+  // ── Treasury letters — ARS (zero-coupon, discount instruments) ───────────
   {
-    ticker: "S31O5",
-    name: "Letra del Tesoro en Pesos 31/10/2025",
+    ticker: "S30A6",
+    name: "Letra del Tesoro en Pesos 30/04/2026",
     type: "LETTER" as const,
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2025-10-31",
+    maturityDate: "2026-04-30",
   },
   {
-    ticker: "S28N5",
-    name: "Letra del Tesoro en Pesos 28/11/2025",
+    ticker: "S29M6",
+    name: "Letra del Tesoro en Pesos 29/05/2026",
     type: "LETTER" as const,
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2025-11-28",
+    maturityDate: "2026-05-29",
   },
   {
-    ticker: "S31D5",
-    name: "Letra del Tesoro en Pesos 31/12/2025",
+    ticker: "S30J6",
+    name: "Letra del Tesoro en Pesos 30/06/2026",
     type: "LETTER" as const,
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2025-12-31",
+    maturityDate: "2026-06-30",
   },
-  // Corporate bonds / ONs (USD)
+  {
+    ticker: "S31L6",
+    name: "Letra del Tesoro en Pesos 31/07/2026",
+    type: "LETTER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-07-31",
+  },
+  // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
   {
     ticker: "YPF24",
-    name: "Obligación Negociable YPF 2024",
+    name: "Obligación Negociable YPF 2026 Serie I",
     type: "ON" as const,
     currency: "USD" as const,
     issuer: "YPF S.A.",
@@ -119,7 +179,7 @@ const instrumentsData = [
   },
   {
     ticker: "TECO27",
-    name: "Obligación Negociable Telecom 2027",
+    name: "Obligación Negociable Telecom Argentina 2027",
     type: "ON" as const,
     currency: "USD" as const,
     issuer: "Telecom Argentina S.A.",
@@ -130,114 +190,130 @@ const instrumentsData = [
 // ── Cash flows ────────────────────────────────────────────────────────────────
 
 /**
- * AL30 / GD30 cash flow schedule.
- * Coupon: 0.5% semi-annual on residual capital.
- * Amortization: 4% semi-annual starting Jul 2024, accelerating to 16% from Jan 2027.
+ * AL30 / GD30 — Bono del Tesoro USD 2030
+ * Coupon: 1% annual (0.5% semi-annual) on residual capital.
+ * Amortization: stepped schedule from 2024, completing Jul 2030.
+ * Source: Prospecto de emisión, Ministerio de Economía Argentina (2020 restructuring).
  */
-const al30Cashflows = [
+const al30Cashflows: CF[] = [
   { paymentDate: "2026-07-09", coupon: 0.5, amortization: 4.0, residual: 0.96 },
-  {
-    paymentDate: "2027-01-09",
-    coupon: 0.48,
-    amortization: 16.0,
-    residual: 0.8,
-  },
-  {
-    paymentDate: "2027-07-09",
-    coupon: 0.4,
-    amortization: 16.0,
-    residual: 0.64,
-  },
-  {
-    paymentDate: "2028-01-09",
-    coupon: 0.32,
-    amortization: 16.0,
-    residual: 0.48,
-  },
-  {
-    paymentDate: "2028-07-09",
-    coupon: 0.24,
-    amortization: 16.0,
-    residual: 0.32,
-  },
-  {
-    paymentDate: "2029-01-09",
-    coupon: 0.16,
-    amortization: 16.0,
-    residual: 0.16,
-  },
-  {
-    paymentDate: "2029-07-09",
-    coupon: 0.08,
-    amortization: 8.0,
-    residual: 0.08,
-  },
+  { paymentDate: "2027-01-09", coupon: 0.48, amortization: 16.0, residual: 0.8 },
+  { paymentDate: "2027-07-09", coupon: 0.4, amortization: 16.0, residual: 0.64 },
+  { paymentDate: "2028-01-09", coupon: 0.32, amortization: 16.0, residual: 0.48 },
+  { paymentDate: "2028-07-09", coupon: 0.24, amortization: 16.0, residual: 0.32 },
+  { paymentDate: "2029-01-09", coupon: 0.16, amortization: 16.0, residual: 0.16 },
+  { paymentDate: "2029-07-09", coupon: 0.08, amortization: 8.0, residual: 0.08 },
   { paymentDate: "2030-01-09", coupon: 0.04, amortization: 8.0, residual: 0.0 },
   { paymentDate: "2030-07-09", coupon: 0.0, amortization: 0.0, residual: 0.0 },
 ];
 
 /**
- * YPF24 ON cash flow schedule.
- * Bullet structure: semi-annual coupons at 8.5%, full principal at maturity.
+ * AL35 / GD35 — Bono del Tesoro USD 2035
+ * Coupon: 3.625% annual (1.8125% semi-annual) on residual — stepped-up rate as of 2026.
+ * 4 coupon-only periods, then equal amortization through Jul 2035.
+ * Approximate schedule based on 2020 restructuring terms.
  */
-const ypf24Cashflows = [
-  { paymentDate: "2025-07-15", coupon: 4.25, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-01-15", coupon: 4.25, amortization: 0.0, residual: 1.0 },
-  {
-    paymentDate: "2026-07-15",
-    coupon: 4.25,
-    amortization: 100.0,
-    residual: 0.0,
-  },
+const al35Cashflows = sovCashflows(sovDates(2026, 7, 2035, 7), 0.018125, 4);
+
+/**
+ * AL41 / GD41 — Bono del Tesoro USD 2041
+ * Coupon: 4.25% annual (2.125% semi-annual) on residual — stepped-up rate as of 2026.
+ * 8 coupon-only periods, then equal amortization through Jul 2041.
+ * Approximate schedule based on 2020 restructuring terms.
+ */
+const al41Cashflows = sovCashflows(sovDates(2026, 7, 2041, 7), 0.02125, 8);
+
+/**
+ * GD46 — Bono del Tesoro USD 2046 (Ley Nueva York only)
+ * Coupon: 4.625% annual (2.3125% semi-annual) on residual — stepped-up rate as of 2026.
+ * 12 coupon-only periods, then equal amortization through Jul 2046.
+ * Approximate schedule based on 2020 restructuring terms.
+ */
+const gd46Cashflows = sovCashflows(sovDates(2026, 7, 2046, 7), 0.023125, 12);
+
+/**
+ * AO27D — Bono del Tesoro USD 2027 (Ley Argentina)
+ * Bullet structure: semi-annual coupon at 4% annual, full principal at maturity.
+ */
+const ao27dCashflows: CF[] = [
+  { paymentDate: "2026-07-09", coupon: 2.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-01-09", coupon: 2.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-07-09", coupon: 2.0, amortization: 100.0, residual: 0.0 },
 ];
 
 /**
- * PAMP27 ON cash flow schedule.
- * Bullet structure: semi-annual coupons at 7.375%, full principal at maturity.
+ * ARS letters — zero-coupon discount instruments.
+ * Single cashflow: full face value (100) at maturity.
+ * Price reflects the discount rate implied by the current TNA.
  */
-const pamp27Cashflows = [
-  {
-    paymentDate: "2025-07-21",
-    coupon: 3.6875,
-    amortization: 0.0,
-    residual: 1.0,
-  },
-  {
-    paymentDate: "2026-01-21",
-    coupon: 3.6875,
-    amortization: 0.0,
-    residual: 1.0,
-  },
-  {
-    paymentDate: "2026-07-21",
-    coupon: 3.6875,
-    amortization: 0.0,
-    residual: 1.0,
-  },
-  {
-    paymentDate: "2027-01-21",
-    coupon: 3.6875,
-    amortization: 0.0,
-    residual: 1.0,
-  },
-  {
-    paymentDate: "2027-07-21",
-    coupon: 3.6875,
-    amortization: 100.0,
-    residual: 0.0,
-  },
+const s30a6Cashflows: CF[] = [
+  { paymentDate: "2026-04-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const s29m6Cashflows: CF[] = [
+  { paymentDate: "2026-05-29", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const s30j6Cashflows: CF[] = [
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const s31l6Cashflows: CF[] = [
+  { paymentDate: "2026-07-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * YPF24 — Obligación Negociable YPF 2026 Serie I
+ * Bullet: semi-annual coupons at 8.5% annual, full principal at maturity Jul 2026.
+ */
+const ypf24Cashflows: CF[] = [
+  { paymentDate: "2026-01-15", coupon: 4.25, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-07-15", coupon: 4.25, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * PAMP27 — Obligación Negociable Pampa Energía 2027
+ * Bullet: semi-annual coupons at 7.375% annual, full principal at maturity Jul 2027.
+ */
+const pamp27Cashflows: CF[] = [
+  { paymentDate: "2026-01-21", coupon: 3.6875, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-07-21", coupon: 3.6875, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-01-21", coupon: 3.6875, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-07-21", coupon: 3.6875, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * TECO27 — Obligación Negociable Telecom Argentina 2027
+ * Bullet: semi-annual coupons at 8.5% annual, full principal at maturity Mar 2027.
+ */
+const teco27Cashflows: CF[] = [
+  { paymentDate: "2026-09-17", coupon: 4.25, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-03-17", coupon: 4.25, amortization: 100.0, residual: 0.0 },
 ];
 
 // ── Seed logic ────────────────────────────────────────────────────────────────
 
+const cashflowMap: Record<string, CF[]> = {
+  AL30: al30Cashflows,
+  GD30: al30Cashflows,
+  AL35: al35Cashflows,
+  GD35: al35Cashflows,
+  AL41: al41Cashflows,
+  GD41: al41Cashflows,
+  GD46: gd46Cashflows,
+  AO27D: ao27dCashflows,
+  S30A6: s30a6Cashflows,
+  S29M6: s29m6Cashflows,
+  S30J6: s30j6Cashflows,
+  S31L6: s31l6Cashflows,
+  YPF24: ypf24Cashflows,
+  PAMP27: pamp27Cashflows,
+  TECO27: teco27Cashflows,
+};
+
 async function seed(): Promise<void> {
   console.log("🌱 Seeding database...");
 
-  // Clear existing data (safe for development)
   await db.delete(cashflows);
   await db.delete(instruments);
 
-  // Insert instruments
   const inserted = await db
     .insert(instruments)
     .values(instrumentsData.map((i) => ({ ...i, market: "BYMA", isActive: true })))
@@ -245,27 +321,18 @@ async function seed(): Promise<void> {
 
   console.log(`✓ Inserted ${inserted.length} instruments`);
 
-  // Build ticker → id map
   const tickerToId = new Map(inserted.map((r) => [r.ticker, r.id]));
 
-  // Helper: insert cash flows for a given ticker
-  const insertCashflows = async (ticker: string, flows: typeof al30Cashflows): Promise<void> => {
+  console.log("🌱 Seeding cashflows...");
+  for (const [ticker, flows] of Object.entries(cashflowMap)) {
     const instrumentId = tickerToId.get(ticker);
     if (instrumentId === undefined) {
-      console.warn(`⚠ Ticker ${ticker} not found, skipping cashflows`);
-      return;
+      console.warn(`⚠ ${ticker}: not found, skipping cashflows`);
+      continue;
     }
     await db.insert(cashflows).values(flows.map((cf) => ({ ...cf, instrumentId })));
     console.log(`  ✓ ${ticker}: ${flows.length} cashflows`);
-  };
-
-  console.log("🌱 Seeding cashflows...");
-
-  // AL30 and GD30 share the same cashflow schedule
-  await insertCashflows("AL30", al30Cashflows);
-  await insertCashflows("GD30", al30Cashflows);
-  await insertCashflows("YPF24", ypf24Cashflows);
-  await insertCashflows("PAMP27", pamp27Cashflows);
+  }
 
   console.log("✅ Seed complete!");
   client.close();
