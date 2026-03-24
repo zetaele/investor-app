@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import type { CompareEntry } from "@investor-app/shared";
-import type { Instrument } from "@investor-app/shared";
+import type { CompareEntry, Instrument } from "@investor-app/shared";
 import { fetchCompare, fetchInstruments } from "@/services/api";
 import { useCurrencyStore } from "@/stores/currencyStore";
-import {
-  formatYield,
-  formatPrice,
-  formatNumber,
-  formatDate,
-  formatTimeToMaturity,
-} from "@/composables/useFormat";
 import YieldCurveChart from "@/components/charts/YieldCurveChart.vue";
 import CompareTable from "@/components/compare/CompareTable.vue";
 import InstrumentSelector from "@/components/compare/InstrumentSelector.vue";
@@ -184,11 +176,6 @@ const hasResults = computed(() => entries.value.length > 0);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.error-state {
-  padding: 2rem 0;
-  color: var(--color-text-secondary);
 }
 
 .failed-warning {
