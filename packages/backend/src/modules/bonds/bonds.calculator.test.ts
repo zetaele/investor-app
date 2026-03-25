@@ -283,9 +283,9 @@ describe("calcCashflowsWithPV", () => {
 // ── calcBondAnalysis ──────────────────────────────────────────────────────────
 
 describe("calcBondAnalysis", () => {
-  it("dirtyPrice in output matches input (rounded to 4dp)", () => {
+  it("cleanPrice in output matches input (rounded to 4dp)", () => {
     const result = calcBondAnalysis(BULLET_10PCT, 95.1234, BULLET_SETTLEMENT);
-    expect(result.dirtyPrice).toBe(95.1234);
+    expect(result.cleanPrice).toBe(95.1234);
   });
 
   it("cleanPrice = dirtyPrice - accruedInterest", () => {
@@ -301,7 +301,7 @@ describe("calcBondAnalysis", () => {
 
   it("parityPct = dirtyPrice / 100", () => {
     const result = calcBondAnalysis(BULLET_10PCT, 75.5, BULLET_SETTLEMENT);
-    expect(result.parityPct).toBeCloseTo(75.5 / 100, 4);
+    expect(result.parityPct).toBeCloseTo(result.dirtyPrice / 100, 4);
   });
 
   it("returns ytm=0 and modifiedDuration=0 when all cashflows are expired", () => {

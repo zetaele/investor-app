@@ -52,14 +52,25 @@ export function calcAccruedInterest(cashflows: Cashflow[], settlement: Date): nu
 
   // Determine the previous payment date (or issue approximation)
   const prevCoupon = nextCouponIndex > 0 ? cashflows[nextCouponIndex - 1] : undefined;
-  const prevPaymentDate =
-    prevCoupon !== undefined
-      ? new Date(prevCoupon.paymentDate)
-      : new Date(
-          nextPaymentDate.getFullYear() - 1,
-          nextPaymentDate.getMonth(),
-          nextPaymentDate.getDate(),
-        );
+  let prevPaymentDate: Date;
+  if (prevCoupon !== undefined) {
+    prevPaymentDate = new Date(prevCoupon.paymentDate);
+  } else {
+    // No prior cashflow — mirror the period length by looking at the NEXT coupon gap.
+    // e.g. for a monthly bond: gap(coupon1→coupon2) = 30d → start of period = coupon1 - 30d.
+    const nextCoupon2 = cashflows.slice(nextCouponIndex + 1).find((cf) => cf.coupon > 0);
+    if (nextCoupon2 !== undefined) {
+      const periodDays = daysBetween(nextPaymentDate, new Date(nextCoupon2.paymentDate));
+      prevPaymentDate = new Date(nextPaymentDate.getTime() - periodDays * 24 * 60 * 60 * 1000);
+    } else {
+      // Single-coupon fallback: assume annual period
+      prevPaymentDate = new Date(
+        nextPaymentDate.getFullYear() - 1,
+        nextPaymentDate.getMonth(),
+        nextPaymentDate.getDate(),
+      );
+    }
+  }
 
   const couponPeriodDays = daysBetween(prevPaymentDate, nextPaymentDate);
   if (couponPeriodDays === 0) return 0;
@@ -212,13 +223,15 @@ export function calcCashflowsWithPV(
 // ── Price from YTM ────────────────────────────────────────────────────────────
 
 /**
- * Calculates the theoretical dirty price of a bond given a target YTM.
- * This is the inverse operation of calcYTM.
+ * Calculates the theoretical clean price of a bond given a target YTM.
  *
- * @param cashflows  - Future scheduled cash flows.
+ * Inverse of the Argentine TIREA convention used in calcBondAnalysis:
+ * clean price = Σ [CF_i / (1+ytm)^t_i]
+ *
+ * @param cashflows  - All scheduled cash flows.
  * @param settlement - Settlement date.
  * @param ytm        - Target annual yield (decimal, e.g. 0.15 = 15%).
- * @returns Theoretical dirty price, or NaN if ytm is NaN.
+ * @returns Theoretical clean price, or NaN if ytm is NaN.
  */
 export function calcPriceFromYTM(cashflows: Cashflow[], settlement: Date, ytm: number): number {
   if (isNaN(ytm)) return NaN;
@@ -233,19 +246,21 @@ export function calcPriceFromYTM(cashflows: Cashflow[], settlement: Date, ytm: n
  * Runs the full set of financial calculations for a bond or ON.
  *
  * @param cashflows  - All scheduled cash flows for the instrument.
- * @param dirtyPrice - Market price (dirty) in the instrument's native currency.
+ * @param cleanPrice - Market quoted price (clean/ex-coupon) in the instrument's native currency.
  * @param settlement - Settlement date (typically T+1 or T+2 from trade date).
  * @returns BondCalculations object with all computed metrics.
  */
 export function calcBondAnalysis(
   cashflows: Cashflow[],
-  dirtyPrice: number,
+  cleanPrice: number,
   settlement: Date,
 ): BondCalculations & { cashflowsWithPV: CashflowWithPV[] } {
   const accruedInterest = calcAccruedInterest(cashflows, settlement);
-  const cleanPrice = dirtyPrice - accruedInterest;
-  const ytm = calcYTM(cashflows, dirtyPrice, settlement);
-  const modifiedDuration = calcModifiedDuration(cashflows, dirtyPrice, settlement, ytm);
+  const dirtyPrice = cleanPrice + accruedInterest;
+  // Argentine TIREA convention: YTM is solved against the clean (quoted) price,
+  // not the dirty price. This matches BYMA/CNV and common broker platforms.
+  const ytm = calcYTM(cashflows, cleanPrice, settlement);
+  const modifiedDuration = calcModifiedDuration(cashflows, cleanPrice, settlement, ytm);
   const cashflowsWithPV = calcCashflowsWithPV(cashflows, settlement, ytm);
 
   return {
