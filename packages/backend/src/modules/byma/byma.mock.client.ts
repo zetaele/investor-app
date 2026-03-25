@@ -12,16 +12,17 @@ import { BymaInstrumentNotFoundError } from "./byma.types.js";
  * Sources: BYMA / IOL market data, manually updated for development purposes.
  */
 const MOCK_PRICES: Record<string, number> = {
-  // ── Sovereign bonds — ARS (sin sufijo, cotización en pesos, VN 100) ──────
-  AL30: 67500,
-  GD30: 70800,
-  AL35: 60200,
-  GD35: 63100,
-  AL41: 55300,
-  GD41: 57900,
-  GD46: 52800,
-  // ── Sovereign bond — USD (AO27 = Bonar 2027, precio de corte 100.45) ────
-  AO27: 100.45,
+  // ── Sovereign bonds — USD (D suffix = USD MEP) ───────────────────────────
+  AE38D: 77.78, // ~50% of par, approximate March 2026
+  GD38D: 79.0,  // NY law premium over AE38D, approximate March 2026
+  AL41D: 69.46, // ~55% of par, approximate March 2026
+  GD41D: 71.0,  // NY law premium over AL41D, approximate March 2026
+  GD46D: 73.0,  // approximate March 2026
+  AL30D: 61.2, // ~67.5% of par, approximate March 2026
+  GD30D: 62.5, // NY law premium over AL30D, approximate March 2026
+  AL35D: 75.05, // ~60% of par, approximate March 2026
+  GD35D: 76.5,  // NY law premium over AL35D, approximate March 2026
+  AO27D: 102,
 
   // ── Treasury letters — ARS (price as % of face value 100, in ARS) ────────
   S30A6: 97.8, // ~37 days to maturity

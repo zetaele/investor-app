@@ -22,6 +22,10 @@ export interface BondCalculations {
   accruedInterest: number;
   /** Price as a fraction of par (e.g. 0.625 = 62.5%). */
   parityPct: number;
+  /** Tasa Nominal Anual: m × ((1+YTM)^(1/m) − 1), where m = payments per year. */
+  tna: number;
+  /** Current yield: annual coupon / dirty price. NaN for zero-coupon instruments. */
+  currentYield: number;
 }
 
 /** Cashflow enriched with its present value. */

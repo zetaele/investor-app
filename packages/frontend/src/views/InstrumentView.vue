@@ -146,6 +146,20 @@ const ytmClass = computed(() => {
             :value="formatYield(analysis.calculations.parityPct)"
             tooltip="Precio actual como porcentaje del valor nominal (100 = par)"
           />
+          <MetricCard
+            label="TNA"
+            :value="analysis.calculations.tna ? formatYield(analysis.calculations.tna) : '-'"
+            tooltip="Tasa Nominal Anual equivalente a la TIR según la frecuencia de pagos"
+          />
+          <MetricCard
+            label="Current Yield"
+            :value="
+              analysis.calculations.currentYield
+                ? formatYield(analysis.calculations.currentYield)
+                : '-'
+            "
+            tooltip="Cupones del próximo año dividido el precio sucio"
+          />
         </div>
       </section>
 

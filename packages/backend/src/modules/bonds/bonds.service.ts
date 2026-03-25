@@ -66,6 +66,11 @@ export class BondsService {
       settlement,
     );
 
+    // Include past cashflows (PV = 0) so the UI can optionally display them.
+    const pastCashflows = cashflows
+      .filter((cf) => new Date(cf.paymentDate) <= settlement)
+      .map((cf) => ({ ...cf, presentValue: 0 }));
+
     return {
       ticker: instrument.ticker,
       name: instrument.name,
@@ -79,7 +84,7 @@ export class BondsService {
         fetchedAt: marketPrice.fetchedAt,
       },
       calculations,
-      cashflows: cashflowsWithPV,
+      cashflows: [...pastCashflows, ...cashflowsWithPV],
       displayCurrency: effectiveCurrency,
     };
   }

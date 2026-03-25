@@ -57,7 +57,7 @@ async function simulate(): Promise<void> {
 
   loading.value = true;
   try {
-    result.value = await fetchSimulation(props.ticker, input, props.displayCurrency);
+    result.value = await fetchSimulation(props.ticker, input);
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Error al simular.";
     result.value = null;
@@ -116,6 +116,11 @@ async function simulate(): Promise<void> {
             tooltip="Tasa Interna de Retorno anual a ese precio"
           />
           <MetricCard
+            label="TNA"
+            :value="result.calculations.tna ? formatYield(result.calculations.tna) : '-'"
+            tooltip="Tasa Nominal Anual equivalente a la TIR según la frecuencia de pagos"
+          />
+          <MetricCard
             label="Precio limpio"
             :value="formatPrice(result.calculations.cleanPrice, displayCurrency)"
             tooltip="Precio sin el interés corrido"
@@ -124,6 +129,13 @@ async function simulate(): Promise<void> {
             label="Interés corrido"
             :value="formatPrice(result.calculations.accruedInterest, displayCurrency)"
             tooltip="Cupón devengado hasta la fecha de liquidación"
+          />
+          <MetricCard
+            label="Current Yield"
+            :value="
+              result.calculations.currentYield ? formatYield(result.calculations.currentYield) : '-'
+            "
+            tooltip="Cupones del próximo año dividido el precio sucio"
           />
           <MetricCard
             label="Duration mod."
@@ -143,6 +155,11 @@ async function simulate(): Promise<void> {
             label="Precio limpio"
             :value="formatPrice(result.calculations.cleanPrice, displayCurrency)"
             tooltip="Precio sin el interés corrido"
+          />
+          <MetricCard
+            label="TNA"
+            :value="result.calculations.tna ? formatYield(result.calculations.tna) : '-'"
+            tooltip="Tasa Nominal Anual equivalente a la TIR según la frecuencia de pagos"
           />
           <MetricCard
             label="Paridad"
@@ -289,11 +306,11 @@ async function simulate(): Promise<void> {
   color: var(--color-negative, #ef4444);
 }
 
-/* Results grid */
+/* Results grid — same sizing as the main metrics-grid in InstrumentView */
 .results {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 /* Transition */

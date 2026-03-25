@@ -1,16 +1,32 @@
 <script setup lang="ts">
+import { ref, computed } from "vue";
 import type { CashflowWithPV } from "@investor-app/shared";
 import type { Currency } from "@investor-app/shared";
 import { formatDate, formatNumber } from "@/composables/useFormat";
 
-defineProps<{
+const props = defineProps<{
   cashflows: CashflowWithPV[];
   currency: Currency;
 }>();
+
+const showPast = ref(false);
+const today = new Date().toISOString().slice(0, 10);
+
+const hasPast = computed(() => props.cashflows.some((cf) => cf.paymentDate < today));
+
+const visible = computed(() =>
+  showPast.value ? props.cashflows : props.cashflows.filter((cf) => cf.paymentDate >= today),
+);
 </script>
 
 <template>
   <div class="table-wrapper card">
+    <div v-if="hasPast" class="table-toolbar">
+      <label class="past-toggle">
+        <input v-model="showPast" type="checkbox" />
+        Mostrar pagos pasados
+      </label>
+    </div>
     <table class="cashflow-table">
       <thead>
         <tr>
@@ -23,7 +39,11 @@ defineProps<{
         </tr>
       </thead>
       <tbody>
-        <tr v-for="cf in cashflows" :key="cf.paymentDate">
+        <tr
+          v-for="cf in visible"
+          :key="cf.paymentDate"
+          :class="{ 'row-past': cf.paymentDate < today }"
+        >
           <td class="font-mono date-cell">{{ formatDate(cf.paymentDate) }}</td>
           <td class="font-mono text-right">
             <span v-if="cf.coupon > 0" style="color: var(--color-accent)">
@@ -42,7 +62,10 @@ defineProps<{
           </td>
           <td class="font-mono text-right">{{ formatNumber(cf.residual * 100, 0) }}%</td>
           <td class="font-mono text-right pv-cell">
-            {{ currency }} {{ formatNumber(cf.presentValue, 4) }}
+            <span v-if="cf.paymentDate >= today">
+              {{ currency }} {{ formatNumber(cf.presentValue, 4) }}
+            </span>
+            <span v-else class="dim">—</span>
           </td>
         </tr>
       </tbody>
@@ -53,6 +76,30 @@ defineProps<{
 <style scoped>
 .table-wrapper {
   overflow-x: auto;
+}
+
+.table-toolbar {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.past-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.past-toggle input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+.row-past td {
+  opacity: 0.45;
 }
 
 .cashflow-table {

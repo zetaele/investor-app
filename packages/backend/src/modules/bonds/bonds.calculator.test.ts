@@ -299,9 +299,9 @@ describe("calcBondAnalysis", () => {
     expect(result.cleanPrice).toBeCloseTo(result.dirtyPrice - result.accruedInterest, 4);
   });
 
-  it("parityPct = dirtyPrice / 100", () => {
+  it("parityPct = cleanPrice / 100", () => {
     const result = calcBondAnalysis(BULLET_10PCT, 75.5, BULLET_SETTLEMENT);
-    expect(result.parityPct).toBeCloseTo(result.dirtyPrice / 100, 4);
+    expect(result.parityPct).toBeCloseTo(result.cleanPrice / 100, 4);
   });
 
   it("returns ytm=0 and modifiedDuration=0 when all cashflows are expired", () => {

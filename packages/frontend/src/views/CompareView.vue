@@ -121,7 +121,7 @@ const hasResults = computed(() => entries.value.length > 0);
       <!-- Yield curve chart -->
       <section class="result-section">
         <h2 class="section-title">Curva de rendimientos</h2>
-        <p class="section-subtitle">TIR vs. tiempo al vencimiento</p>
+        <p class="section-subtitle">TIR vs. duration modificada</p>
         <div class="chart-wrapper card">
           <YieldCurveChart :entries="entries" />
         </div>

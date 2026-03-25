@@ -220,6 +220,62 @@ export function calcCashflowsWithPV(
     });
 }
 
+// ── TNA ───────────────────────────────────────────────────────────────────────
+
+/**
+ * Infers the number of coupon payments per year from the gap between the first
+ * two future coupon cashflows.
+ */
+function inferPaymentsPerYear(cashflows: Cashflow[], settlement: Date): number {
+  const futureCoupons = cashflows.filter(
+    (cf) => new Date(cf.paymentDate) > settlement && cf.coupon > 0,
+  );
+  if (futureCoupons.length < 2) return 1;
+  const gap = daysBetween(
+    new Date(futureCoupons[0]!.paymentDate),
+    new Date(futureCoupons[1]!.paymentDate),
+  );
+  if (gap <= 35) return 12; // monthly
+  if (gap <= 100) return 4; // quarterly
+  if (gap <= 200) return 2; // semi-annual
+  return 1; // annual
+}
+
+/**
+ * Tasa Nominal Anual: the nominal rate equivalent to the given TIREA for a
+ * bond paying m times per year.
+ *
+ * TNA = m × ((1 + ytm)^(1/m) − 1)
+ */
+export function calcTNA(ytm: number, paymentsPerYear: number): number {
+  if (isNaN(ytm) || paymentsPerYear <= 0) return NaN;
+  return paymentsPerYear * (Math.pow(1 + ytm, 1 / paymentsPerYear) - 1);
+}
+
+// ── Current yield ─────────────────────────────────────────────────────────────
+
+/**
+ * Current yield: sum of coupon payments in the next 12 months divided by the
+ * dirty price. Returns NaN for zero-coupon instruments.
+ */
+export function calcCurrentYield(
+  cashflows: Cashflow[],
+  dirtyPrice: number,
+  settlement: Date,
+): number {
+  if (dirtyPrice <= 0) return NaN;
+  const oneYearOut = new Date(settlement);
+  oneYearOut.setFullYear(oneYearOut.getFullYear() + 1);
+  const annualCoupon = cashflows
+    .filter((cf) => {
+      const d = new Date(cf.paymentDate);
+      return d > settlement && d <= oneYearOut && cf.coupon > 0;
+    })
+    .reduce((sum, cf) => sum + cf.coupon, 0);
+  if (annualCoupon === 0) return NaN;
+  return annualCoupon / dirtyPrice;
+}
+
 // ── Price from YTM ────────────────────────────────────────────────────────────
 
 /**
@@ -262,6 +318,9 @@ export function calcBondAnalysis(
   const ytm = calcYTM(cashflows, cleanPrice, settlement);
   const modifiedDuration = calcModifiedDuration(cashflows, cleanPrice, settlement, ytm);
   const cashflowsWithPV = calcCashflowsWithPV(cashflows, settlement, ytm);
+  const paymentsPerYear = inferPaymentsPerYear(cashflows, settlement);
+  const tna = calcTNA(ytm, paymentsPerYear);
+  const currentYield = calcCurrentYield(cashflows, dirtyPrice, settlement);
 
   return {
     ytm: isNaN(ytm) ? 0 : Math.round(ytm * 1e7) / 1e7,
@@ -269,7 +328,9 @@ export function calcBondAnalysis(
     cleanPrice: Math.round(cleanPrice * 10000) / 10000,
     dirtyPrice: Math.round(dirtyPrice * 10000) / 10000,
     accruedInterest: Math.round(accruedInterest * 10000) / 10000,
-    parityPct: Math.round((dirtyPrice / 100) * 10000) / 10000,
+    parityPct: Math.round((cleanPrice / 100) * 10000) / 10000,
+    tna: isNaN(tna) ? 0 : Math.round(tna * 1e7) / 1e7,
+    currentYield: isNaN(currentYield) ? 0 : Math.round(currentYield * 1e7) / 1e7,
     cashflowsWithPV,
   };
 }
