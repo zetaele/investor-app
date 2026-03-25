@@ -18,19 +18,23 @@ export interface CreateInstrumentInput {
   flowParams: FlowGeneratorParams;
 }
 
-export interface UpdateInstrumentInput {
-  name?: string | undefined;
-  issuer?: string | undefined;
-  isActive?: boolean | undefined;
-  flowParams?: FlowGeneratorParams | undefined;
+export interface RawCashflow {
+  paymentDate: string;
+  coupon: number;
+  amortization: number;
+  residual: number;
 }
 
 export interface UpdateInstrumentInput {
-  name?: string;
-  issuer?: string;
-  isActive?: boolean;
-  // Updating flow params regenerates all cashflows
-  flowParams?: FlowGeneratorParams;
+  name?: string | undefined;
+  currency?: "ARS" | "USD" | "USD_LINKED" | undefined;
+  maturityDate?: string | undefined;
+  issuer?: string | undefined;
+  isActive?: boolean | undefined;
+  /** Regenerates cashflows via the flow generator. Mutually exclusive with rawCashflows. */
+  flowParams?: FlowGeneratorParams | undefined;
+  /** Replaces cashflows directly with explicit values. Mutually exclusive with flowParams. */
+  rawCashflows?: RawCashflow[] | undefined;
 }
 
 export class AdminError extends Error {
@@ -135,19 +139,34 @@ export async function updateInstrument(
   }
 
   // Update metadata
-  if (input.name !== undefined || input.issuer !== undefined || input.isActive !== undefined) {
-    await db
-      .update(instruments)
-      .set({
-        ...(input.name !== undefined && { name: input.name }),
-        ...(input.issuer !== undefined && { issuer: input.issuer }),
-        ...(input.isActive !== undefined && { isActive: input.isActive }),
-        updatedAt: new Date().toISOString(),
-      })
-      .where(eq(instruments.id, existing.id));
+  const metaUpdate: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+  if (input.name !== undefined) metaUpdate["name"] = input.name;
+  if (input.currency !== undefined) metaUpdate["currency"] = input.currency;
+  if (input.maturityDate !== undefined) metaUpdate["maturityDate"] = input.maturityDate;
+  if (input.issuer !== undefined) metaUpdate["issuer"] = input.issuer;
+  if (input.isActive !== undefined) metaUpdate["isActive"] = input.isActive;
+
+  if (Object.keys(metaUpdate).length > 1) {
+    await db.update(instruments).set(metaUpdate).where(eq(instruments.id, existing.id));
   }
 
-  // Regenerate cash flows if new params provided
+  // Replace cashflows from explicit JSON
+  if (input.rawCashflows !== undefined) {
+    await db.delete(cashflows).where(eq(cashflows.instrumentId, existing.id));
+    await db.delete(instrumentConfig).where(eq(instrumentConfig.instrumentId, existing.id));
+    await db.insert(cashflows).values(
+      input.rawCashflows.map((cf) => ({
+        instrumentId: existing.id,
+        paymentDate: cf.paymentDate,
+        coupon: cf.coupon,
+        amortization: cf.amortization,
+        residual: cf.residual,
+      })),
+    );
+    return { ticker: existing.ticker, flowCount: input.rawCashflows.length };
+  }
+
+  // Regenerate cashflows via flow generator
   if (input.flowParams !== undefined) {
     const flows = generateFlows(input.flowParams);
 
@@ -155,11 +174,9 @@ export async function updateInstrument(
       throw new AdminError("Flow generation produced no cash flows. Check the parameters.");
     }
 
-    // Delete existing flows and config
     await db.delete(cashflows).where(eq(cashflows.instrumentId, existing.id));
     await db.delete(instrumentConfig).where(eq(instrumentConfig.instrumentId, existing.id));
 
-    // Insert fresh flows and config
     await db.insert(cashflows).values(
       flows.map((cf) => ({
         instrumentId: existing.id,

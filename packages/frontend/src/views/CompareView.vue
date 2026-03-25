@@ -2,13 +2,10 @@
 import { ref, computed, watch } from "vue";
 import type { CompareEntry, Instrument } from "@investor-app/shared";
 import { fetchCompare, fetchInstruments } from "@/services/api";
-import { useCurrencyStore } from "@/stores/currencyStore";
 import YieldCurveChart from "@/components/charts/YieldCurveChart.vue";
 import CompareTable from "@/components/compare/CompareTable.vue";
 import InstrumentSelector from "@/components/compare/InstrumentSelector.vue";
 import ErrorBanner from "@/components/ui/ErrorBanner.vue";
-
-const currencyStore = useCurrencyStore();
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
@@ -46,7 +43,7 @@ async function runCompare(): Promise<void> {
   error.value = null;
 
   try {
-    const result = await fetchCompare(selectedTickers.value, currencyStore.currency);
+    const result = await fetchCompare(selectedTickers.value);
     entries.value = result.entries;
     failed.value = result.failed ?? [];
   } catch (err: unknown) {
@@ -56,7 +53,7 @@ async function runCompare(): Promise<void> {
   }
 }
 
-watch([selectedTickers, () => currencyStore.currency], runCompare, {
+watch(selectedTickers, runCompare, {
   deep: true,
 });
 
@@ -133,7 +130,7 @@ const hasResults = computed(() => entries.value.length > 0);
       <!-- Compare table -->
       <section class="result-section">
         <h2 class="section-title">Tabla comparativa</h2>
-        <CompareTable :entries="entries" :currency="currencyStore.currency" />
+        <CompareTable :entries="entries" />
       </section>
     </template>
   </div>

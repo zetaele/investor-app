@@ -14,7 +14,7 @@ export class CompareService {
 
   async compareInstruments(
     tickers: string[],
-    displayCurrency: Currency,
+    displayCurrency: Currency | undefined,
   ): Promise<{ entries: CompareEntry[]; failed: string[] }> {
     const results = await Promise.allSettled(
       tickers.map((ticker) => this.bondsService.analyzeInstrument(ticker, displayCurrency)),

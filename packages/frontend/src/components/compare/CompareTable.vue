@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import type { CompareEntry, Currency } from "@investor-app/shared";
+import type { CompareEntry } from "@investor-app/shared";
 import {
   formatYield,
   formatPrice,
@@ -11,7 +11,6 @@ import {
 
 const props = defineProps<{
   entries: CompareEntry[];
-  currency: Currency;
 }>();
 
 const router = useRouter();
@@ -42,17 +41,17 @@ const rows: Row[] = [
   {
     label: "Precio limpio",
     tooltip: "Precio sin interés corrido",
-    getValue: (e) => formatPrice(e.calculations.cleanPrice, props.currency),
+    getValue: (e) => formatPrice(e.calculations.cleanPrice, e.currency),
   },
   {
     label: "Precio sucio",
     tooltip: "Precio efectivo del comprador",
-    getValue: (e) => formatPrice(e.calculations.dirtyPrice, props.currency),
+    getValue: (e) => formatPrice(e.calculations.dirtyPrice, e.currency),
   },
   {
     label: "Interés corrido",
     tooltip: "Cupón devengado desde el último pago",
-    getValue: (e) => formatPrice(e.calculations.accruedInterest, props.currency),
+    getValue: (e) => formatPrice(e.calculations.accruedInterest, e.currency),
   },
   {
     label: "Duration mod.",

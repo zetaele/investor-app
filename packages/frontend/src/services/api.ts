@@ -5,7 +5,6 @@ import type {
   Cashflow,
   InstrumentAnalysis,
   SimulationResult,
-  Currency,
   InstrumentType,
 } from "@investor-app/shared";
 
@@ -48,9 +47,8 @@ async function get<T>(path: string, params?: Record<string, string>): Promise<T>
 export async function fetchSimulation(
   ticker: string,
   input: { price: number } | { ytm: number },
-  displayCurrency: Currency = "USD",
 ): Promise<SimulationResult> {
-  const params: Record<string, string> = { displayCurrency };
+  const params: Record<string, string> = {};
   if ("price" in input) {
     params["price"] = String(input.price);
   } else {
@@ -63,7 +61,7 @@ export async function fetchSimulation(
 /** Returns all active instruments, optionally filtered. */
 export async function fetchInstruments(filters?: {
   type?: InstrumentType;
-  currency?: Currency;
+  currency?: string;
 }): Promise<Instrument[]> {
   const params: Record<string, string> = {};
   if (filters?.type !== undefined) params["type"] = filters.type;
@@ -86,13 +84,8 @@ export async function fetchCashflows(ticker: string): Promise<Cashflow[]> {
 }
 
 /** Returns the full financial analysis for an instrument. */
-export async function fetchAnalysis(
-  ticker: string,
-  displayCurrency: Currency = "USD",
-): Promise<InstrumentAnalysis> {
-  const res = await get<{ data: InstrumentAnalysis }>(`/instruments/${ticker}/analysis`, {
-    displayCurrency,
-  });
+export async function fetchAnalysis(ticker: string): Promise<InstrumentAnalysis> {
+  const res = await get<{ data: InstrumentAnalysis }>(`/instruments/${ticker}/analysis`);
   return res.data;
 }
 
@@ -101,11 +94,9 @@ export async function fetchAnalysis(
 /** Returns a side-by-side analysis for 2–5 instruments. */
 export async function fetchCompare(
   tickers: string[],
-  displayCurrency: Currency = "USD",
 ): Promise<{ entries: CompareEntry[]; failed?: string[] }> {
   const res = await get<{ data: CompareEntry[]; failed?: string[] }>("/compare", {
     tickers: tickers.join(","),
-    displayCurrency,
   });
   return { entries: res.data, failed: res.failed };
 }

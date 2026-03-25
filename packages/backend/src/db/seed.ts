@@ -62,12 +62,12 @@ function sovCashflows(
 // ── Instruments ───────────────────────────────────────────────────────────────
 
 const instrumentsData = [
-  // ── Sovereign bonds — USD ────────────────────────────────────────────────
+  // ── Sovereign bonds — ARS (sin sufijo = cotización en pesos en BYMA) ─────
   {
     ticker: "AL30",
     name: "Bono del Tesoro en Dólares 2030 (Ley Argentina)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2030-07-09",
   },
@@ -75,7 +75,7 @@ const instrumentsData = [
     ticker: "GD30",
     name: "Bono del Tesoro en Dólares 2030 (Ley Nueva York)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2030-07-09",
   },
@@ -83,7 +83,7 @@ const instrumentsData = [
     ticker: "AL35",
     name: "Bono del Tesoro en Dólares 2035 (Ley Argentina)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2035-07-09",
   },
@@ -91,7 +91,7 @@ const instrumentsData = [
     ticker: "GD35",
     name: "Bono del Tesoro en Dólares 2035 (Ley Nueva York)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2035-07-09",
   },
@@ -99,7 +99,7 @@ const instrumentsData = [
     ticker: "AL41",
     name: "Bono del Tesoro en Dólares 2041 (Ley Argentina)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2041-07-09",
   },
@@ -107,7 +107,7 @@ const instrumentsData = [
     ticker: "GD41",
     name: "Bono del Tesoro en Dólares 2041 (Ley Nueva York)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2041-07-09",
   },
@@ -115,7 +115,7 @@ const instrumentsData = [
     ticker: "GD46",
     name: "Bono del Tesoro en Dólares 2046 (Ley Nueva York)",
     type: "BOND" as const,
-    currency: "USD" as const,
+    currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2046-07-09",
   },
@@ -125,7 +125,7 @@ const instrumentsData = [
     type: "BOND" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2027-07-09",
+    maturityDate: "2027-10-29",
   },
   // ── Treasury letters — ARS (zero-coupon, discount instruments) ───────────
   {
@@ -232,13 +232,32 @@ const al41Cashflows = sovCashflows(sovDates(2026, 7, 2041, 7), 0.02125, 8);
 const gd46Cashflows = sovCashflows(sovDates(2026, 7, 2046, 7), 0.023125, 12);
 
 /**
- * AO27D — Bono del Tesoro USD 2027 (Ley Argentina)
- * Bullet structure: semi-annual coupon at 4% annual, full principal at maturity.
+ * AO27 — Bonar 2027 (Ley Argentina)
+ * Bullet: cupón 6% TNA pagadero mensualmente (6%/12 = 0.50 por c/100 nominal).
+ * Licitación inaugural feb-2026: precio de corte USD 1.004,50 / USD 1.000 VN → TIREA 5,89%.
+ * Vencimiento: 29-oct-2027. Fechas ajustadas por calendario BYMA (fin de mes hábil).
  */
 const ao27dCashflows: CF[] = [
-  { paymentDate: "2026-07-09", coupon: 2.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-01-09", coupon: 2.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-07-09", coupon: 2.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-03-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-04-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-05-29", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-06-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-07-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-08-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-09-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-10-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-11-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-12-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-01-29", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-02-26", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-03-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-04-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-05-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-06-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-07-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-08-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-09-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-10-29", coupon: 0.5, amortization: 100.0, residual: 0.0 },
 ];
 
 /**

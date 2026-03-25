@@ -26,24 +26,31 @@ export class BondsService {
     private readonly fxService: FxService,
   ) {}
 
-  async analyzeInstrument(ticker: string, displayCurrency: Currency): Promise<InstrumentAnalysis> {
+  async analyzeInstrument(
+    ticker: string,
+    displayCurrency: Currency | undefined,
+  ): Promise<InstrumentAnalysis> {
     // 1. Load static data (throws InstrumentNotFoundError if not found)
     const [instrument, cashflows] = await Promise.all([
       getInstrument(ticker),
       getInstrumentCashflows(ticker),
     ]);
 
-    // 2. Fetch market price (from cache or BYMA)
-    const marketPrice = await this.priceCache.getPrice(ticker);
+    // Default to the instrument's own trading currency — no conversion needed
+    const effectiveCurrency = displayCurrency ?? instrument.currency;
+
+    // 2. Fetch market price (from cache or BYMA) — pass instrument currency so it's cached correctly
+    const priceCurrency = instrument.currency === "ARS" ? "ARS" : "USD";
+    const marketPrice = await this.priceCache.getPrice(ticker, priceCurrency);
 
     // 3. Convert price to display currency if needed
     let displayPrice = marketPrice.price;
-    if (displayCurrency !== instrument.currency) {
+    if (effectiveCurrency !== instrument.currency) {
       const rates = await this.fxService.getRates();
       displayPrice = this.convertPrice(
         marketPrice.price,
         instrument.currency,
-        displayCurrency,
+        effectiveCurrency,
         rates.mep.rate,
       );
     }
@@ -73,7 +80,7 @@ export class BondsService {
       },
       calculations,
       cashflows: cashflowsWithPV,
-      displayCurrency,
+      displayCurrency: effectiveCurrency,
     };
   }
 
@@ -90,12 +97,14 @@ export class BondsService {
   async simulate(
     ticker: string,
     input: { price: number } | { ytm: number },
-    displayCurrency: Currency,
+    displayCurrency: Currency | undefined,
   ): Promise<SimulationResult> {
     const [instrument, cashflows] = await Promise.all([
       getInstrument(ticker),
       getInstrumentCashflows(ticker),
     ]);
+
+    const effectiveCurrency = displayCurrency ?? instrument.currency;
 
     const settlement = new Date();
     settlement.setDate(settlement.getDate() + 1);
@@ -107,11 +116,11 @@ export class BondsService {
     if ("price" in input) {
       // price → YTM: convert input price to instrument currency for calculation
       let calcPrice = input.price;
-      if (displayCurrency !== instrument.currency) {
+      if (effectiveCurrency !== instrument.currency) {
         const rates = await this.fxService.getRates();
         calcPrice = this.convertPrice(
           input.price,
-          displayCurrency,
+          effectiveCurrency,
           instrument.currency,
           rates.mep.rate,
         );
@@ -122,12 +131,12 @@ export class BondsService {
     } else {
       // YTM → price: solve theoretical price in instrument currency, then convert to display
       dirtyPrice = calcPriceFromYTM(cashflows, settlement, input.ytm);
-      if (displayCurrency !== instrument.currency) {
+      if (effectiveCurrency !== instrument.currency) {
         const rates = await this.fxService.getRates();
         dirtyPrice = this.convertPrice(
           dirtyPrice,
           instrument.currency,
-          displayCurrency,
+          effectiveCurrency,
           rates.mep.rate,
         );
       }

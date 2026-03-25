@@ -3,7 +3,6 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import type { InstrumentAnalysis } from "@investor-app/shared";
 import { fetchAnalysis } from "@/services/api";
-import { useCurrencyStore } from "@/stores/currencyStore";
 import {
   formatYield,
   formatPrice,
@@ -19,7 +18,6 @@ import ErrorBanner from "@/components/ui/ErrorBanner.vue";
 
 const props = defineProps<{ ticker: string }>();
 const router = useRouter();
-const currencyStore = useCurrencyStore();
 
 const analysis = ref<InstrumentAnalysis | null>(null);
 const loading = ref(true);
@@ -29,7 +27,7 @@ async function load(): Promise<void> {
   loading.value = true;
   error.value = null;
   try {
-    analysis.value = await fetchAnalysis(props.ticker, currencyStore.currency);
+    analysis.value = await fetchAnalysis(props.ticker);
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : "Error al cargar el instrumento.";
   } finally {
@@ -37,7 +35,7 @@ async function load(): Promise<void> {
   }
 }
 
-watch(() => [props.ticker, currencyStore.currency], load);
+watch(() => props.ticker, load);
 onMounted(load);
 
 const TYPE_LABELS: Record<string, string> = {

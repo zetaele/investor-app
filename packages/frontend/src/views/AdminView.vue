@@ -2,7 +2,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import type { FlowGeneratorParams } from "@investor-app/shared";
-import { fetchInstruments } from "@/services/api";
+import { fetchInstruments, fetchCashflows } from "@/services/api";
 import type { Instrument } from "@investor-app/shared";
 import { formatDate } from "@/composables/useFormat";
 import {
@@ -11,10 +11,12 @@ import {
   clearAdminToken,
   verifyAdminToken,
   adminCreateInstrument,
+  adminUpdateInstrument,
   adminDeactivateInstrument,
   adminPreviewFlows,
   AdminApiError,
 } from "@/services/adminApi";
+import type { RawCashflow } from "@/services/adminApi";
 import type { GeneratedCashflow, FlowType } from "@/services/adminTypes";
 import { FLOW_TYPE_LABELS, FLOW_TYPE_DESCRIPTIONS } from "@/services/adminTypes";
 
@@ -243,6 +245,195 @@ watch(
   },
 );
 
+// ── Edit ──────────────────────────────────────────────────────────────────────
+
+const editingInstrument = ref<Instrument | null>(null);
+const editTab = ref<"meta" | "cashflows">("meta");
+const editCfMode = ref<"raw" | "generator">("raw");
+const editLoading = ref(false);
+const editError = ref<string | null>(null);
+const editSuccess = ref<string | null>(null);
+
+const editMeta = ref({
+  name: "",
+  currency: "ARS" as "ARS" | "USD" | "USD_LINKED",
+  maturityDate: "",
+  issuer: "",
+});
+
+const rawCfInput = ref("");
+const rawCfParsed = ref<RawCashflow[] | null>(null);
+const rawCfParseError = ref<string | null>(null);
+
+// Generator fields for edit (reuse same structure as create form)
+const editFlowType = ref<FlowType>("BULLET");
+const editCouponRate = ref("");
+const editCouponFreq = ref("2");
+const editFirstCouponDate = ref("");
+const editCouponScheduleRaw = ref("");
+const editAmortScheduleRaw = ref("");
+const editIssueDate = ref("");
+const editPreviewResult = ref<{
+  data: GeneratedCashflow[];
+  count: number;
+  totalCoupon: number;
+  totalAmortization: number;
+} | null>(null);
+const editPreviewLoading = ref(false);
+const editPreviewError = ref<string | null>(null);
+
+async function openEdit(instrument: Instrument): Promise<void> {
+  editingInstrument.value = instrument;
+  editTab.value = "meta";
+  editCfMode.value = "raw";
+  editError.value = null;
+  editSuccess.value = null;
+  rawCfParsed.value = null;
+  rawCfParseError.value = null;
+  editPreviewResult.value = null;
+
+  editMeta.value = {
+    name: instrument.name,
+    currency: instrument.currency,
+    maturityDate: instrument.maturityDate.slice(0, 10),
+    issuer: instrument.issuer ?? "",
+  };
+
+  // Load current cashflows as editable JSON
+  try {
+    const cfs = await fetchCashflows(instrument.ticker);
+    rawCfInput.value = JSON.stringify(
+      cfs.map((cf) => ({
+        paymentDate: cf.paymentDate.slice(0, 10),
+        coupon: cf.coupon,
+        amortization: cf.amortization,
+        residual: cf.residual,
+      })),
+      null,
+      2,
+    );
+  } catch {
+    rawCfInput.value = "[]";
+  }
+
+  showForm.value = false;
+}
+
+function closeEdit(): void {
+  editingInstrument.value = null;
+}
+
+function parseRawCf(): void {
+  rawCfParseError.value = null;
+  rawCfParsed.value = null;
+  try {
+    const parsed = JSON.parse(rawCfInput.value) as unknown;
+    if (!Array.isArray(parsed)) throw new Error("Debe ser un array JSON");
+    for (const item of parsed) {
+      if (
+        typeof item !== "object" ||
+        item === null ||
+        typeof (item as Record<string, unknown>)["paymentDate"] !== "string" ||
+        typeof (item as Record<string, unknown>)["coupon"] !== "number" ||
+        typeof (item as Record<string, unknown>)["amortization"] !== "number" ||
+        typeof (item as Record<string, unknown>)["residual"] !== "number"
+      ) {
+        throw new Error("Cada item debe tener: paymentDate (string), coupon, amortization, residual (numbers)");
+      }
+    }
+    rawCfParsed.value = parsed as RawCashflow[];
+  } catch (e) {
+    rawCfParseError.value = e instanceof Error ? e.message : "JSON inválido";
+  }
+}
+
+async function runEditPreview(): Promise<void> {
+  editPreviewResult.value = null;
+  editPreviewError.value = null;
+  editPreviewLoading.value = true;
+
+  try {
+    const params = buildEditFlowParams();
+    if (params === null) {
+      editPreviewError.value = "Completá los campos requeridos.";
+      return;
+    }
+    editPreviewResult.value = await adminPreviewFlows(params);
+  } catch (err) {
+    editPreviewError.value = err instanceof AdminApiError ? err.message : "Error al previsualizar.";
+  } finally {
+    editPreviewLoading.value = false;
+  }
+}
+
+function buildEditFlowParams(): FlowGeneratorParams | null {
+  if (!editIssueDate.value || !editingInstrument.value) return null;
+  const base: FlowGeneratorParams = {
+    flowType: editFlowType.value,
+    issueDate: editIssueDate.value,
+    maturityDate: editMeta.value.maturityDate || editingInstrument.value.maturityDate.slice(0, 10),
+    faceValue: 100,
+  };
+  if (editCouponRate.value) {
+    base.couponRate = parseFloat(editCouponRate.value) / 100;
+    base.couponFrequency = parseInt(editCouponFreq.value) as 1 | 2 | 4 | 12;
+  }
+  if (editCouponScheduleRaw.value.trim()) {
+    try { base.couponSchedule = JSON.parse(editCouponScheduleRaw.value); } catch { return null; }
+  } else if (editFirstCouponDate.value) {
+    base.firstCouponDate = editFirstCouponDate.value;
+  }
+  if (editAmortScheduleRaw.value.trim()) {
+    try { base.amortizationSchedule = JSON.parse(editAmortScheduleRaw.value); } catch { return null; }
+  }
+  return base;
+}
+
+async function submitEdit(): Promise<void> {
+  if (!editingInstrument.value) return;
+  editError.value = null;
+  editSuccess.value = null;
+  editLoading.value = true;
+
+  try {
+    const instrument = editingInstrument.value;
+    const meta = editMeta.value;
+
+    const payload: Parameters<typeof adminUpdateInstrument>[1] = {};
+    if (meta.name !== instrument.name) payload.name = meta.name;
+    if (meta.currency !== instrument.currency) payload.currency = meta.currency;
+    if (meta.maturityDate !== instrument.maturityDate.slice(0, 10)) payload.maturityDate = meta.maturityDate;
+    if (meta.issuer !== (instrument.issuer ?? "")) payload.issuer = meta.issuer;
+
+    if (editTab.value === "cashflows") {
+      if (editCfMode.value === "raw") {
+        if (!rawCfParsed.value) { editError.value = "Parseá los flujos primero."; return; }
+        payload.rawCashflows = rawCfParsed.value;
+      } else {
+        const params = buildEditFlowParams();
+        if (!params || !editPreviewResult.value) {
+          editError.value = "Previsualizá los flujos antes de guardar.";
+          return;
+        }
+        payload.flowParams = params;
+      }
+    }
+
+    const result = await adminUpdateInstrument(instrument.ticker, payload);
+    const flowMsg = result !== undefined && "flowCount" in (result as object)
+      ? ` · ${(result as { flowCount: number }).flowCount} flujos actualizados`
+      : "";
+    editSuccess.value = `✓ ${instrument.ticker} actualizado${flowMsg}.`;
+    await loadInstruments();
+    // Refresh maturityDate in place
+    editingInstrument.value = instruments.value.find((i) => i.ticker === instrument.ticker) ?? null;
+  } catch (err) {
+    editError.value = err instanceof AdminApiError ? err.message : "Error al guardar.";
+  } finally {
+    editLoading.value = false;
+  }
+}
+
 // ── Submit ────────────────────────────────────────────────────────────────────
 
 async function submit(): Promise<void> {
@@ -366,7 +557,8 @@ async function submit(): Promise<void> {
                     {{ i.isActive ? "Activo" : "Inactivo" }}
                   </span>
                 </td>
-                <td>
+                <td class="actions-cell">
+                  <button class="btn-edit-sm" @click="openEdit(i)">Editar</button>
                   <button v-if="i.isActive" class="btn-danger-sm" @click="deactivate(i.ticker)">
                     Desactivar
                   </button>
@@ -374,6 +566,283 @@ async function submit(): Promise<void> {
               </tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- Edit panel -->
+      <section v-if="editingInstrument" class="admin-section form-section">
+        <div class="section-header">
+          <h2 class="section-title font-display">
+            Editar
+            <span class="font-mono" style="color: var(--color-accent)">{{
+              editingInstrument.ticker
+            }}</span>
+          </h2>
+          <button class="btn-secondary" @click="closeEdit">✕ Cerrar</button>
+        </div>
+
+        <div v-if="editSuccess" class="success-banner">{{ editSuccess }}</div>
+        <p v-if="editError" class="form-error">{{ editError }}</p>
+
+        <!-- Tabs -->
+        <div class="edit-tabs">
+          <button
+            class="edit-tab"
+            :class="{ active: editTab === 'meta' }"
+            @click="editTab = 'meta'"
+          >
+            Metadatos
+          </button>
+          <button
+            class="edit-tab"
+            :class="{ active: editTab === 'cashflows' }"
+            @click="editTab = 'cashflows'"
+          >
+            Flujos de caja
+          </button>
+        </div>
+
+        <!-- Meta tab -->
+        <div v-if="editTab === 'meta'" class="form-grid">
+          <div class="form-group form-group--wide">
+            <label class="field-label">Nombre</label>
+            <input v-model="editMeta.name" class="field-input" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Moneda</label>
+            <select v-model="editMeta.currency" class="field-input">
+              <option value="USD">USD</option>
+              <option value="ARS">ARS</option>
+              <option value="USD_LINKED">USD-linked</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="field-label">Vencimiento</label>
+            <input v-model="editMeta.maturityDate" class="field-input" type="date" />
+          </div>
+          <div class="form-group form-group--wide">
+            <label class="field-label">Emisor</label>
+            <input v-model="editMeta.issuer" class="field-input" />
+          </div>
+        </div>
+
+        <!-- Cashflows tab -->
+        <div v-else class="cashflows-tab">
+          <div class="cf-mode-toggle">
+            <button
+              class="edit-tab"
+              :class="{ active: editCfMode === 'raw' }"
+              @click="editCfMode = 'raw'; editPreviewResult = null"
+            >
+              JSON directo
+            </button>
+            <button
+              class="edit-tab"
+              :class="{ active: editCfMode === 'generator' }"
+              @click="editCfMode = 'generator'; rawCfParsed = null"
+            >
+              Generador
+            </button>
+          </div>
+
+          <!-- Raw JSON mode -->
+          <template v-if="editCfMode === 'raw'">
+            <div class="form-group form-group--full">
+              <label class="field-label">
+                Flujos de caja — JSON
+                <span class="field-hint">
+                  Array de {paymentDate, coupon, amortization, residual (0–1)}. Los flujos actuales
+                  están precargados para editar.
+                </span>
+              </label>
+              <textarea
+                v-model="rawCfInput"
+                class="field-input field-textarea"
+                rows="12"
+                spellcheck="false"
+              />
+            </div>
+            <p v-if="rawCfParseError" class="form-error">{{ rawCfParseError }}</p>
+            <button class="btn-secondary" @click="parseRawCf">Parsear y verificar</button>
+
+            <div v-if="rawCfParsed" class="preview-result" style="margin-top: 0.75rem">
+              <div class="preview-summary">
+                <span class="font-mono">{{ rawCfParsed.length }} flujos</span>
+                <span class="font-mono">
+                  Cupones totales:
+                  {{ rawCfParsed.reduce((s, c) => s + c.coupon, 0).toFixed(4) }}
+                </span>
+                <span class="font-mono">
+                  Amortización total:
+                  {{ rawCfParsed.reduce((s, c) => s + c.amortization, 0).toFixed(2) }}
+                </span>
+              </div>
+              <div class="table-wrapper card">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th class="text-right">Cupón</th>
+                      <th class="text-right">Amortización</th>
+                      <th class="text-right">Flujo total</th>
+                      <th class="text-right">Residual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="cf in rawCfParsed" :key="cf.paymentDate" class="table-row">
+                      <td class="font-mono">{{ formatDate(cf.paymentDate) }}</td>
+                      <td class="font-mono text-right" style="color: var(--color-accent)">
+                        {{ cf.coupon > 0 ? cf.coupon.toFixed(4) : "—" }}
+                      </td>
+                      <td class="font-mono text-right" style="color: var(--color-positive)">
+                        {{ cf.amortization > 0 ? cf.amortization.toFixed(2) : "—" }}
+                      </td>
+                      <td class="font-mono text-right">
+                        {{ (cf.coupon + cf.amortization).toFixed(4) }}
+                      </td>
+                      <td class="font-mono text-right">{{ (cf.residual * 100).toFixed(0) }}%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </template>
+
+          <!-- Generator mode -->
+          <template v-else>
+            <div class="form-grid" style="margin-top: 0.5rem">
+              <div class="form-group form-group--full">
+                <label class="field-label">Estructura de flujo</label>
+                <div class="flow-type-grid">
+                  <button
+                    v-for="(label, type) in FLOW_TYPE_LABELS"
+                    :key="type"
+                    class="flow-type-btn"
+                    :class="{ active: editFlowType === type }"
+                    @click="editFlowType = type as FlowType; editPreviewResult = null"
+                  >
+                    <span class="flow-type-name">{{ label }}</span>
+                    <span class="flow-type-desc">{{
+                      FLOW_TYPE_DESCRIPTIONS[type as FlowType]
+                    }}</span>
+                  </button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Fecha de emisión *</label>
+                <input v-model="editIssueDate" class="field-input" type="date" />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Tasa de cupón anual (%)</label>
+                <input
+                  v-model="editCouponRate"
+                  class="field-input"
+                  type="number"
+                  step="0.01"
+                  @input="editPreviewResult = null"
+                />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Frecuencia</label>
+                <select v-model="editCouponFreq" class="field-input">
+                  <option value="1">Anual</option>
+                  <option value="2">Semestral</option>
+                  <option value="4">Trimestral</option>
+                  <option value="12">Mensual</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Fecha primer cupón</label>
+                <input v-model="editFirstCouponDate" class="field-input" type="date" />
+              </div>
+              <div class="form-group form-group--full">
+                <label class="field-label">
+                  Fechas exactas de cupón — JSON (opcional)
+                  <span class="field-hint"
+                    >Sobreescribe la generación automática. Ej:
+                    [{"date":"2026-03-31"},{"date":"2026-09-30"}]</span
+                  >
+                </label>
+                <textarea
+                  v-model="editCouponScheduleRaw"
+                  class="field-input field-textarea"
+                  rows="3"
+                  @input="editPreviewResult = null"
+                />
+              </div>
+            </div>
+
+            <div class="preview-section" style="margin-top: 0.75rem">
+              <div class="preview-header">
+                <h3 class="preview-title">Preview de flujos</h3>
+                <button
+                  class="btn-secondary"
+                  :disabled="editPreviewLoading"
+                  @click="runEditPreview"
+                >
+                  {{ editPreviewLoading ? "Calculando..." : "Previsualizar" }}
+                </button>
+              </div>
+              <p v-if="editPreviewError" class="form-error">{{ editPreviewError }}</p>
+              <div v-if="editPreviewResult" class="preview-result">
+                <div class="preview-summary">
+                  <span class="font-mono">{{ editPreviewResult.count }} flujos</span>
+                  <span class="font-mono"
+                    >Cupones: {{ editPreviewResult.totalCoupon.toFixed(4) }}</span
+                  >
+                  <span class="font-mono"
+                    >Amortización: {{ editPreviewResult.totalAmortization.toFixed(2) }}</span
+                  >
+                </div>
+                <div class="table-wrapper card">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th class="text-right">Cupón</th>
+                        <th class="text-right">Amortización</th>
+                        <th class="text-right">Flujo total</th>
+                        <th class="text-right">Residual</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="cf in editPreviewResult.data"
+                        :key="cf.paymentDate"
+                        class="table-row"
+                      >
+                        <td class="font-mono">{{ formatDate(cf.paymentDate) }}</td>
+                        <td class="font-mono text-right" style="color: var(--color-accent)">
+                          {{ cf.coupon > 0 ? cf.coupon.toFixed(4) : "—" }}
+                        </td>
+                        <td class="font-mono text-right" style="color: var(--color-positive)">
+                          {{ cf.amortization > 0 ? cf.amortization.toFixed(2) : "—" }}
+                        </td>
+                        <td class="font-mono text-right">
+                          {{ (cf.coupon + cf.amortization).toFixed(4) }}
+                        </td>
+                        <td class="font-mono text-right">
+                          {{ (cf.residual * 100).toFixed(0) }}%
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Edit actions -->
+        <div class="form-actions">
+          <button class="btn-secondary" @click="closeEdit">Cancelar</button>
+          <button
+            class="btn-primary"
+            :disabled="editLoading || (editTab === 'cashflows' && editCfMode === 'raw' && !rawCfParsed) || (editTab === 'cashflows' && editCfMode === 'generator' && !editPreviewResult)"
+            @click="submitEdit"
+          >
+            {{ editLoading ? "Guardando..." : "Guardar cambios" }}
+          </button>
         </div>
       </section>
 
@@ -1047,5 +1516,64 @@ async function submit(): Promise<void> {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   padding: 1rem 0;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-edit-sm {
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+.btn-edit-sm:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.edit-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0;
+}
+
+.edit-tab {
+  all: unset;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--transition-base);
+}
+.edit-tab:hover {
+  color: var(--color-text-primary);
+}
+.edit-tab.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.cashflows-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cf-mode-toggle {
+  display: flex;
+  gap: 0.25rem;
 }
 </style>

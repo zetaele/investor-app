@@ -56,12 +56,29 @@ const createInstrumentSchema = z.object({
   flowParams: flowParamsSchema,
 });
 
-const updateInstrumentSchema = z.object({
-  name: z.string().min(3).max(200).optional(),
-  issuer: z.string().optional(),
-  isActive: z.boolean().optional(),
-  flowParams: flowParamsSchema.optional(),
+const rawCashflowSchema = z.object({
+  paymentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+  coupon: z.number().min(0),
+  amortization: z.number().min(0),
+  residual: z.number().min(0).max(1),
 });
+
+const updateInstrumentSchema = z
+  .object({
+    name: z.string().min(3).max(200).optional(),
+    currency: z.enum(["ARS", "USD", "USD_LINKED"]).optional(),
+    maturityDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    issuer: z.string().optional(),
+    isActive: z.boolean().optional(),
+    flowParams: flowParamsSchema.optional(),
+    rawCashflows: z.array(rawCashflowSchema).min(1).optional(),
+  })
+  .refine((d) => !(d.flowParams !== undefined && d.rawCashflows !== undefined), {
+    message: "Provide either flowParams or rawCashflows, not both",
+  });
 
 const tickerParamSchema = z.object({
   ticker: z.string().regex(/^[A-Z0-9]{2,10}$/),

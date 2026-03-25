@@ -82,11 +82,21 @@ export interface CreateInstrumentPayload {
   flowParams: FlowGeneratorParams;
 }
 
+export interface RawCashflow {
+  paymentDate: string;
+  coupon: number;
+  amortization: number;
+  residual: number;
+}
+
 export interface UpdateInstrumentPayload {
   name?: string;
+  currency?: "ARS" | "USD" | "USD_LINKED";
+  maturityDate?: string;
   issuer?: string;
   isActive?: boolean;
   flowParams?: FlowGeneratorParams;
+  rawCashflows?: RawCashflow[];
 }
 
 /** Creates a new instrument with generated cash flows. */

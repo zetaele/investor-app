@@ -23,17 +23,17 @@ export class PriceCacheService {
    * Returns the current market price for a ticker.
    * Serves from cache if available and fresh; otherwise fetches from BYMA.
    */
-  async getPrice(ticker: string): Promise<MarketPrice> {
+  async getPrice(ticker: string, currency: "ARS" | "USD" = "USD"): Promise<MarketPrice> {
     const cached = await this.getFromCache(ticker);
     if (cached !== null) return cached;
 
     const fresh = await this.bymaClient.getPrice(ticker);
-    await this.saveToCache(fresh.ticker, fresh.price, "USD");
+    await this.saveToCache(fresh.ticker, fresh.price, currency);
 
     return {
       ticker: fresh.ticker,
       price: fresh.price,
-      currency: "USD",
+      currency,
       fetchedAt: fresh.updatedAt,
     };
   }

@@ -27,7 +27,7 @@ export const tickerParamSchema = z.object({
 
 /** Query params for the analysis endpoint. */
 export const analysisQuerySchema = z.object({
-  displayCurrency: currencySchema.optional().default("USD"),
+  displayCurrency: currencySchema.optional(),
 });
 
 /**
@@ -38,7 +38,7 @@ export const simulateQuerySchema = z
   .object({
     price: z.coerce.number().positive().optional(),
     ytm: z.coerce.number().min(-0.999).max(100).optional(),
-    displayCurrency: currencySchema.optional().default("USD"),
+    displayCurrency: currencySchema.optional(),
   })
   .refine((d) => (d.price !== undefined) !== (d.ytm !== undefined), {
     message: "Provide exactly one of: price or ytm",
@@ -55,5 +55,5 @@ export const compareQuerySchema = z.object({
         .min(2, "At least 2 tickers required")
         .max(5, "Maximum 5 tickers allowed"),
     ),
-  displayCurrency: currencySchema.optional().default("USD"),
+  displayCurrency: currencySchema.optional(),
 });

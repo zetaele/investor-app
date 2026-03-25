@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from "vue-router";
 import { useThemeStore } from "@/stores/themeStore";
-import { useCurrencyStore } from "@/stores/currencyStore";
 
 const route = useRoute();
 const themeStore = useThemeStore();
-const currencyStore = useCurrencyStore();
 </script>
 
 <template>
@@ -52,18 +50,6 @@ const currencyStore = useCurrencyStore();
 
       <!-- Controls -->
       <div class="nav-controls">
-        <!-- Currency toggle: hidden on Letras (always ARS) -->
-        <button
-          v-if="route.name !== 'letras'"
-          class="control-btn currency-btn"
-          :title="`Cambiar a ${currencyStore.currency === 'USD' ? 'ARS' : 'USD'}`"
-          @click="currencyStore.toggle()"
-        >
-          <span class="font-mono text-sm font-semibold">
-            {{ currencyStore.currency }}
-          </span>
-        </button>
-
         <!-- Theme toggle -->
         <button
           class="control-btn theme-btn"
@@ -178,15 +164,6 @@ const currencyStore = useCurrencyStore();
   border-color: var(--color-accent);
   color: var(--color-accent);
   background-color: var(--color-accent-dim);
-}
-
-.currency-btn {
-  width: auto;
-  padding: 0 0.625rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
 }
 
 @media (max-width: 640px) {
