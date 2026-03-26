@@ -1,6 +1,6 @@
 import { eq, and, gt } from "drizzle-orm";
 import { db } from "../../db/index.js";
-import { cashflows, instruments } from "../../db/schema.js";
+import { cashflows, instrumentConfig, instruments } from "../../db/schema.js";
 import type { Cashflow, Instrument } from "@investor-app/shared";
 
 /**
@@ -54,4 +54,19 @@ export async function findCashflowsByInstrumentId(instrumentId: number): Promise
     .from(cashflows)
     .where(eq(cashflows.instrumentId, instrumentId))
     .orderBy(cashflows.paymentDate);
+}
+
+/**
+ * Fetches the instrument config row for a given instrument, if it exists.
+ * Returns undefined for instruments without a config entry (most regular bonds/ONs).
+ */
+export async function findInstrumentConfig(
+  instrumentId: number,
+): Promise<typeof instrumentConfig.$inferSelect | undefined> {
+  const result = await db
+    .select()
+    .from(instrumentConfig)
+    .where(eq(instrumentConfig.instrumentId, instrumentId))
+    .limit(1);
+  return result[0];
 }

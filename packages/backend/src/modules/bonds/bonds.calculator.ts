@@ -310,6 +310,14 @@ export function calcBondAnalysis(
   cashflows: Cashflow[],
   cleanPrice: number,
   settlement: Date,
+  options?: {
+    /**
+     * Current valor técnico (VT) per 100 VN nominal.
+     * When provided, paridad = price / valorTecnico (correct for CAPITALIZABLE, TAMAR, DUAL).
+     * Defaults to 100 (correct for regular bonds where face value = 100).
+     */
+    valorTecnico?: number;
+  },
 ): BondCalculations & { cashflowsWithPV: CashflowWithPV[] } {
   const accruedInterest = calcAccruedInterest(cashflows, settlement);
   const dirtyPrice = cleanPrice + accruedInterest;
@@ -328,7 +336,7 @@ export function calcBondAnalysis(
     cleanPrice: Math.round(cleanPrice * 10000) / 10000,
     dirtyPrice: Math.round(dirtyPrice * 10000) / 10000,
     accruedInterest: Math.round(accruedInterest * 10000) / 10000,
-    parityPct: Math.round((cleanPrice / 100) * 10000) / 10000,
+    parityPct: Math.round((cleanPrice / (options?.valorTecnico ?? 100)) * 10000) / 10000,
     tna: isNaN(tna) ? 0 : Math.round(tna * 1e7) / 1e7,
     currentYield: isNaN(currentYield) ? 0 : Math.round(currentYield * 1e7) / 1e7,
     cashflowsWithPV,

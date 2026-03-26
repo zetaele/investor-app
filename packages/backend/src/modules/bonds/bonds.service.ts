@@ -4,6 +4,7 @@ import { PriceCacheService } from "../byma/byma.price-cache.service.js";
 import {
   getInstrument,
   getInstrumentCashflows,
+  getValorTecnico,
   InstrumentNotFoundError,
 } from "../instruments/instruments.service.js";
 import type { FxService } from "../fx/fx.service.js";
@@ -31,9 +32,10 @@ export class BondsService {
     displayCurrency: Currency | undefined,
   ): Promise<InstrumentAnalysis> {
     // 1. Load static data (throws InstrumentNotFoundError if not found)
-    const [instrument, cashflows] = await Promise.all([
+    const [instrument, cashflows, valorTecnico] = await Promise.all([
       getInstrument(ticker),
       getInstrumentCashflows(ticker),
+      getValorTecnico(ticker),
     ]);
 
     // Default to the instrument's own trading currency — no conversion needed
@@ -64,6 +66,7 @@ export class BondsService {
       cashflows,
       displayPrice,
       settlement,
+      valorTecnico !== undefined ? { valorTecnico } : undefined,
     );
 
     // Include past cashflows (PV = 0) so the UI can optionally display them.
@@ -104,9 +107,10 @@ export class BondsService {
     input: { price: number } | { ytm: number },
     displayCurrency: Currency | undefined,
   ): Promise<SimulationResult> {
-    const [instrument, cashflows] = await Promise.all([
+    const [instrument, cashflows, valorTecnico] = await Promise.all([
       getInstrument(ticker),
       getInstrumentCashflows(ticker),
+      getValorTecnico(ticker),
     ]);
 
     const effectiveCurrency = displayCurrency ?? instrument.currency;
@@ -153,6 +157,7 @@ export class BondsService {
       cashflows,
       dirtyPrice,
       settlement,
+      valorTecnico !== undefined ? { valorTecnico } : undefined,
     );
 
     return {

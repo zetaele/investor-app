@@ -3,6 +3,7 @@ import {
   findAllInstruments,
   findCashflowsByInstrumentId,
   findInstrumentByTicker,
+  findInstrumentConfig,
 } from "./instruments.repository.js";
 
 export class InstrumentNotFoundError extends Error {
@@ -44,4 +45,15 @@ export async function getInstrument(ticker: string): Promise<Instrument> {
 export async function getInstrumentCashflows(ticker: string): Promise<Cashflow[]> {
   const instrument = await getInstrument(ticker);
   return findCashflowsByInstrumentId(instrument.id);
+}
+
+/**
+ * Returns the current valor técnico (VT) per 100 VN for instruments that have
+ * an instrumentConfig row with adjustmentCoefficient set (CAPITALIZABLE, TAMAR, DUAL, CER).
+ * Returns undefined for regular bonds and ONs.
+ */
+export async function getValorTecnico(ticker: string): Promise<number | undefined> {
+  const instrument = await getInstrument(ticker);
+  const config = await findInstrumentConfig(instrument.id);
+  return config?.adjustmentCoefficient ?? undefined;
 }

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter @investor-app/shared build)",
+      "Bash(pnpm --filter @investor-app/backend typecheck)",
+      "Bash(pnpm tsc:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node_modules/.bin/tsc -p packages/backend/tsconfig.json --noEmit)",
+      "Bash(find /Users/zeta/Projects/investor-app -name tsc -path */node_modules/.bin/*)",
+      "Bash(pnpm db:seed)",
+      "Bash(pnpm --filter @investor-app/backend db:seed)",
+      "Bash(../../node_modules/.pnpm/node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.pnpm/node_modules/.bin/tsc -p packages/frontend/tsconfig.app.json --noEmit)",
+      "Bash(node_modules/.pnpm/node_modules/.bin/tsc -p packages/backend/tsconfig.json --noEmit)",
+      "Bash(npm run:*)",
+      "Bash(npx vitest:*)"
+    ]
+  }
+}

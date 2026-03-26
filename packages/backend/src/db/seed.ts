@@ -663,10 +663,25 @@ const cashflowMap: Record<string, CF[]> = {
  * adjustmentCoefficient = valor par (snapshot 2026-03-26).
  * Updated periodically as CER index publishes new values.
  */
+/**
+ * adjustmentCoefficient = valor técnico actual (VT_now) per 100 VN nominal.
+ * Used by the calculator to derive paridad = price / VT_now.
+ * Must be refreshed periodically as VT accretes daily.
+ * Reference date: 2026-03-26.
+ */
 const cerConfigMap: Record<string, number> = {
-  TMF27: 1.043593,  // valor técnico actual (VT_now); couponRate = TAMAR actual en instrumentConfig
-  TTJ26: 152.77,    // valor técnico actual (VT_now); crece a max(LECAP+2.19%, TAMAR)
-  TTS26: 155.03,    // valor técnico actual (VT_now); crece a max(LECAP+2.17%, TAMAR)
+  // CAPITALIZABLE (LECAP / BONCAP)
+  S17A6: 106.09,    // VT=1.060938 per 1 VN → 106.09 per 100 VN
+  S30A6: 107.40,    // VT=1.074016 per 1 VN → 107.40 per 100 VN
+  S31L6: 105.13,    // VT=1.051333 per 1 VN → 105.13 per 100 VN
+  T30J6: 136.9083,  // VT per Abbaco 2026-03-26
+  // TAMAR
+  TMF27: 104.3593,  // VT=1.043593 per 1 VN → 104.36 per 100 VN
+  // DUAL
+  TTJ26: 152.77,
+  TTS26: 155.03,
+  // CER (valor par per 1 VN → multiply by 100 for per-100-VN basis? No: stored as-is,
+  // CER bonds use price=paridad×100 convention so valorTecnico not needed for them yet)
   TX28:  19.185114,
   TZX28: 3.597229,
 };
