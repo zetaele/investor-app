@@ -7,6 +7,7 @@ const props = defineProps<{
   selected: string[];
   loading: boolean;
   canAddMore: boolean;
+  allowedType?: string;
 }>();
 
 const emit = defineEmits<{
@@ -24,6 +25,7 @@ const filtered = computed(() => {
     .filter(
       (i) =>
         !props.selected.includes(i.ticker) &&
+        (props.allowedType === undefined || i.type === props.allowedType) &&
         (i.ticker.toLowerCase().includes(q) ||
           i.name.toLowerCase().includes(q) ||
           (i.issuer ?? "").toLowerCase().includes(q)),
@@ -61,6 +63,14 @@ const TYPE_COLORS: Record<string, string> = {
       </div>
       <span class="chip-count">{{ selected.length }}/5</span>
     </div>
+
+    <!-- Type lock hint -->
+    <p v-if="allowedType && selected.length > 0" class="type-lock-hint">
+      Solo podés comparar instrumentos del mismo tipo
+      <span class="type-badge" :style="{ color: TYPE_COLORS[allowedType] ?? 'inherit' }">
+        {{ allowedType }}
+      </span>
+    </p>
 
     <!-- Search input -->
     <div v-if="canAddMore" class="search-wrapper">
@@ -242,5 +252,22 @@ const TYPE_COLORS: Record<string, string> = {
   font-size: 0.8rem;
   color: var(--color-text-dim);
   margin: 0;
+}
+
+.type-lock-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+  margin: 0;
+}
+
+.type-badge {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import type { Instrument, InstrumentType } from "@investor-app/shared";
+import type { Instrument, InstrumentType, InstrumentSubtype } from "@investor-app/shared";
 import { fetchInstruments } from "@/services/api";
 import { formatDate, formatTimeToMaturity } from "@/composables/useFormat";
 import ErrorBanner from "@/components/ui/ErrorBanner.vue";
@@ -13,22 +13,45 @@ const instruments = ref<Instrument[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 const search = ref("");
+const activeSubtype = ref<InstrumentSubtype | null>(null);
 const sortKey = ref<"ticker" | "maturityDate" | "currency">("maturityDate");
 const sortDir = ref<"asc" | "desc">("asc");
 
 const SECTION_CONFIG: Record<InstrumentType, { title: string; subtitle: string }> = {
   BOND: {
-    title: "Bonos Soberanos",
+    title: "Bonos",
     subtitle: "Bonos del Tesoro Nacional · BYMA",
   },
   LETTER: {
-    title: "Letras del Tesoro",
+    title: "Letras",
     subtitle: "Letras a descuento, CER y dólar-linked · BYMA",
   },
   ON: {
     title: "Obligaciones Negociables",
     subtitle: "Bonos corporativos · BYMA",
   },
+};
+
+const SUBTYPE_LABELS: Record<InstrumentSubtype, string> = {
+  SOV_USD_ARG: "Ley Argentina",
+  SOV_USD_EXT: "Ley Extranjera",
+  BONCAP: "BONCAP",
+  DUAL: "Dual",
+  TASA_FIJA_ARS: "Tasa Fija",
+  TASA_CER: "CER",
+  TASA_FLOTANTE: "Tasa Flotante",
+  SUBSOBERANO_DL: "Sub-sob. DL",
+  SUBSOBERANO_FIJA_USD: "Sub-sob. USD",
+  SUBSOBERANO_FLOTANTE: "Sub-sob. Flotante",
+  LECAP: "LECAP",
+  LECER: "LECER",
+  TAMAR: "TAMAR",
+  LELINK: "LELINK",
+  ON_LEY_NAC: "Ley Nacional",
+  ON_LEY_EXT: "Ley Extranjera",
+  ON_UVA: "UVA",
+  ON_TAMAR: "TAMAR",
+  ON_DL: "Dollar Linked",
 };
 
 async function load(): Promise<void> {
@@ -50,14 +73,25 @@ watch(
   () => props.type,
   () => {
     search.value = "";
+    activeSubtype.value = null;
     sortKey.value = "maturityDate";
     sortDir.value = "asc";
   },
 );
 
+/** Subtypes present in the current type — drives which filter pills to show. */
+const availableSubtypes = computed((): InstrumentSubtype[] => {
+  const seen = new Set<InstrumentSubtype>();
+  for (const i of instruments.value) {
+    if (i.type === props.type) seen.add(i.subtype);
+  }
+  return [...seen];
+});
+
 const filtered = computed(() => {
   const list = instruments.value.filter((i) => {
     if (i.type !== props.type) return false;
+    if (activeSubtype.value !== null && i.subtype !== activeSubtype.value) return false;
     const q = search.value.toLowerCase();
     return (
       q === "" ||
@@ -109,6 +143,26 @@ function goToCompare(): void {
       </div>
       <button class="compare-cta" @click="goToCompare">Comparar →</button>
     </header>
+
+    <!-- Subtype filter pills (only shown when >1 subtype available) -->
+    <div v-if="availableSubtypes.length > 1" class="subtype-filters">
+      <button
+        class="filter-pill"
+        :class="{ active: activeSubtype === null }"
+        @click="activeSubtype = null"
+      >
+        Todos
+      </button>
+      <button
+        v-for="st in availableSubtypes"
+        :key="st"
+        class="filter-pill"
+        :class="{ active: activeSubtype === st }"
+        @click="activeSubtype = st"
+      >
+        {{ SUBTYPE_LABELS[st] }}
+      </button>
+    </div>
 
     <div class="controls">
       <input
@@ -387,6 +441,39 @@ td {
   padding: 3rem 0;
   color: var(--color-text-secondary);
   font-size: 0.9rem;
+}
+
+.subtype-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.filter-pill {
+  all: unset;
+  cursor: pointer;
+  padding: 0.3rem 0.875rem;
+  border-radius: 2rem;
+  border: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: transparent;
+  letter-spacing: 0.03em;
+  transition:
+    color var(--transition-base),
+    border-color var(--transition-base),
+    background var(--transition-base);
+}
+.filter-pill:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.filter-pill.active {
+  background: var(--color-accent-dim);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 @media (max-width: 640px) {

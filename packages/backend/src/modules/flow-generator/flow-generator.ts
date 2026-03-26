@@ -244,6 +244,11 @@ export function generateFlows(params: FlowGeneratorParams): GeneratedCashflow[] 
       return generateCER(params);
     case "USD_LINKED":
       return generateUSDLinked(params);
+    case "TAMAR":
+    case "DUAL":
+      // Floating-rate instruments: cashflows are pre-seeded in the DB.
+      // Generator not implemented — motor extension pending.
+      throw new Error(`flowType ${params.flowType} requires pre-seeded cashflows`);
     default: {
       const _exhaustive: never = params.flowType;
       throw new Error(`Unsupported flowType: ${String(_exhaustive)}`);

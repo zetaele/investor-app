@@ -1,6 +1,59 @@
 /** Supported instrument types in the Argentine market. */
 export type InstrumentType = "BOND" | "LETTER" | "ON";
 
+/**
+ * Market sub-categories within each InstrumentType.
+ * Drives UI grouping and filtering — independent from FlowType (which drives the calculator).
+ *
+ * Sovereign bonds (BOND):
+ *   BONCAP          — Bonos de Capitalización ARS (CAPITALIZABLE, > 1 year)
+ *   DUAL            — Bonos Duales ARS (max LECAP+spread / TAMAR)
+ *   SOV_USD_ARG     — Soberanos USD Ley Argentina
+ *   SOV_USD_EXT     — Soberanos USD Ley Extranjera
+ *   TASA_FIJA_ARS   — Soberanos Tasa Fija ARS
+ *   TASA_CER        — Soberanos Tasa Fija + CER ARS
+ *   TASA_FLOTANTE   — Soberanos Tasa Flotante ARS
+ *   SUBSOBERANO_DL  — Sub-soberanos Dollar Linked
+ *   SUBSOBERANO_FIJA_USD — Sub-soberanos Tasa Fija USD
+ *   SUBSOBERANO_FLOTANTE — Sub-soberanos Tasa Flotante ARS
+ *
+ * Treasury letters (LETTER):
+ *   LECAP           — Letras de Capitalización ARS (< 1 year)
+ *   LECER           — Letras ajustadas por CER ARS
+ *   TAMAR           — Letras/Bonos TAMAR ARS
+ *   LELINK          — Letras Dollar-Linked ARS
+ *
+ * Corporate bonds (ON):
+ *   ON_LEY_NAC      — ONs Ley Nacional
+ *   ON_LEY_EXT      — ONs Ley Extranjera
+ *   ON_UVA          — ONs ajustadas por UVA
+ *   ON_TAMAR        — ONs tasa TAMAR
+ *   ON_DL           — ONs Dollar Linked
+ */
+export type InstrumentSubtype =
+  // BOND — sovereign
+  | "BONCAP"
+  | "DUAL"
+  | "SOV_USD_ARG"
+  | "SOV_USD_EXT"
+  | "TASA_FIJA_ARS"
+  | "TASA_CER"
+  | "TASA_FLOTANTE"
+  | "SUBSOBERANO_DL"
+  | "SUBSOBERANO_FIJA_USD"
+  | "SUBSOBERANO_FLOTANTE"
+  // LETTER
+  | "LECAP"
+  | "LECER"
+  | "TAMAR"
+  | "LELINK"
+  // ON
+  | "ON_LEY_NAC"
+  | "ON_LEY_EXT"
+  | "ON_UVA"
+  | "ON_TAMAR"
+  | "ON_DL";
+
 /** Currencies in which instruments can be denominated. */
 export type Currency = "ARS" | "USD" | "USD_LINKED";
 
@@ -10,6 +63,7 @@ export interface Instrument {
   ticker: string;
   name: string;
   type: InstrumentType;
+  subtype: InstrumentSubtype;
   currency: Currency;
   market: string;
   issuer: string | null;
@@ -37,7 +91,9 @@ export type FlowType =
   | "ZERO_COUPON"
   | "CAPITALIZABLE"
   | "CER"
-  | "USD_LINKED";
+  | "USD_LINKED"
+  | "TAMAR"
+  | "DUAL";
 
 /** Parameters required to generate cash flows, vary by FlowType. */
 export interface FlowGeneratorParams {

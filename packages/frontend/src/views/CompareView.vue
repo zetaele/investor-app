@@ -71,6 +71,12 @@ function removeTicker(ticker: string): void {
 
 const canAddMore = computed(() => selectedTickers.value.length < 5);
 const hasResults = computed(() => entries.value.length > 0);
+
+/** Lock comparison to the type of the first selected instrument. */
+const allowedType = computed(() => {
+  if (selectedTickers.value.length === 0) return undefined;
+  return allInstruments.value.find((i) => i.ticker === selectedTickers.value[0])?.type;
+});
 </script>
 
 <template>
@@ -90,6 +96,7 @@ const hasResults = computed(() => entries.value.length > 0);
       :selected="selectedTickers"
       :loading="loadingInstruments"
       :can-add-more="canAddMore"
+      :allowed-type="allowedType"
       @add="addTicker"
       @remove="removeTicker"
     />

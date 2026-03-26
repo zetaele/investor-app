@@ -33,6 +33,11 @@ const themeStore = useThemeStore();
           </RouterLink>
         </li>
         <li>
+          <RouterLink to="/curvas" class="nav-link" :class="{ active: route.name === 'curvas' }">
+            Curvas
+          </RouterLink>
+        </li>
+        <li>
           <RouterLink to="/compare" class="nav-link" :class="{ active: route.name === 'compare' }">
             Comparar
           </RouterLink>

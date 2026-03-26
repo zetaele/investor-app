@@ -1,0 +1,1 @@
+ALTER TABLE `instruments` ADD `subtype` text DEFAULT 'SOV_USD_ARG' NOT NULL;

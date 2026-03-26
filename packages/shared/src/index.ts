@@ -2,6 +2,7 @@
 export type {
   Instrument,
   InstrumentType,
+  InstrumentSubtype,
   Currency,
   Cashflow,
   FlowType,
@@ -20,6 +21,7 @@ export type { FxRate, FxRates } from "./types/fx.js";
 // Schemas
 export {
   instrumentTypeSchema,
+  instrumentSubtypeSchema,
   currencySchema,
   instrumentSchema,
   tickerParamSchema,

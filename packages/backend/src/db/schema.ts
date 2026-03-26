@@ -10,8 +10,17 @@ export const instruments = sqliteTable("instruments", {
   market: text("market").notNull().default("BYMA"),
   issuer: text("issuer"),
   maturityDate: text("maturity_date").notNull(),
+  subtype: text("subtype", {
+    enum: [
+      "BONCAP", "DUAL", "SOV_USD_ARG", "SOV_USD_EXT",
+      "TASA_FIJA_ARS", "TASA_CER", "TASA_FLOTANTE",
+      "SUBSOBERANO_DL", "SUBSOBERANO_FIJA_USD", "SUBSOBERANO_FLOTANTE",
+      "LECAP", "LECER", "TAMAR", "LELINK",
+      "ON_LEY_NAC", "ON_LEY_EXT", "ON_UVA", "ON_TAMAR", "ON_DL",
+    ],
+  }).notNull().default("SOV_USD_ARG"),
   flowType: text("flow_type", {
-    enum: ["BULLET", "AMORTIZABLE", "ZERO_COUPON", "CAPITALIZABLE", "CER", "USD_LINKED"],
+    enum: ["BULLET", "AMORTIZABLE", "ZERO_COUPON", "CAPITALIZABLE", "CER", "USD_LINKED", "TAMAR", "DUAL"],
   })
     .notNull()
     .default("BULLET"),

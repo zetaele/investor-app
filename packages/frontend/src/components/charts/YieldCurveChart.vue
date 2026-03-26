@@ -212,7 +212,10 @@ const chartOptions = computed(() => ({
       ticks: {
         color: isDark.value ? "#4a6058" : "#9c9086",
         font: { family: "JetBrains Mono", size: 10 },
-        callback: (val: number | string) => Number(val).toFixed(1),
+        callback: (val: number | string) => {
+          const n = Number(val);
+          return n < 1 ? n.toFixed(2) : n.toFixed(1);
+        },
       },
     },
     y: {

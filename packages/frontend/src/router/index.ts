@@ -30,6 +30,11 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/curvas",
+      name: "curvas",
+      component: () => import("@/views/CurvesView.vue"),
+    },
+    {
       path: "/compare",
       name: "compare",
       component: () => import("@/views/CompareView.vue"),

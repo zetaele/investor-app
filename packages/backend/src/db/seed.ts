@@ -13,43 +13,21 @@ type CF = { paymentDate: string; coupon: number; amortization: number; residual:
 // ── Instruments ───────────────────────────────────────────────────────────────
 
 const instrumentsData = [
-  // ── Sovereign bonds — USD (D suffix = USD MEP) ────────────────────────────
+  // ── Soberanos USD Ley Argentina (cat 7) ───────────────────────────────────
   {
     ticker: "AE38D",
     name: "Bono del Tesoro en Dólares 2038 (Ley Argentina) - USD",
     type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2038-01-09",
-  },
-  {
-    ticker: "GD38D",
-    name: "Bono del Tesoro en Dólares 2038 (Ley Nueva York) - USD",
-    type: "BOND" as const,
-    currency: "USD" as const,
-    issuer: "Tesoro Nacional",
-    maturityDate: "2038-01-09",
-  },
-  {
-    ticker: "GD46D",
-    name: "Bono del Tesoro en Dólares 2046 (Ley Nueva York) - USD",
-    type: "BOND" as const,
-    currency: "USD" as const,
-    issuer: "Tesoro Nacional",
-    maturityDate: "2046-07-09",
   },
   {
     ticker: "AL41D",
     name: "Bono del Tesoro en Dólares 2041 (Ley Argentina) - USD",
     type: "BOND" as const,
-    currency: "USD" as const,
-    issuer: "Tesoro Nacional",
-    maturityDate: "2041-07-09",
-  },
-  {
-    ticker: "GD41D",
-    name: "Bono del Tesoro en Dólares 2041 (Ley Nueva York) - USD",
-    type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2041-07-09",
@@ -58,14 +36,7 @@ const instrumentsData = [
     ticker: "AL30D",
     name: "Bono del Tesoro en Dólares 2030 (Ley Argentina) - USD",
     type: "BOND" as const,
-    currency: "USD" as const,
-    issuer: "Tesoro Nacional",
-    maturityDate: "2030-07-09",
-  },
-  {
-    ticker: "GD30D",
-    name: "Bono del Tesoro en Dólares 2030 (Ley Nueva York) - USD",
-    type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2030-07-09",
@@ -74,14 +45,7 @@ const instrumentsData = [
     ticker: "AL35D",
     name: "Bono del Tesoro en Dólares 2035 (Ley Argentina) - USD",
     type: "BOND" as const,
-    currency: "USD" as const,
-    issuer: "Tesoro Nacional",
-    maturityDate: "2035-07-09",
-  },
-  {
-    ticker: "GD35D",
-    name: "Bono del Tesoro en Dólares 2035 (Ley Nueva York) - USD",
-    type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2035-07-09",
@@ -90,48 +54,160 @@ const instrumentsData = [
     ticker: "AO27D",
     name: "Bono del Tesoro en Dólares 2027 (Ley Argentina)",
     type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2027-10-29",
   },
-  // ── Treasury letters — ARS (zero-coupon, discount instruments) ───────────
+  // ── Soberanos USD Ley Extranjera (cat 8) ──────────────────────────────────
   {
-    ticker: "S30A6",
-    name: "Letra del Tesoro en Pesos 30/04/2026",
-    type: "LETTER" as const,
-    currency: "ARS" as const,
+    ticker: "GD38D",
+    name: "Bono del Tesoro en Dólares 2038 (Ley Nueva York) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_EXT" as const,
+    currency: "USD" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2026-04-30",
+    maturityDate: "2038-01-09",
   },
   {
-    ticker: "S29M6",
-    name: "Letra del Tesoro en Pesos 29/05/2026",
-    type: "LETTER" as const,
-    currency: "ARS" as const,
+    ticker: "GD46D",
+    name: "Bono del Tesoro en Dólares 2046 (Ley Nueva York) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_EXT" as const,
+    currency: "USD" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2026-05-29",
+    maturityDate: "2046-07-09",
   },
   {
-    ticker: "S30J6",
-    name: "Letra del Tesoro en Pesos 30/06/2026",
-    type: "LETTER" as const,
+    ticker: "GD41D",
+    name: "Bono del Tesoro en Dólares 2041 (Ley Nueva York) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_EXT" as const,
+    currency: "USD" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2041-07-09",
+  },
+  {
+    ticker: "GD30D",
+    name: "Bono del Tesoro en Dólares 2030 (Ley Nueva York) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_EXT" as const,
+    currency: "USD" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2030-07-09",
+  },
+  {
+    ticker: "GD35D",
+    name: "Bono del Tesoro en Dólares 2035 (Ley Nueva York) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_EXT" as const,
+    currency: "USD" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2035-07-09",
+  },
+  // ── BONCAP — Bonos de Capitalización ARS (cat 1) ──────────────────────────
+  // Cashflows per 100 VN nominal. Single payment = VT_maturity × 100.
+  {
+    ticker: "T30J6",
+    name: "BONCAP Vencimiento 30/06/2026",
+    type: "BOND" as const,
+    subtype: "BONCAP" as const,
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2026-06-30",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  // ── Bonos Duales ARS (cat 2) ──────────────────────────────────────────────
+  {
+    ticker: "TTJ26",
+    name: "Bono del Tesoro Dual (LECAP+2.19%/TAMAR) Vto 30/06/2026",
+    type: "BOND" as const,
+    subtype: "DUAL" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-06-30",
+    flowType: "DUAL" as const,
+  },
+  {
+    ticker: "TTS26",
+    name: "Bono del Tesoro Dual (LECAP+2.17%/TAMAR) Vto 15/09/2026",
+    type: "BOND" as const,
+    subtype: "DUAL" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-09-15",
+    flowType: "DUAL" as const,
+  },
+  // ── Tasa Fija + CER ARS (cat 10) ──────────────────────────────────────────
+  {
+    ticker: "TX28",
+    name: "Bono del Tesoro en Pesos ajustado por CER 2.25% 2028",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2028-11-09",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZX28",
+    name: "Bono del Tesoro en Pesos ajustado por CER 0% 2028",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2028-06-30",
+    flowType: "CER" as const,
+  },
+  // ── LECAP — Letras de Capitalización ARS (cat 5) ──────────────────────────
+  // Single payment at maturity = VT_maturity × 100 per 100 VN.
+  {
+    ticker: "S17A6",
+    name: "LECAP Vencimiento 17/04/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-04-17",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "S30A6",
+    name: "LECAP Vencimiento 30/04/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-04-30",
+    flowType: "CAPITALIZABLE" as const,
   },
   {
     ticker: "S31L6",
-    name: "Letra del Tesoro en Pesos 31/07/2026",
+    name: "LECAP Vencimiento 31/07/2026",
     type: "LETTER" as const,
+    subtype: "LECAP" as const,
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2026-07-31",
+    flowType: "CAPITALIZABLE" as const,
   },
-  // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
+  // ── Letras TAMAR ARS (cat 4) ──────────────────────────────────────────────
+  {
+    ticker: "TMF27",
+    name: "Letra del Tesoro Nacional en Pesos (TAMAR) Vto 26/02/2027",
+    type: "LETTER" as const,
+    subtype: "TAMAR" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-02-26",
+    flowType: "TAMAR" as const,
+  },
+  // ── Corporate bonds / ONs ─────────────────────────────────────────────────
   {
     ticker: "YPF24",
     name: "Obligación Negociable YPF 2026 Serie I",
     type: "ON" as const,
+    subtype: "ON_LEY_NAC" as const,
     currency: "USD" as const,
     issuer: "YPF S.A.",
     maturityDate: "2026-07-15",
@@ -140,6 +216,7 @@ const instrumentsData = [
     ticker: "PAMP27",
     name: "Obligación Negociable Pampa Energía 2027",
     type: "ON" as const,
+    subtype: "ON_LEY_NAC" as const,
     currency: "USD" as const,
     issuer: "Pampa Energía S.A.",
     maturityDate: "2027-07-21",
@@ -148,6 +225,7 @@ const instrumentsData = [
     ticker: "TECO27",
     name: "Obligación Negociable Telecom Argentina 2027",
     type: "ON" as const,
+    subtype: "ON_LEY_NAC" as const,
     currency: "USD" as const,
     issuer: "Telecom Argentina S.A.",
     maturityDate: "2027-03-17",
@@ -419,21 +497,109 @@ const ao27dCashflows: CF[] = [
 ];
 
 /**
- * ARS letters — zero-coupon discount instruments.
- * Single cashflow: full face value (100) at maturity.
- * Price reflects the discount rate implied by the current TNA.
+ * LECAP / Bono Capitalizable — ARS instruments.
+ * Single cashflow at maturity = VT_vencimiento × 100 per 100 VN nominal.
+ * VT_maturity computed as: VT_now × (1 + TNM)^(months_D30360)
+ * Prices in mock client are expressed as VT_now × Paridad × 100 per 100 VN.
+ * Reference date for VT calculations: 2026-03-26.
  */
+const s17a6Cashflows: CF[] = [
+  // S17A6: TNM=3.0%, VT=1.060938, maturity 2026-04-17 → months=0.7 → VT_mat≈109.89
+  { paymentDate: "2026-04-17", coupon: 0.0, amortization: 109.89, residual: 0.0 },
+];
 const s30a6Cashflows: CF[] = [
-  { paymentDate: "2026-04-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
-];
-const s29m6Cashflows: CF[] = [
-  { paymentDate: "2026-05-29", coupon: 0.0, amortization: 100.0, residual: 0.0 },
-];
-const s30j6Cashflows: CF[] = [
-  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  // S30A6: TNM=3.0%, VT=1.074016, maturity 2026-04-30 → months=1.133 → VT_mat≈125.56
+  { paymentDate: "2026-04-30", coupon: 0.0, amortization: 125.56, residual: 0.0 },
 ];
 const s31l6Cashflows: CF[] = [
-  { paymentDate: "2026-07-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  // S31L6: TNM=2.75%, VT=1.051333, maturity 2026-07-31 → months=3.167 → VT_mat≈114.27
+  { paymentDate: "2026-07-31", coupon: 0.0, amortization: 114.27, residual: 0.0 },
+];
+const t30j6Cashflows: CF[] = [
+  // T30J6: TNM=3.0%, VT=1.199366, maturity 2026-06-30 → months=2.0 → VT_mat≈139.92
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 139.92, residual: 0.0 },
+];
+
+/**
+ * TMF27 — Bono del Tesoro Nacional en Pesos (TAMAR) Vto 26/02/2027
+ * Bullet, zero-coupon structure: accretes daily at TAMAR floating rate.
+ * Estimated VT_maturity = VT_now × (1 + TAMAR × remaining_days/360)
+ *   = 1.043593 × (1 + 0.364965 × 337/360) ≈ 140.0 per 100 VN (snapshot 2026-03-26)
+ * Day count: D30/360. Current TAMAR: 36.4965%.
+ */
+const tmf27Cashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2026-02-13", coupon: 0.0, amortization: 0.0,   residual: 1.0 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2027-02-26", coupon: 0.0, amortization: 140.0, residual: 0.0 },
+];
+
+/**
+ * TTJ26 — Bono del Tesoro Nacional Dual (LECAP+2.19% / TAMAR) Vto 30/06/2026
+ * Bullet. Pays max(LECAP_TNM + 2.19% annual, TAMAR) — capitalizes until maturity.
+ * Estimated VT_maturity = 152.77 × (1 + 38.19% × 96/360) ≈ 168.3 per 100 VN (snapshot 2026-03-26)
+ *   where 38.19% = LECAP ~36% + 2.19% spread (currently the binding constraint).
+ */
+const ttj26Cashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2025-01-29", coupon: 0.0, amortization: 0.0,   residual: 1.0 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 168.3, residual: 0.0 },
+];
+
+/**
+ * TTS26 — Bono del Tesoro Nacional Dual (LECAP+2.17% / TAMAR) Vto 15/09/2026
+ * Bullet. Pays max(LECAP_TNM + 2.17% annual, TAMAR) — capitalizes until maturity.
+ * Estimated VT_maturity = 155.03 × (1 + 38.17% × 169/360) ≈ 182.8 per 100 VN (snapshot 2026-03-26)
+ *   169 days D30/360 from 2026-03-26 to 2026-09-15. Spread 2.17% (vs TTJ26's 2.19%).
+ */
+const tts26Cashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2025-01-29", coupon: 0.0, amortization: 0.0,   residual: 1.0 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-09-15", coupon: 0.0, amortization: 182.8, residual: 0.0 },
+];
+
+/**
+ * TX28 — Bono del Tesoro en Pesos ajustado por CER 2.25% VTO. 2028
+ * Sinkable: 10% amortization per semester starting May 2024 (10 installments).
+ * Coupon: 2.25% annual, semiannual, on residual outstanding.
+ * Cashflows expressed as % of original 100 VN nominal.
+ * Current residual: 60% (4 amortizations already paid: May/Nov 2024, May/Nov 2025).
+ * Day count: D30/360.
+ */
+const tx28Cashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2021-05-09", coupon: 1.53, amortization: 0.0,  residual: 1.0  },
+  { paymentDate: "2021-11-09", coupon: 1.13, amortization: 0.0,  residual: 1.0  },
+  { paymentDate: "2022-05-09", coupon: 1.13, amortization: 0.0,  residual: 1.0  },
+  { paymentDate: "2022-11-09", coupon: 1.13, amortization: 0.0,  residual: 1.0  },
+  { paymentDate: "2023-05-09", coupon: 1.13, amortization: 0.0,  residual: 1.0  },
+  { paymentDate: "2023-11-09", coupon: 1.13, amortization: 0.0,  residual: 1.0  },
+  { paymentDate: "2024-05-09", coupon: 1.13, amortization: 10.0, residual: 0.9  },
+  { paymentDate: "2024-11-09", coupon: 1.01, amortization: 10.0, residual: 0.8  },
+  { paymentDate: "2025-05-09", coupon: 0.9,  amortization: 10.0, residual: 0.7  },
+  { paymentDate: "2025-11-09", coupon: 0.79, amortization: 10.0, residual: 0.6  },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-05-09", coupon: 0.68, amortization: 10.0, residual: 0.5  },
+  { paymentDate: "2026-11-09", coupon: 0.56, amortization: 10.0, residual: 0.4  },
+  { paymentDate: "2027-05-09", coupon: 0.45, amortization: 10.0, residual: 0.3  },
+  { paymentDate: "2027-11-09", coupon: 0.34, amortization: 10.0, residual: 0.2  },
+  { paymentDate: "2028-05-09", coupon: 0.23, amortization: 10.0, residual: 0.1  },
+  { paymentDate: "2028-11-09", coupon: 0.11, amortization: 10.0, residual: 0.0  },
+];
+
+/**
+ * TZX28 — Bono del Tesoro en Pesos ajustado por CER 0% VTO. 30/06/2028
+ * Bullet, zero-coupon. Single payment of 100% at maturity.
+ * Valor par: 3.597229 (CER inflation factor, snapshot 2026-03-26).
+ * Day count: REAL/365.
+ */
+const tzx28Cashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2024-02-01", coupon: 0.0, amortization: 0.0,   residual: 1.0  },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2028-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0  },
 ];
 
 /**
@@ -478,13 +644,30 @@ const cashflowMap: Record<string, CF[]> = {
   AL35D: al35dCashflows,
   GD35D: al35dCashflows,
   AO27D: ao27dCashflows,
+  S17A6: s17a6Cashflows,
   S30A6: s30a6Cashflows,
-  S29M6: s29m6Cashflows,
-  S30J6: s30j6Cashflows,
   S31L6: s31l6Cashflows,
+  T30J6: t30j6Cashflows,
+  TMF27: tmf27Cashflows,
+  TTJ26: ttj26Cashflows,
+  TTS26: tts26Cashflows,
+  TX28: tx28Cashflows,
+  TZX28: tzx28Cashflows,
   YPF24: ypf24Cashflows,
   PAMP27: pamp27Cashflows,
   TECO27: teco27Cashflows,
+};
+
+/**
+ * adjustmentCoefficient = valor par (snapshot 2026-03-26).
+ * Updated periodically as CER index publishes new values.
+ */
+const cerConfigMap: Record<string, number> = {
+  TMF27: 1.043593,  // valor técnico actual (VT_now); couponRate = TAMAR actual en instrumentConfig
+  TTJ26: 152.77,    // valor técnico actual (VT_now); crece a max(LECAP+2.19%, TAMAR)
+  TTS26: 155.03,    // valor técnico actual (VT_now); crece a max(LECAP+2.17%, TAMAR)
+  TX28:  19.185114,
+  TZX28: 3.597229,
 };
 
 async function seed(): Promise<void> {
@@ -512,6 +695,17 @@ async function seed(): Promise<void> {
     }
     await db.insert(cashflows).values(flows.map((cf) => ({ ...cf, instrumentId })));
     console.log(`  ✓ ${ticker}: ${flows.length} cashflows`);
+  }
+
+  console.log("🌱 Seeding instrument config (CER valor par)...");
+  for (const [ticker, valorPar] of Object.entries(cerConfigMap)) {
+    const instrumentId = tickerToId.get(ticker);
+    if (instrumentId === undefined) {
+      console.warn(`⚠ ${ticker}: not found, skipping config`);
+      continue;
+    }
+    await db.insert(instrumentConfig).values({ instrumentId, adjustmentCoefficient: valorPar });
+    console.log(`  ✓ ${ticker}: valorPar=${valorPar}`);
   }
 
   console.log("✅ Seed complete!");

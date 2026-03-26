@@ -24,11 +24,20 @@ const MOCK_PRICES: Record<string, number> = {
   GD35D: 76.5,  // NY law premium over AL35D, approximate March 2026
   AO27D: 102,
 
-  // ── Treasury letters — ARS (price as % of face value 100, in ARS) ────────
-  S30A6: 97.8, // ~37 days to maturity
-  S29M6: 95.8, // ~66 days
-  S30J6: 93.5, // ~98 days
-  S31L6: 91.2, // ~129 days
+  // ── Treasury letters — ARS (LECAP, price = Paridad × VT × 100 per 100 VN) ─
+  S17A6: 108.48, // VT_mat≈109.89, Paridad≈98.71%, maturity 2026-04-17
+  S30A6: 124.56, // VT_mat≈125.56, Paridad≈99.20%, maturity 2026-04-30
+  S31L6: 107.26, // VT_mat≈114.27, Paridad≈93.86%, maturity 2026-07-31
+  T30J6: 135.15, // VT_mat≈139.92, Paridad≈96.59%, maturity 2026-06-30
+
+  // ── TAMAR / Dual sovereign bonds — ARS (price = paridad × VT × 100) ──────
+  TMF27: 106.19, // paridad=1.0176, VT=1.0436, TIR nominal≈41.33%
+  TTJ26: 148.92, // paridad=0.9747, VT=152.77, TIR≈46.13%
+  TTS26: 150.70, // paridad=0.9489, VT=155.03, TIR≈48.83%
+
+  // ── CER-adjusted sovereign bonds — ARS (price = paridad × 100) ──────────
+  TX28:  96.23, // paridad=0.9623, valorPar=19.185114, TIR real≈5.27%
+  TZX28: 84.68, // paridad=0.8468, valorPar=3.597229,  TIR real≈7.62%
 
   // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
   YPF24: 99.5, // near maturity Jul 2026

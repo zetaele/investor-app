@@ -2,12 +2,20 @@ import { z } from "zod";
 
 export const instrumentTypeSchema = z.enum(["BOND", "LETTER", "ON"]);
 export const currencySchema = z.enum(["ARS", "USD", "USD_LINKED"]);
+export const instrumentSubtypeSchema = z.enum([
+  "BONCAP", "DUAL", "SOV_USD_ARG", "SOV_USD_EXT",
+  "TASA_FIJA_ARS", "TASA_CER", "TASA_FLOTANTE",
+  "SUBSOBERANO_DL", "SUBSOBERANO_FIJA_USD", "SUBSOBERANO_FLOTANTE",
+  "LECAP", "LECER", "TAMAR", "LELINK",
+  "ON_LEY_NAC", "ON_LEY_EXT", "ON_UVA", "ON_TAMAR", "ON_DL",
+]);
 
 export const instrumentSchema = z.object({
   id: z.number().int().positive(),
   ticker: z.string().min(2).max(10),
   name: z.string().min(1),
   type: instrumentTypeSchema,
+  subtype: instrumentSubtypeSchema,
   currency: currencySchema,
   market: z.string(),
   issuer: z.string().nullable(),
@@ -53,7 +61,7 @@ export const compareQuerySchema = z.object({
       z
         .array(z.string().regex(/^[A-Z0-9]{2,10}$/))
         .min(2, "At least 2 tickers required")
-        .max(5, "Maximum 5 tickers allowed"),
+        .max(30, "Maximum 30 tickers allowed"),
     ),
   displayCurrency: currencySchema.optional(),
 });
