@@ -516,8 +516,9 @@ const s31l6Cashflows: CF[] = [
   { paymentDate: "2026-07-31", coupon: 0.0, amortization: 114.27, residual: 0.0 },
 ];
 const t30j6Cashflows: CF[] = [
-  // T30J6: TNM=3.0%, VT=1.199366, maturity 2026-06-30 → months=2.0 → VT_mat≈139.92
-  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 139.92, residual: 0.0 },
+  // T30J6: TEM=2.15%/mes, VT actual=136.9083, pago total al vencimiento=144.89 per 100 VN
+  // (Interés acumulado 44.89 + amortización 100.00 per Abbaco, 2026-03-26)
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 144.89, residual: 0.0 },
 ];
 
 /**

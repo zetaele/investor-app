@@ -28,7 +28,7 @@ const MOCK_PRICES: Record<string, number> = {
   S17A6: 108.48, // VT_mat≈109.89, Paridad≈98.71%, maturity 2026-04-17
   S30A6: 124.56, // VT_mat≈125.56, Paridad≈99.20%, maturity 2026-04-30
   S31L6: 107.26, // VT_mat≈114.27, Paridad≈93.86%, maturity 2026-07-31
-  T30J6: 135.15, // VT_mat≈139.92, Paridad≈96.59%, maturity 2026-06-30
+  T30J6: 135.55, // VT=136.9083, Paridad=99.00%, pago total=144.89, TIR≈29.18% TEA
 
   // ── TAMAR / Dual sovereign bonds — ARS (price = paridad × VT × 100) ──────
   TMF27: 106.19, // paridad=1.0176, VT=1.0436, TIR nominal≈41.33%
