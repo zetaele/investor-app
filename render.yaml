@@ -5,12 +5,12 @@ services:
     region: oregon
     plan: free
     buildCommand: "pnpm install --frozen-lockfile && pnpm -r build"
-    startCommand: "node packages/backend/dist/db/seed.js && node packages/backend/dist/app.js"
+    startCommand: "mkdir -p /tmp/data && DATABASE_URL=/tmp/data/app.db node packages/backend/dist/db/seed.js && DATABASE_URL=/tmp/data/app.db node packages/backend/dist/app.js"
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: /tmp/investor.db
+        value: /tmp/data/app.db
       - key: CORS_ORIGIN
         sync: false   # set manually in Render dashboard (your Vercel URL)
       - key: ADMIN_TOKEN
