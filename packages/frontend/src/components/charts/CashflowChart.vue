@@ -8,6 +8,7 @@ import {
   BarElement,
   Tooltip,
   Legend,
+  type ChartOptions,
 } from "chart.js";
 import type { CashflowWithPV } from "@investor-app/shared";
 import type { Currency } from "@investor-app/shared";
@@ -44,7 +45,7 @@ const chartData = computed(() => ({
   ],
 }));
 
-const chartOptions = computed(() => ({
+const chartOptions = computed((): ChartOptions<"bar"> => ({
   responsive: true,
   maintainAspectRatio: true,
   aspectRatio: 2.5,
@@ -64,12 +65,12 @@ const chartOptions = computed(() => ({
       borderWidth: 1,
       titleColor: isDark.value ? "#e8ede8" : "#1a1612",
       bodyColor: isDark.value ? "#7a9488" : "#6b6256",
-      titleFont: { family: "JetBrains Mono", size: 12, weight: "600" as const },
+      titleFont: { family: "JetBrains Mono", size: 12, weight: 600 },
       bodyFont: { family: "JetBrains Mono", size: 11 },
       padding: 12,
       callbacks: {
-        label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) =>
-          ` ${ctx.dataset.label}: ${props.currency} ${ctx.parsed.y.toFixed(4)}`,
+        label: (ctx) =>
+          ` ${ctx.dataset.label}: ${props.currency} ${(ctx.parsed as { y: number }).y.toFixed(4)}`,
       },
     },
   },

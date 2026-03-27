@@ -8,6 +8,10 @@ import {
   LineElement,
   Tooltip,
   Legend,
+  type ChartDataset,
+  type ChartData,
+  type ChartOptions,
+  type Point,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type { CompareEntry } from "@investor-app/shared";
@@ -81,7 +85,7 @@ const TYPE_SHAPES: Record<string, "circle" | "triangle" | "rect"> = {
   LETTER: "rect",
 };
 
-const chartData = computed(() => {
+const chartData = computed((): ChartData<"scatter", Point[]> => {
   const allPts = props.entries.map((e) => ({
     x: e.calculations.modifiedDuration,
     y: e.calculations.ytm * 100,
@@ -92,7 +96,7 @@ const chartData = computed(() => {
 
   // Need ≥3 points for a meaningful quadratic fit; fall back to linear (degree 1) with 2 points
   const fitDegree = allPts.length >= 3 ? 2 : 1;
-  const curveDataset: object[] = [];
+  const curveDataset: ChartDataset<"scatter", Point[]>[] = [];
 
   if (allPts.length >= 2) {
     const coeffs = polyFit(allPts, fitDegree);
@@ -137,7 +141,7 @@ const chartData = computed(() => {
   return { datasets: [...curveDataset, ...pointDatasets] };
 });
 
-const chartOptions = computed(() => ({
+const chartOptions = computed((): ChartOptions<"scatter"> => ({
   responsive: true,
   maintainAspectRatio: true,
   aspectRatio: 2.5,
@@ -155,7 +159,7 @@ const chartOptions = computed(() => ({
       borderWidth: 1,
       titleColor: isDark.value ? "#e8ede8" : "#1a1612",
       bodyColor: isDark.value ? "#7a9488" : "#6b6256",
-      titleFont: { family: "JetBrains Mono", size: 12, weight: "600" as const },
+      titleFont: { family: "JetBrains Mono", size: 12, weight: 600 },
       bodyFont: { family: "JetBrains Mono", size: 11 },
       padding: 12,
       callbacks: {
@@ -190,7 +194,7 @@ const chartOptions = computed(() => ({
       font: {
         family: "JetBrains Mono",
         size: 11,
-        weight: "600" as const,
+        weight: 600,
       },
       anchor: "end" as const,
       align: "top" as const,
