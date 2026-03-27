@@ -938,10 +938,10 @@ const cerConfigMap: Record<string, number> = {
   // DUAL — stored as VT_CAP (YTW leg); paridad = price / VT_CAP
   TTJ26: 136.507, // VT_CAP per Abbaco ~2026-03-26 (TODO: confirm fresh data)
   TTS26: 137.16, // VT_CAP per Bonistas/Abbaco confirmed 2026-03-26
-  // CER (valor par per 1 VN → multiply by 100 for per-100-VN basis? No: stored as-is,
-  // CER bonds use price=paridad×100 convention so valorTecnico not needed for them yet)
-  TX28: 19.185114,
-  TZX28: 3.597229,
+  // CER bonds — valorTecnico = residual × 100 (same basis as cashflows % of original VN)
+  // parityPct = price / valorTecnico; price = paridad × residual × 100
+  TX28: 60,     // residual=60% → VT=60; price=57.74 (=96.23% parity × 60)
+  TZX28: 100,   // residual=100% → VT=100; price=84.68 (=84.68% parity × 100)
 };
 
 async function seed(): Promise<void> {

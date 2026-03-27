@@ -54,8 +54,8 @@ const MOCK_PRICES: Record<string, number> = {
   TTS26: 151.4, // paridad=110.4%, VT_CAP=137.16, TIR_CAP≈0.98% (YTW; Abbaco 2026-03-26)
 
   // ── CER-adjusted sovereign bonds — ARS (price = paridad × 100) ──────────
-  TX28: 96.23, // paridad=0.9623, valorPar=19.185114, TIR real≈5.27%
-  TZX28: 84.68, // paridad=0.8468, valorPar=3.597229,  TIR real≈7.62%
+  TX28: 57.74, // paridad=96.23%, residual=60% → price=paridad×residual×100; TIR real≈5.27%
+  TZX28: 84.68, // paridad=84.68%, residual=100% → price=84.68; TIR real≈7.62%
 
   // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
   YPF24: 99.5, // near maturity Jul 2026

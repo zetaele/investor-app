@@ -6,7 +6,6 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Filler,
   Tooltip,
   Legend,
 } from "chart.js";
@@ -14,7 +13,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import type { CompareEntry } from "@investor-app/shared";
 import { formatYield, formatTimeToMaturity } from "@/composables/useFormat";
 
-ChartJS.register(LinearScale, PointElement, LineElement, Filler, Tooltip, Legend, ChartDataLabels);
+ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, ChartDataLabels);
 
 const props = defineProps<{ entries: CompareEntry[] }>();
 
@@ -83,20 +82,21 @@ const TYPE_SHAPES: Record<string, "circle" | "triangle" | "rect"> = {
 };
 
 const chartData = computed(() => {
-  const bondPts = props.entries
-    .filter((e) => e.type === "BOND")
-    .map((e) => ({ x: e.calculations.modifiedDuration, y: e.calculations.ytm * 100 }));
+  const allPts = props.entries.map((e) => ({
+    x: e.calculations.modifiedDuration,
+    y: e.calculations.ytm * 100,
+  }));
 
   const curveColor = isDark.value ? "rgba(120,190,150,0.7)" : "rgba(60,120,80,0.6)";
   const curveFill = isDark.value ? "rgba(120,190,150,0.08)" : "rgba(60,120,80,0.07)";
 
   // Need ≥3 points for a meaningful quadratic fit; fall back to linear (degree 1) with 2 points
-  const fitDegree = bondPts.length >= 3 ? 2 : 1;
+  const fitDegree = allPts.length >= 3 ? 2 : 1;
   const curveDataset: object[] = [];
 
-  if (bondPts.length >= 2) {
-    const coeffs = polyFit(bondPts, fitDegree);
-    const xs = bondPts.map((p) => p.x);
+  if (allPts.length >= 2) {
+    const coeffs = polyFit(allPts, fitDegree);
+    const xs = allPts.map((p) => p.x);
     const xMin = Math.min(...xs) - 0.3;
     const xMax = Math.max(...xs) + 0.3;
     const STEPS = 80;
@@ -113,7 +113,7 @@ const chartData = computed(() => {
       borderColor: curveColor,
       borderWidth: 2,
       backgroundColor: curveFill,
-      fill: "origin" as const,
+      fill: false,
       pointRadius: 0,
       pointHoverRadius: 0,
       datalabels: { display: false },
