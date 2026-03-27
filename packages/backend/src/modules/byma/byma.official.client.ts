@@ -18,8 +18,8 @@ export class BymaOfficialClient implements IBYMAClient {
   private readonly apiKey: string;
 
   constructor() {
-    this.baseUrl = env.BYMA_API_BASE_URL;
-    this.apiKey = env.BYMA_API_KEY;
+    this.baseUrl = env.BYMA_API_BASE_URL ?? "";
+    this.apiKey = env.BYMA_API_KEY ?? "";
   }
 
   private get defaultHeaders(): Record<string, string> {

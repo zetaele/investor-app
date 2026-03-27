@@ -1,0 +1,5 @@
+{
+  "buildCommand": "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm --filter frontend build",
+  "outputDirectory": "packages/frontend/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

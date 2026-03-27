@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: investor-app-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm -r build"
+    startCommand: "node packages/backend/dist/db/seed.js && node packages/backend/dist/app.js"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: /tmp/investor.db
+      - key: CORS_ORIGIN
+        sync: false   # set manually in Render dashboard (your Vercel URL)
+      - key: ADMIN_TOKEN
+        generateValue: true

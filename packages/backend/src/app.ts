@@ -24,7 +24,11 @@ const app = Fastify({
 // ── Security plugins ──────────────────────────────────────────────────────────
 
 await app.register(helmet);
-await app.register(cors, { origin: env.CORS_ORIGIN, methods: ["GET"] });
+const corsOrigin =
+  env.CORS_ORIGIN === "*"
+    ? true
+    : env.CORS_ORIGIN.split(",").map((o) => o.trim());
+await app.register(cors, { origin: corsOrigin, methods: ["GET"] });
 await app.register(rateLimit, { max: 60, timeWindow: "1 minute" });
 await app.register(calendarRouter, { prefix: "/api/v1/calendar" });
 await app.register(adminRouter, { prefix: "/api/v1/admin" });

@@ -3,13 +3,15 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().int().positive().default(3001),
-  DATABASE_URL: z.string().min(1),
-  BYMA_API_BASE_URL: z.string().url(),
-  BYMA_API_KEY: z.string().min(1),
-  CORS_ORIGIN: z.string().url(),
+  DATABASE_URL: z.string().min(1).default("./data/app.db"),
+  // Not used with MockBymaClient; required only when switching to live data
+  BYMA_API_BASE_URL: z.string().url().optional(),
+  BYMA_API_KEY: z.string().min(1).optional(),
+  // Comma-separated list of allowed origins, or "*" for all
+  CORS_ORIGIN: z.string().min(1).default("*"),
   CACHE_TTL_PRICE_SECONDS: z.coerce.number().int().positive().default(300),
   CACHE_TTL_FX_SECONDS: z.coerce.number().int().positive().default(600),
-  ADMIN_TOKEN: z.string().min(8),
+  ADMIN_TOKEN: z.string().min(8).default("change-me-in-production"),
 });
 
 /**
