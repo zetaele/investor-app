@@ -9,12 +9,17 @@ export function formatYield(value: number, decimals = 2): string {
 }
 
 /**
- * Formats a price with the appropriate currency symbol.
- * e.g. formatPrice(62.50, 'USD') → "USD 62.50"
+ * Formats a price with the appropriate currency symbol and thousands separator.
+ * e.g. formatPrice(62.50, 'USD')      → "USD 62,50"
+ *      formatPrice(136700, 'ARS')     → "ARS 136.700,00"
  */
 export function formatPrice(value: number, currency: Currency, decimals = 2): string {
   const symbol = currency === "ARS" ? "ARS" : "USD";
-  return `${symbol} ${value.toFixed(decimals)}`;
+  const formatted = new Intl.NumberFormat("es-AR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+  return `${symbol} ${formatted}`;
 }
 
 /**

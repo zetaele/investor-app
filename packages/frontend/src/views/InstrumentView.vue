@@ -111,6 +111,15 @@ const ytmClass = computed(() => {
         </div>
       </header>
 
+      <!-- YTW disclaimer for dual bonds -->
+      <div v-if="analysis.subtype === 'DUAL'" class="ytw-banner">
+        <strong>Rendimiento calculado bajo criterio Yield to Worst (YTW):</strong>
+        refleja el mínimo rendimiento posible para este instrumento. El monto a pagar al
+        vencimiento será el mayor entre la <strong>tasa fija capitalizable</strong>
+        (pata CAP) y la <strong>TAMAR acumulada</strong> durante la vida del bono (pata variable).
+        La TIR mostrada corresponde a la pata CAP.
+      </div>
+
       <!-- Key metrics -->
       <section class="metrics-section">
         <h2 class="section-title">Métricas clave</h2>
@@ -144,7 +153,9 @@ const ytmClass = computed(() => {
           <MetricCard
             label="Paridad"
             :value="formatYield(analysis.calculations.parityPct)"
-            tooltip="Precio actual como porcentaje del valor nominal (100 = par)"
+            :tooltip="analysis.subtype === 'DUAL'
+              ? 'Precio como porcentaje del Valor Técnico de la pata CAP (precio / VT_CAP)'
+              : 'Precio actual como porcentaje del valor nominal (100 = par)'"
           />
           <MetricCard
             label="TNA"
@@ -198,6 +209,16 @@ const ytmClass = computed(() => {
   flex-direction: column;
   gap: 2.5rem;
   padding-top: 1rem;
+}
+
+.ytw-banner {
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-warning, #f59e0b) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning, #f59e0b) 40%, transparent);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text);
 }
 
 .back-btn {

@@ -1,4 +1,4 @@
-import type { Currency } from "./instrument.js";
+import type { Currency, InstrumentSubtype } from "./instrument.js";
 
 /** Real-time market price for an instrument. */
 export interface MarketPrice {
@@ -42,6 +42,7 @@ export interface InstrumentAnalysis {
   ticker: string;
   name: string;
   type: string;
+  subtype: InstrumentSubtype;
   currency: Currency;
   maturityDate: string;
   market: MarketPrice;

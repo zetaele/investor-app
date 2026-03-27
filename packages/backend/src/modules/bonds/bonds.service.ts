@@ -78,6 +78,7 @@ export class BondsService {
       ticker: instrument.ticker,
       name: instrument.name,
       type: instrument.type,
+      subtype: instrument.subtype,
       currency: instrument.currency,
       maturityDate: instrument.maturityDate,
       market: {
