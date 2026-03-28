@@ -35,6 +35,7 @@ const SECTION_CONFIG: Record<InstrumentType, { title: string; subtitle: string }
 const SUBTYPE_LABELS: Record<InstrumentSubtype, string> = {
   SOV_USD_ARG: "Ley Argentina",
   SOV_USD_EXT: "Ley Extranjera",
+  BOPREAL: "BOPREAL",
   BONCAP: "BONCAP",
   DUAL: "Dual",
   TASA_FIJA_ARS: "Tasa Fija",
