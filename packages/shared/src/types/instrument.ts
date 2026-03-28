@@ -7,6 +7,7 @@ export type InstrumentType = "BOND" | "LETTER" | "ON";
  *
  * Sovereign bonds (BOND):
  *   BONCAP          — Bonos de Capitalización ARS (CAPITALIZABLE, > 1 year)
+ *   BOPREAL         — Bonos para la Reconstrucción de una Argentina Libre (BCRA, USD)
  *   DUAL            — Bonos Duales ARS (max LECAP+spread / TAMAR)
  *   SOV_USD_ARG     — Soberanos USD Ley Argentina
  *   SOV_USD_EXT     — Soberanos USD Ley Extranjera
@@ -33,6 +34,7 @@ export type InstrumentType = "BOND" | "LETTER" | "ON";
 export type InstrumentSubtype =
   // BOND — sovereign
   | "BONCAP"
+  | "BOPREAL"
   | "DUAL"
   | "SOV_USD_ARG"
   | "SOV_USD_EXT"

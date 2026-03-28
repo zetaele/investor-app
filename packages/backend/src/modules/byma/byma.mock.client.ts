@@ -2,65 +2,130 @@ import type { BymaMarketPrice, IBYMAClient } from "./byma.types.js";
 import { BymaInstrumentNotFoundError } from "./byma.types.js";
 
 /**
- * Approximate prices as of March 2026.
+ * Closing prices as of 2026-03-27 (Rava).
  *
  * USD-denominated instruments: price as % of face value in USD.
- * ARS-denominated instruments (letters): price as % of face value in ARS.
- *   Note: PriceCacheService currently hardcodes currency = "USD"; ARS instruments
- *   are a known limitation to address when real price feeds are integrated.
- *
- * Sources: BYMA / IOL market data, manually updated for development purposes.
+ * ARS-denominated instruments: nominal ARS price per unit as quoted on BYMA.
  */
 const MOCK_PRICES: Record<string, number> = {
   // ── Sovereign bonds — USD (D suffix = USD MEP) ───────────────────────────
-  AE38D: 77.78, // ~50% of par, approximate March 2026
-  GD38D: 79.0, // NY law premium over AE38D, approximate March 2026
-  AL41D: 69.46, // ~55% of par, approximate March 2026
-  GD41D: 71.0, // NY law premium over AL41D, approximate March 2026
-  GD46D: 73.0, // approximate March 2026
-  AL30D: 61.2, // ~67.5% of par, approximate March 2026
-  GD30D: 62.5, // NY law premium over AL30D, approximate March 2026
-  AL35D: 75.05, // ~60% of par, approximate March 2026
-  GD35D: 76.5, // NY law premium over AL35D, approximate March 2026
-  AO27D: 102,
+  AE38D: 76.9,
+  GD38D: 78.85,
+  AL41D: 69.05,
+  GD41D: 69.79,
+  GD46D: 67.96,
+  AL30D: 60.55,
+  GD30D: 62.33,
+  AL35D: 74.07,
+  GD35D: 75.30,
+  AO27D: 101.9,
+  AL29D: 61.69,
+  AN29D: 91.3,
+  GD29D: 63.98,
 
-  // ── Treasury letters — ARS/USD-linked (LELINK, price = Paridad × VT) ───────
-  D30A6: 136700, // paridad=98.1%, VT=139344, TIR=22.83% TEA; Abbaco 2026-03-27
-  D30S6: 134700, // paridad=97.0%, VT=139344, TIR= 6.84% TEA; Abbaco 2026-03-27
+  // ── Treasury letters — ARS/USD-linked (LELINK, price in ARS) ─────────────
+  D30A6: 138780,
+  D30S6: 137500,
 
   // ── Floating-rate ARS sovereign bonds ────────────────────────────────────
-  PR17: 93.00,   // BADLAR quarterly; TIR=36.54% TEA; normalized per-100-VN (BYMA: 795/unit, VN≈855)
+  PR17: 795.6,  // price in ARS per unit (VN≈855)
 
   // ── Fixed-rate ARS sovereign bonds ───────────────────────────────────────
-  TO26:  100.20, // 15.50% TNA semi-anual, TIR=31.06% TEA; Abbaco 2026-03-27
-  TY30P: 118.70, // 29.50% TNA semi-anual, TIR=27.80% TEA; Abbaco 2026-03-27
+  TO26:  100.95,
+  TY30P: 117.4,
 
-  // ── Treasury letters — ARS CER-adjusted (LECER, price = Paridad × VT) ──────
-  X15Y6: 104.20,  // paridad=101%, VT=102.85, TIR=-9.28% TEA; Abbaco 2026-03-27
-  X29Y6: 112.59,  // paridad=102%, VT=110.69, TIR=-9.39% TEA
-  X31L6: 107.70,  // paridad=102%, VT=105.26, TIR=-6.43% TEA
-  X30S6: 101.95,  // paridad=101%, VT=100.92, TIR=-1.96% TEA
-  X30N6: 109.50,  // paridad=100%, VT=109.38, TIR=-0.16% TEA
+  // ── Treasury letters — ARS CER-adjusted (LECER, price in ARS) ────────────
+  X15Y6: 104.47,
+  X29Y6: 111.37,
+  X31L6: 108.1,
+  X30S6: 100.45,
+  X30N6: 110.5,
 
-  // ── Treasury letters — ARS (LECAP, price = Paridad × VT × 100 per 100 VN) ─
-  S17A6: 108.48, // VT_mat≈109.89, Paridad≈98.71%, maturity 2026-04-17
-  S30A6: 124.56, // VT_mat≈125.56, Paridad≈99.20%, maturity 2026-04-30
-  S31L6: 107.26, // VT_mat≈114.27, Paridad≈93.86%, maturity 2026-07-31
-  T30J6: 135.55, // VT=136.9083, Paridad=99.00%, pago total=144.89, TIR≈29.18% TEA
+  // ── Treasury letters — ARS (LECAP, price in ARS per 100 VN) ──────────────
+  S17A6: 108.88,
+  S30A6: 124.8,
+  S31L6: 108.2,
+  T30J6: 136.25,
+  S15Y6: 101.94,
+  S29Y6: 126.8,
+  S31G6: 114.14,
+  S30S6: 103.00,
+  S30O6: 116.00,
+  S30N6: 109.1,
 
-  // ── TAMAR / Dual sovereign bonds — ARS (price = paridad × VT × 100) ──────
-  TMF27: 106.65, // paridad=102.0%, VT=104.56, TIR=33.92% TEA; Abbaco 2026-03-27
-  TTJ26: 152.85, // paridad=109.1%, VT_CAP=136.51, TIR_CAP≈-9.6% (YTW; TODO refresh)
-  TTS26: 151.4, // paridad=110.4%, VT_CAP=137.16, TIR_CAP≈0.98% (YTW; Abbaco 2026-03-26)
+  // ── TAMAR / Dual sovereign bonds — ARS ───────────────────────────────────
+  TMF27: 107.6,
+  TTJ26: 153.1,
+  TTS26: 151.9,
 
-  // ── CER-adjusted sovereign bonds — ARS (price = paridad × 100) ──────────
-  TX28: 57.74, // paridad=96.23%, residual=60% → price=paridad×residual×100; TIR real≈5.27%
-  TZX28: 84.68, // paridad=84.68%, residual=100% → price=84.68; TIR real≈7.62%
+  // ── CER-adjusted sovereign bonds — ARS (price in ARS) ────────────────────
+  TX28: 1915.00,
+  TZX28: 308.4,
+
+  // ── BOPREAL — BCRA bonds USD ──────────────────────────────────────────────
+  BPA7D: 103.3,
+  BPA8D: 90.71,
+  BPB7D: 102.5,
+  BPB8D: 89.0,
+  BPC7D: 102.25,
+  BPD7D: 102.1,
+  BPY6D: 36.3,
+
+  // ── BONCAP — ARS (price in ARS per 100 VN) ───────────────────────────────
+  T15E7: 130.60,
+  T30A7: 118.2,
+  T31Y7: 111.45,
+  T30J7: 113.00,
+
+  // ── Dual ──────────────────────────────────────────────────────────────────
+  TTD26: 150.25,
+
+  // ── TAMAR letters — ARS ───────────────────────────────────────────────────
+  M30A6: 113.1,
+  M31G6: 117.3,
+  CO2D7: 101.5,
+
+  // ── TZX / CER zeros — ARS (price in ARS) ─────────────────────────────────
+  TZX26: 368.4,
+  TZX27: 348.5,
+  TZXD6: 267.25,
+  TZXO6: 151.7,
+  TZXM7: 196.25,
+  TZXD7: 246.2,
+  TZXA7: 110.5,
+
+  // ── CER bonds with coupon — ARS (price in ARS) ────────────────────────────
+  TX26:  1314.00,
+  TX31:  1359.00,
+  DICP:  48570.00,
+  PARP:  32690.00,
+  CUAP:  39870.00,
+  DIP0:  48500.00,
+  PAP0:  32750.00,
+
+  // ── Sub-soberanos USD ─────────────────────────────────────────────────────
+  BA37D:  69.6,
+  BB37D:  70.0,
+  BC37D:  67.7,
+  CO26D:  10.59,
+  CO32D:  109.45,
+  ERF25D: 45.6,
+  ERM33D: 101.0,
+  NDT5D:  72.75,
+  PM29D:  45.85,
+  S24DD:  51.9,
+  SFD4D:  102.0,
+
+  // ── Sub-soberanos ARS flotante ────────────────────────────────────────────
+  BAF27:  103.0,
+  BDC28:  103.0,
+  PBY26:  105.3,
+  PMD26:  101.5,
 
   // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
-  YPF24: 99.5, // near maturity Jul 2026
+  YPF24:  99.5,
   PAMP27: 95.5,
-  TECO27: 98.2, // near maturity Mar 2027
+  TECO27: 98.2,
 };
 
 /**

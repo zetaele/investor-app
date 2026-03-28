@@ -37,8 +37,8 @@ await app.register(adminRouter, { prefix: "/api/v1/admin" });
 
 /**
  * To switch from mock to live BYMA data:
- * 1. Replace MockBymaClient with BymaOfficialClient
- * 2. Set BYMA_API_KEY in .env
+ * 1. Replace MockBymaClient with BymaOfficialClient (or Data912Client for bonds-only)
+ * 2. Set BYMA_API_KEY in .env if using BymaOfficialClient
  * Nothing else needs to change.
  */
 const bymaClient = new MockBymaClient();

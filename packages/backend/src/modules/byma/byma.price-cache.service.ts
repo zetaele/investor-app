@@ -1,6 +1,6 @@
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, inArray } from "drizzle-orm";
 import { db } from "../../db/index.js";
-import { priceCache } from "../../db/schema.js";
+import { instruments, priceCache } from "../../db/schema.js";
 import { env } from "../../config/env.js";
 import type { IBYMAClient } from "./byma.types.js";
 import type { MarketPrice } from "@investor-app/shared";
@@ -58,14 +58,25 @@ export class PriceCacheService {
 
     // Fetch all stale tickers in one call
     if (staleTickers.length > 0) {
-      const fresh = await this.bymaClient.getPrices(staleTickers);
+      const [fresh, currencyRows] = await Promise.all([
+        this.bymaClient.getPrices(staleTickers),
+        db
+          .select({ ticker: instruments.ticker, currency: instruments.currency })
+          .from(instruments)
+          .where(inArray(instruments.ticker, staleTickers)),
+      ]);
+
+      const currencyMap = new Map(
+        currencyRows.map((r) => [r.ticker, r.currency === "USD" ? "USD" : "ARS"] as const),
+      );
 
       for (const [ticker, data] of fresh.entries()) {
-        await this.saveToCache(ticker, data.price, "USD");
+        const currency = currencyMap.get(ticker) ?? "ARS";
+        await this.saveToCache(ticker, data.price, currency);
         const price: MarketPrice = {
           ticker,
           price: data.price,
-          currency: "USD",
+          currency,
           fetchedAt: data.updatedAt,
         };
         result.set(ticker, price);

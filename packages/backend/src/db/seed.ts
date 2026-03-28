@@ -59,6 +59,24 @@ const instrumentsData = [
     issuer: "Tesoro Nacional",
     maturityDate: "2027-10-29",
   },
+  {
+    ticker: "AL29D",
+    name: "Bono del Tesoro en Dólares 2029 (Ley Argentina) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
+    currency: "USD" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2029-07-09",
+  },
+  {
+    ticker: "AN29D",
+    name: "Bono del Tesoro en Dólares 2029 Serie II (Ley Argentina) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_ARG" as const,
+    currency: "USD" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2029-09-07", // TODO: confirm exact maturity date
+  },
   // ── Soberanos USD Ley Extranjera (cat 8) ──────────────────────────────────
   {
     ticker: "GD38D",
@@ -105,6 +123,79 @@ const instrumentsData = [
     issuer: "Tesoro Nacional",
     maturityDate: "2035-07-09",
   },
+  {
+    ticker: "GD29D",
+    name: "Bono del Tesoro en Dólares 2029 (Ley Nueva York) - USD",
+    type: "BOND" as const,
+    subtype: "SOV_USD_EXT" as const,
+    currency: "USD" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2029-01-09",
+  },
+  // ── BOPREAL — Bonos para la Reconstrucción de una Argentina Libre (BCRA) ──
+  {
+    ticker: "BPA7D",
+    name: "BOPREAL Serie 1A 2027 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2027-02-28",
+  },
+  {
+    ticker: "BPA8D",
+    name: "BOPREAL Serie 1A 2028 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2028-02-28",
+  },
+  {
+    ticker: "BPB7D",
+    name: "BOPREAL Serie 1B 2027 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2027-05-31",
+  },
+  {
+    ticker: "BPB8D",
+    name: "BOPREAL Serie 1B 2028 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2028-05-31",
+  },
+  {
+    ticker: "BPC7D",
+    name: "BOPREAL Serie 1C 2027 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2027-08-31",
+  },
+  {
+    ticker: "BPD7D",
+    name: "BOPREAL Serie 1D 2027 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2027-11-30",
+  },
+  {
+    ticker: "BPY6D",
+    name: "BOPREAL Serie 2 2026 - USD",
+    type: "BOND" as const,
+    subtype: "BOPREAL" as const,
+    currency: "USD" as const,
+    issuer: "BCRA",
+    maturityDate: "2026-06-30",
+  },
   // ── BONCAP — Bonos de Capitalización ARS (cat 1) ──────────────────────────
   // Cashflows per 100 VN nominal. Single payment = VT_maturity × 100.
   {
@@ -115,6 +206,46 @@ const instrumentsData = [
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2026-06-30",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "T15E7",
+    name: "BONCAP Vencimiento 15/01/2027",
+    type: "BOND" as const,
+    subtype: "BONCAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-01-15",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "T30A7",
+    name: "BONCAP Vencimiento 30/04/2027",
+    type: "BOND" as const,
+    subtype: "BONCAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-04-30",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "T31Y7",
+    name: "BONCAP Vencimiento 31/05/2027",
+    type: "BOND" as const,
+    subtype: "BONCAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-05-31",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "T30J7",
+    name: "BONCAP Vencimiento 30/06/2027",
+    type: "BOND" as const,
+    subtype: "BONCAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-06-30",
     flowType: "CAPITALIZABLE" as const,
   },
   // ── LELINK — Letras del Tesoro vinculadas al dólar ARS (cat 6) ───────────
@@ -158,6 +289,16 @@ const instrumentsData = [
     currency: "ARS" as const,
     issuer: "Tesoro Nacional",
     maturityDate: "2026-09-15",
+    flowType: "DUAL" as const,
+  },
+  {
+    ticker: "TTD26",
+    name: "Bono del Tesoro Dual (LECAP/TAMAR) Vto 31/12/2026",
+    type: "BOND" as const,
+    subtype: "DUAL" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-12-31",
     flowType: "DUAL" as const,
   },
   // ── Tasa Flotante ARS (cat 4) ─────────────────────────────────────────────
@@ -265,6 +406,177 @@ const instrumentsData = [
     maturityDate: "2028-06-30",
     flowType: "CER" as const,
   },
+  {
+    ticker: "TX26",
+    name: "Bono del Tesoro en Pesos ajustado por CER 2.00% 2026",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-11-09",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TX31",
+    name: "Bono del Tesoro en Pesos ajustado por CER 2.25% 2031",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2031-11-09",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZX26",
+    name: "Bono del Tesoro en Pesos ajustado por CER 0% 2026",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-06-30",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZX27",
+    name: "Bono del Tesoro en Pesos ajustado por CER 0% 2027",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-06-30",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZXD6",
+    name: "Letra del Tesoro en Pesos ajustada por CER 0% Vto 31/12/2026",
+    type: "LETTER" as const,
+    subtype: "LECER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-12-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZXO6",
+    name: "Letra del Tesoro en Pesos ajustada por CER 0% Vto 31/10/2026",
+    type: "LETTER" as const,
+    subtype: "LECER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-10-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZXM7",
+    name: "Letra del Tesoro en Pesos ajustada por CER 0% Vto 31/03/2027",
+    type: "LETTER" as const,
+    subtype: "LECER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-03-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZXD7",
+    name: "Letra del Tesoro en Pesos ajustada por CER 0% Vto 31/12/2027",
+    type: "LETTER" as const,
+    subtype: "LECER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-12-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "TZXA7",
+    name: "Letra del Tesoro en Pesos ajustada por CER 0% Vto 30/04/2027",
+    type: "LETTER" as const,
+    subtype: "LECER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-04-30",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "DICP",
+    name: "Discount en Pesos CER 5.83% 2033 (DICP)",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2033-12-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "PARP",
+    name: "Par en Pesos CER 2.51% 2038 (PARP)",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2038-12-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "CUAP",
+    name: "Cuasi Par en Pesos CER 2045 (CUAP)",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2045-12-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "DIP0",
+    name: "Discount en Pesos CER Step-Up 2033 (DIP0)",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2033-12-31",
+    flowType: "CER" as const,
+  },
+  {
+    ticker: "PAP0",
+    name: "Par en Pesos CER Step-Up 2038 (PAP0)",
+    type: "BOND" as const,
+    subtype: "TASA_CER" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2038-12-31",
+    flowType: "CER" as const,
+  },
+  // ── Letras TAMAR adicionales ARS ─────────────────────────────────────────
+  {
+    ticker: "M30A6",
+    name: "Letra del Tesoro Nacional en Pesos (TAMAR) Vto 30/04/2026",
+    type: "LETTER" as const,
+    subtype: "TAMAR" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-04-30",
+    flowType: "TAMAR" as const,
+  },
+  {
+    ticker: "M31G6",
+    name: "Letra del Tesoro Nacional en Pesos (TAMAR) Vto 31/08/2026",
+    type: "LETTER" as const,
+    subtype: "TAMAR" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-08-31",
+    flowType: "TAMAR" as const,
+  },
+  {
+    ticker: "CO2D7",
+    name: "Letra del Tesoro Nacional en Pesos (TAMAR) Vto 02/12/2027",
+    type: "LETTER" as const,
+    subtype: "TAMAR" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2027-12-02",
+    flowType: "TAMAR" as const,
+  },
   // ── LECAP — Letras de Capitalización ARS (cat 5) ──────────────────────────
   // Single payment at maturity = VT_maturity × 100 per 100 VN.
   {
@@ -297,6 +609,66 @@ const instrumentsData = [
     maturityDate: "2026-07-31",
     flowType: "CAPITALIZABLE" as const,
   },
+  {
+    ticker: "S15Y6",
+    name: "LECAP Vencimiento 15/05/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-05-15",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "S29Y6",
+    name: "LECAP Vencimiento 29/05/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-05-29",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "S31G6",
+    name: "LECAP Vencimiento 31/08/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-08-31",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "S30S6",
+    name: "LECAP Vencimiento 30/09/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-09-30",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "S30O6",
+    name: "LECAP Vencimiento 30/10/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-10-30",
+    flowType: "CAPITALIZABLE" as const,
+  },
+  {
+    ticker: "S30N6",
+    name: "LECAP Vencimiento 30/11/2026",
+    type: "LETTER" as const,
+    subtype: "LECAP" as const,
+    currency: "ARS" as const,
+    issuer: "Tesoro Nacional",
+    maturityDate: "2026-11-30",
+    flowType: "CAPITALIZABLE" as const,
+  },
   // ── Letras TAMAR ARS (cat 4) ──────────────────────────────────────────────
   {
     ticker: "TMF27",
@@ -307,6 +679,147 @@ const instrumentsData = [
     issuer: "Tesoro Nacional",
     maturityDate: "2027-02-26",
     flowType: "TAMAR" as const,
+  },
+  // ── SubSoberanos — Tasa Fija USD ──────────────────────────────────────────
+  {
+    ticker: "BA37D",
+    name: "Bono Provincia de Buenos Aires 2037 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Buenos Aires",
+    maturityDate: "2037-01-26",
+  },
+  {
+    ticker: "BB37D",
+    name: "Bono Ciudad de Buenos Aires 2037 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Ciudad Autónoma de Buenos Aires",
+    maturityDate: "2037-03-01",
+  },
+  {
+    ticker: "BC37D",
+    name: "Bono SubSoberano 2037 - USD", // TODO: confirm issuer
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Sub-Soberano",
+    maturityDate: "2037-01-01",
+  },
+  {
+    ticker: "CO26D",
+    name: "Bono Provincia de Córdoba 2026 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Córdoba",
+    maturityDate: "2026-12-10",
+  },
+  {
+    ticker: "CO32D",
+    name: "Bono Provincia de Córdoba 2032 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Córdoba",
+    maturityDate: "2032-03-01",
+  },
+  {
+    ticker: "ERF25D",
+    name: "Bono Provincia de Entre Ríos Tasa Fija 2025 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Entre Ríos",
+    maturityDate: "2025-02-28",
+  },
+  {
+    ticker: "ERM33D",
+    name: "Bono Provincia de Entre Ríos 2033 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Entre Ríos",
+    maturityDate: "2033-08-08",
+  },
+  {
+    ticker: "NDT5D",
+    name: "Bono Provincia del Neuquén 2025 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia del Neuquén",
+    maturityDate: "2025-07-15",
+  },
+  {
+    ticker: "PM29D",
+    name: "Bono SubSoberano 2029 - USD", // TODO: confirm issuer
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Sub-Soberano",
+    maturityDate: "2029-01-01",
+  },
+  {
+    ticker: "S24DD",
+    name: "Bono Provincia de Salta 2024 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Salta",
+    maturityDate: "2024-03-01",
+  },
+  {
+    ticker: "SFD4D",
+    name: "Bono Provincia de Santa Fe 2034 - USD",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FIJA_USD" as const,
+    currency: "USD" as const,
+    issuer: "Provincia de Santa Fe",
+    maturityDate: "2034-03-15",
+  },
+  // ── SubSoberanos — Tasa Flotante ARS ──────────────────────────────────────
+  {
+    ticker: "BAF27",
+    name: "Bono Provincia de Buenos Aires BADLAR 2027",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FLOTANTE" as const,
+    currency: "ARS" as const,
+    issuer: "Provincia de Buenos Aires",
+    maturityDate: "2027-05-01",
+    flowType: "AMORTIZABLE" as const,
+  },
+  {
+    ticker: "BDC28",
+    name: "Bono SubSoberano BADLAR 2028",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FLOTANTE" as const,
+    currency: "ARS" as const,
+    issuer: "Sub-Soberano",
+    maturityDate: "2028-01-01",
+    flowType: "AMORTIZABLE" as const,
+  },
+  {
+    ticker: "PBY26",
+    name: "Bono SubSoberano BADLAR 2026",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FLOTANTE" as const,
+    currency: "ARS" as const,
+    issuer: "Sub-Soberano",
+    maturityDate: "2026-12-01",
+    flowType: "AMORTIZABLE" as const,
+  },
+  {
+    ticker: "PMD26",
+    name: "Bono SubSoberano BADLAR 2026 (II)",
+    type: "BOND" as const,
+    subtype: "SUBSOBERANO_FLOTANTE" as const,
+    currency: "ARS" as const,
+    issuer: "Sub-Soberano",
+    maturityDate: "2026-12-01",
+    flowType: "AMORTIZABLE" as const,
   },
   // ── Corporate bonds / ONs ─────────────────────────────────────────────────
   {
@@ -628,6 +1141,463 @@ const t30j6Cashflows: CF[] = [
 ];
 
 /**
+ * New LECAP — single zero-coupon payment at maturity = VT_mat per 100 VN.
+ * VT estimates based on ~2.5% TEM from reference date 2026-03-28.
+ * Refresh from BYMA/Abbaco as CER/TEM accretes.
+ */
+const s15y6Cashflows: CF[] = [
+  // S15Y6: VT_now≈105.0, TEM~2.5%, days=48 → VT_mat≈109.7
+  { paymentDate: "2026-05-15", coupon: 0.0, amortization: 109.70, residual: 0.0 },
+];
+const s29y6Cashflows: CF[] = [
+  // S29Y6: VT_now≈104.5, TEM~2.5%, days=62 → VT_mat≈110.4
+  { paymentDate: "2026-05-29", coupon: 0.0, amortization: 110.40, residual: 0.0 },
+];
+const s31g6Cashflows: CF[] = [
+  // S31G6: VT_now≈100.5, TEM~2.5%, days=156 → VT_mat≈114.0
+  { paymentDate: "2026-08-31", coupon: 0.0, amortization: 114.00, residual: 0.0 },
+];
+const s30s6Cashflows: CF[] = [
+  // S30S6: VT_now≈100.0, TEM~2.5%, days=186 → VT_mat≈115.8
+  { paymentDate: "2026-09-30", coupon: 0.0, amortization: 115.80, residual: 0.0 },
+];
+const s30o6Cashflows: CF[] = [
+  // S30O6: VT_now≈100.0, TEM~2.5%, days=216 → VT_mat≈117.4
+  { paymentDate: "2026-10-30", coupon: 0.0, amortization: 117.40, residual: 0.0 },
+];
+const s30n6Cashflows: CF[] = [
+  // S30N6: VT_now≈100.0, TEM~2.5%, days=247 → VT_mat≈119.4
+  { paymentDate: "2026-11-30", coupon: 0.0, amortization: 119.40, residual: 0.0 },
+];
+
+/**
+ * New BONCAP — single zero-coupon payment at maturity = VT_mat per 100 VN.
+ * VT estimates based on ~2.5% TEM. Refresh from BYMA/Abbaco.
+ */
+const t15e7Cashflows: CF[] = [
+  // T15E7: VT_now≈136, ~9.5 months → VT_mat≈166
+  { paymentDate: "2027-01-15", coupon: 0.0, amortization: 166.00, residual: 0.0 },
+];
+const t30a7Cashflows: CF[] = [
+  // T30A7: VT_now≈132, ~13 months → VT_mat≈176
+  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 176.00, residual: 0.0 },
+];
+const t31y7Cashflows: CF[] = [
+  // T31Y7: VT_now≈130, ~14 months → VT_mat≈180
+  { paymentDate: "2027-05-31", coupon: 0.0, amortization: 180.00, residual: 0.0 },
+];
+const t30j7Cashflows: CF[] = [
+  // T30J7: VT_now≈128, ~15 months → VT_mat≈184
+  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 184.00, residual: 0.0 },
+];
+
+/**
+ * TTD26 — Bono Dual (LECAP/TAMAR) Vto 31/12/2026
+ * YTW: CAP leg (fixed). VT_CAP estimated ≈ 143 (similar to TTJ26/TTS26 siblings).
+ */
+const ttd26Cashflows: CF[] = [
+  { paymentDate: "2025-01-29", coupon: 0.0, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-12-31", coupon: 0.0, amortization: 158.0, residual: 0.0 },
+];
+
+/**
+ * New TAMAR letters — single floating-rate bullet payment at maturity.
+ * VT_mat back-calculated assuming TAMAR ≈ 30% TNA from reference date 2026-03-28.
+ */
+const m30a6Cashflows: CF[] = [
+  // M30A6: ~33 days → VT_mat ≈ 101.5 × (1.30)^(33/365) ≈ 103.7
+  { paymentDate: "2026-04-30", coupon: 0.0, amortization: 103.70, residual: 0.0 },
+];
+const m31g6Cashflows: CF[] = [
+  // M31G6: ~156 days → VT_mat ≈ 100 × (1.30)^(156/365) ≈ 112.5
+  { paymentDate: "2026-08-31", coupon: 0.0, amortization: 112.50, residual: 0.0 },
+];
+const co2d7Cashflows: CF[] = [
+  // CO2D7: ~614 days → VT_mat ≈ 100 × (1.30)^(614/365) ≈ 162.0 (approximate)
+  { paymentDate: "2027-12-02", coupon: 0.0, amortization: 162.00, residual: 0.0 },
+];
+
+/**
+ * TZX series — zero-coupon CER bonds. Single payment of 100 at maturity.
+ * cerConfigMap = 100 (residual=100%; paridad = price / VT_now where VT_now = CER index).
+ * VT_now values for cerConfigMap must be refreshed daily as CER accretes.
+ */
+const tzx26Cashflows: CF[] = [
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const tzx27Cashflows: CF[] = [
+  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const tzxd6Cashflows: CF[] = [
+  { paymentDate: "2026-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const tzxo6Cashflows: CF[] = [
+  { paymentDate: "2026-10-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const tzxm7Cashflows: CF[] = [
+  { paymentDate: "2027-03-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const tzxd7Cashflows: CF[] = [
+  { paymentDate: "2027-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const tzxa7Cashflows: CF[] = [
+  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * TX26 — Bono del Tesoro en Pesos ajustado por CER 2.00% VTO. 09/11/2026
+ * Similar structure to TX28. Semi-annual coupon on residual. Started with 10 amort installments.
+ * By March 2026: residual ≈ 20% (8 of 10 installments paid: 10%×8=80% amortized).
+ * VT = residual × 100 = 20. Approximate — confirm from BYMA prospectus.
+ */
+const tx26Cashflows: CF[] = [
+  // ── Past payments (approximate) ──────────────────────────────────────────
+  { paymentDate: "2022-05-09", coupon: 1.00, amortization: 0.0,  residual: 1.0 },
+  { paymentDate: "2022-11-09", coupon: 1.00, amortization: 0.0,  residual: 1.0 },
+  { paymentDate: "2023-05-09", coupon: 1.00, amortization: 0.0,  residual: 1.0 },
+  { paymentDate: "2023-11-09", coupon: 1.00, amortization: 10.0, residual: 0.9 },
+  { paymentDate: "2024-05-09", coupon: 0.90, amortization: 10.0, residual: 0.8 },
+  { paymentDate: "2024-11-09", coupon: 0.80, amortization: 10.0, residual: 0.7 },
+  { paymentDate: "2025-05-09", coupon: 0.70, amortization: 10.0, residual: 0.6 },
+  { paymentDate: "2025-11-09", coupon: 0.60, amortization: 10.0, residual: 0.5 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-05-09", coupon: 0.50, amortization: 10.0, residual: 0.4 },
+  { paymentDate: "2026-11-09", coupon: 0.40, amortization: 40.0, residual: 0.0 }, // final bulk
+];
+
+/**
+ * TX31 — Bono del Tesoro en Pesos ajustado por CER 2.25% VTO. 09/11/2031
+ * 10% semi-annual amortization starting Nov 2027. Residual = 100% until then.
+ * Approximate — confirm from BYMA prospectus.
+ */
+const tx31Cashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2022-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2022-11-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-11-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2024-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2024-11-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2025-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2025-11-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  // ── Future coupon-only ────────────────────────────────────────────────────
+  { paymentDate: "2026-05-09", coupon: 1.13, amortization: 0.0,  residual: 1.0 },
+  { paymentDate: "2026-11-09", coupon: 1.13, amortization: 0.0,  residual: 1.0 },
+  { paymentDate: "2027-05-09", coupon: 1.13, amortization: 0.0,  residual: 1.0 },
+  // ── Amortization phase ────────────────────────────────────────────────────
+  { paymentDate: "2027-11-09", coupon: 1.13, amortization: 10.0, residual: 0.9 },
+  { paymentDate: "2028-05-09", coupon: 1.01, amortization: 10.0, residual: 0.8 },
+  { paymentDate: "2028-11-09", coupon: 0.90, amortization: 10.0, residual: 0.7 },
+  { paymentDate: "2029-05-09", coupon: 0.79, amortization: 10.0, residual: 0.6 },
+  { paymentDate: "2029-11-09", coupon: 0.68, amortization: 10.0, residual: 0.5 },
+  { paymentDate: "2030-05-09", coupon: 0.56, amortization: 10.0, residual: 0.4 },
+  { paymentDate: "2030-11-09", coupon: 0.45, amortization: 10.0, residual: 0.3 },
+  { paymentDate: "2031-05-09", coupon: 0.34, amortization: 10.0, residual: 0.2 },
+  { paymentDate: "2031-11-09", coupon: 0.23, amortization: 20.0, residual: 0.0 },
+];
+
+/**
+ * DICP — Discount en Pesos CER 5.83% TNA, quarterly, amortizable 2033.
+ * 2005 restructuring bond. Quarterly coupons + quarterly amortization from 2014.
+ * CER-adjusted: cerConfigMap = residual × 100 (approximate; by March 2026 residual ≈ 30%).
+ * Approximate cashflows — confirm exact schedule from prospectus.
+ */
+const dicpCashflows: CF[] = [
+  // ── Future payments only (past history omitted for brevity) ────────────────
+  { paymentDate: "2026-06-30", coupon: 0.44, amortization: 5.0, residual: 0.25 },
+  { paymentDate: "2026-09-30", coupon: 0.36, amortization: 5.0, residual: 0.20 },
+  { paymentDate: "2026-12-31", coupon: 0.29, amortization: 5.0, residual: 0.15 },
+  { paymentDate: "2027-03-31", coupon: 0.22, amortization: 5.0, residual: 0.10 },
+  { paymentDate: "2027-06-30", coupon: 0.15, amortization: 5.0, residual: 0.05 },
+  { paymentDate: "2027-09-30", coupon: 0.07, amortization: 5.0, residual: 0.00 },
+];
+
+/**
+ * PARP — Par en Pesos CER 2.51% TNA, quarterly coupon, bullet 2038.
+ * 2005 restructuring bond. Full principal at maturity, quarterly coupon on full residual.
+ * cerConfigMap = 100 (residual=100% until maturity). Approximate — confirm from prospectus.
+ */
+const parpCashflows: CF[] = [
+  // ── Future payments (quarterly coupon = 2.51/4 = 0.6275% per 100 VN) ─────
+  { paymentDate: "2026-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2035-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2035-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2035-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2035-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2036-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2036-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2036-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2036-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2037-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2037-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2037-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2037-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2038-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2038-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2038-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2038-12-31", coupon: 0.63, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * CUAP, DIP0, PAP0 — CER variants. Placeholder cashflows (single bullet).
+ * TODO: replace with exact schedules from prospectus.
+ */
+const cuapCashflows: CF[] = [
+  { paymentDate: "2045-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const dip0Cashflows: CF[] = [
+  { paymentDate: "2033-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+const pap0Cashflows: CF[] = [
+  { paymentDate: "2038-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * GD29D — Bono del Tesoro en Dólares 2029 (Ley Nueva York)
+ * Bullet bond (no amortization). Step-up coupon schedule (semi-annual).
+ * Part of the 2020 restructuring. Approximate coupon schedule.
+ */
+const gd29dCashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2021-07-09", coupon: 0.25, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2022-01-09", coupon: 0.25, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2022-07-09", coupon: 0.25, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-01-09", coupon: 0.38, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-07-09", coupon: 0.38, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2024-01-09", coupon: 0.50, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2024-07-09", coupon: 0.50, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2025-01-09", coupon: 0.88, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2025-07-09", coupon: 0.88, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-01-09", coupon: 0.88, amortization: 0.0, residual: 1.0 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-07-09", coupon: 1.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-01-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-07-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-01-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-07-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-01-09", coupon: 1.81, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * AL29D — Bono del Tesoro en Dólares 2029 (Ley Argentina)
+ * Same structure as GD29D (Argentine law counterpart).
+ */
+const al29dCashflows: CF[] = gd29dCashflows;
+
+/**
+ * AN29D — Bono del Tesoro en Dólares 2029 Serie II (Ley Argentina)
+ * Approximate: semi-annual coupon, bullet. TODO: confirm exact schedule.
+ */
+const an29dCashflows: CF[] = [
+  { paymentDate: "2026-09-07", coupon: 1.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-03-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-09-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-03-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-09-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-09-07", coupon: 1.81, amortization: 100.0, residual: 0.0 },
+];
+
+/**
+ * BOPREAL cashflows — USD bonds issued by BCRA in 2024 to settle importer debts.
+ * Semi-annual coupon ~3% TNA. Approximate schedules — confirm from BCRA prospectus.
+ */
+const bpa7dCashflows: CF[] = [
+  { paymentDate: "2026-08-28", coupon: 1.50, amortization: 25.0, residual: 0.75 },
+  { paymentDate: "2027-02-28", coupon: 1.13, amortization: 25.0, residual: 0.50 },
+  { paymentDate: "2027-08-28", coupon: 0.75, amortization: 25.0, residual: 0.25 },
+  { paymentDate: "2027-02-28", coupon: 0.38, amortization: 25.0, residual: 0.00 },
+];
+const bpa8dCashflows: CF[] = [
+  { paymentDate: "2026-08-28", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
+  { paymentDate: "2027-02-28", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
+  { paymentDate: "2027-08-28", coupon: 1.50, amortization: 25.0, residual: 0.75 },
+  { paymentDate: "2028-02-28", coupon: 1.13, amortization: 25.0, residual: 0.50 },
+  { paymentDate: "2028-08-28", coupon: 0.75, amortization: 25.0, residual: 0.25 },
+  { paymentDate: "2028-02-28", coupon: 0.38, amortization: 25.0, residual: 0.00 },
+];
+const bpb7dCashflows: CF[] = [
+  { paymentDate: "2026-11-30", coupon: 1.50, amortization: 33.0, residual: 0.67 },
+  { paymentDate: "2027-05-31", coupon: 1.00, amortization: 33.0, residual: 0.34 },
+  { paymentDate: "2027-05-31", coupon: 0.51, amortization: 34.0, residual: 0.00 },
+];
+const bpb8dCashflows: CF[] = [
+  { paymentDate: "2026-11-30", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
+  { paymentDate: "2027-05-31", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
+  { paymentDate: "2027-11-30", coupon: 1.50, amortization: 33.0, residual: 0.67 },
+  { paymentDate: "2028-05-31", coupon: 1.00, amortization: 33.0, residual: 0.34 },
+  { paymentDate: "2028-05-31", coupon: 0.51, amortization: 34.0, residual: 0.00 },
+];
+const bpc7dCashflows: CF[] = [
+  { paymentDate: "2027-02-28", coupon: 1.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2027-08-31", coupon: 0.75, amortization: 50.0, residual: 0.00 },
+];
+const bpd7dCashflows: CF[] = [
+  { paymentDate: "2027-05-31", coupon: 1.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2027-11-30", coupon: 0.75, amortization: 50.0, residual: 0.00 },
+];
+const bpy6dCashflows: CF[] = [
+  { paymentDate: "2026-06-30", coupon: 1.50, amortization: 100.0, residual: 0.00 },
+];
+
+/**
+ * Sub-sovereign USD bonds — approximate cashflows.
+ * TODO: replace with exact schedules from each province's prospectus.
+ */
+const ba37dCashflows: CF[] = [
+  { paymentDate: "2026-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2035-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2035-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2036-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2036-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2037-01-26", coupon: 3.94, amortization: 100.0, residual: 0.0 },
+];
+// BB37D, BC37D — use similar structure as BA37D placeholder
+const bb37dCashflows: CF[] = ba37dCashflows;
+const bc37dCashflows: CF[] = ba37dCashflows;
+
+const co26Cashflows: CF[] = [
+  { paymentDate: "2026-06-10", coupon: 3.5,  amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-12-10", coupon: 3.5,  amortization: 100.0, residual: 0.0 },
+];
+const co32dCashflows: CF[] = [
+  { paymentDate: "2026-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-03-01", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+];
+const erf25Cashflows: CF[] = [
+  { paymentDate: "2025-02-28", coupon: 4.25, amortization: 100.0, residual: 0.0 },
+];
+const erm33Cashflows: CF[] = [
+  { paymentDate: "2026-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-08-08", coupon: 4.00, amortization: 100.0, residual: 0.0 },
+];
+const ndt25Cashflows: CF[] = [
+  { paymentDate: "2025-07-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+];
+const pmm29Cashflows: CF[] = [
+  { paymentDate: "2029-01-01", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+];
+const sa24dCashflows: CF[] = [
+  { paymentDate: "2024-03-01", coupon: 4.00, amortization: 100.0, residual: 0.0 },
+];
+const sfd34Cashflows: CF[] = [
+  { paymentDate: "2026-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2027-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2028-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2029-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2030-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2031-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2032-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2033-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2034-03-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+];
+
+// Sub-sovereign ARS floating — approximate BADLAR structure similar to PR17.
+// TODO: replace with exact schedules per province prospectus.
+const baf27Cashflows: CF[] = [
+  { paymentDate: "2026-05-01", coupon: 6.50, amortization: 10.0, residual: 0.90 },
+  { paymentDate: "2026-08-01", coupon: 5.85, amortization: 10.0, residual: 0.80 },
+  { paymentDate: "2026-11-01", coupon: 5.20, amortization: 10.0, residual: 0.70 },
+  { paymentDate: "2027-02-01", coupon: 4.55, amortization: 10.0, residual: 0.60 },
+  { paymentDate: "2027-05-01", coupon: 3.90, amortization: 60.0, residual: 0.00 },
+];
+const bdc28Cashflows: CF[] = [
+  { paymentDate: "2026-07-01", coupon: 6.50, amortization: 10.0, residual: 0.90 },
+  { paymentDate: "2026-10-01", coupon: 5.85, amortization: 10.0, residual: 0.80 },
+  { paymentDate: "2027-01-01", coupon: 5.20, amortization: 10.0, residual: 0.70 },
+  { paymentDate: "2027-04-01", coupon: 4.55, amortization: 10.0, residual: 0.60 },
+  { paymentDate: "2027-07-01", coupon: 3.90, amortization: 10.0, residual: 0.50 },
+  { paymentDate: "2027-10-01", coupon: 3.25, amortization: 10.0, residual: 0.40 },
+  { paymentDate: "2028-01-01", coupon: 2.60, amortization: 40.0, residual: 0.00 },
+];
+const pby26Cashflows: CF[] = [
+  { paymentDate: "2026-06-01", coupon: 6.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.00 },
+];
+const pmd26Cashflows: CF[] = [
+  { paymentDate: "2026-06-01", coupon: 6.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.00 },
+];
+
+/**
  * TMF27 — Bono del Tesoro Nacional en Pesos (TAMAR) Vto 26/02/2027
  * Bullet, zero-coupon structure: accretes daily at TAMAR floating rate.
  * VT_maturity back-calc: 106.65 × (1.3392)^(335/365) ≈ 139.5 per 100 VN (snapshot 2026-03-27)
@@ -898,11 +1868,64 @@ const cashflowMap: Record<string, CF[]> = {
   S30A6: s30a6Cashflows,
   S31L6: s31l6Cashflows,
   T30J6: t30j6Cashflows,
+  T15E7: t15e7Cashflows,
+  T30A7: t30a7Cashflows,
+  T31Y7: t31y7Cashflows,
+  T30J7: t30j7Cashflows,
   TMF27: tmf27Cashflows,
+  M30A6: m30a6Cashflows,
+  M31G6: m31g6Cashflows,
+  CO2D7: co2d7Cashflows,
   TTJ26: ttj26Cashflows,
   TTS26: tts26Cashflows,
+  TTD26: ttd26Cashflows,
   TX28: tx28Cashflows,
+  TX26: tx26Cashflows,
+  TX31: tx31Cashflows,
   TZX28: tzx28Cashflows,
+  TZX26: tzx26Cashflows,
+  TZX27: tzx27Cashflows,
+  TZXD6: tzxd6Cashflows,
+  TZXO6: tzxo6Cashflows,
+  TZXM7: tzxm7Cashflows,
+  TZXD7: tzxd7Cashflows,
+  TZXA7: tzxa7Cashflows,
+  DICP:  dicpCashflows,
+  PARP:  parpCashflows,
+  CUAP:  cuapCashflows,
+  DIP0:  dip0Cashflows,
+  PAP0:  pap0Cashflows,
+  S15Y6: s15y6Cashflows,
+  S29Y6: s29y6Cashflows,
+  S31G6: s31g6Cashflows,
+  S30S6: s30s6Cashflows,
+  S30O6: s30o6Cashflows,
+  S30N6: s30n6Cashflows,
+  GD29D: gd29dCashflows,
+  AL29D: al29dCashflows,
+  AN29D: an29dCashflows,
+  BPA7D: bpa7dCashflows,
+  BPA8D: bpa8dCashflows,
+  BPB7D: bpb7dCashflows,
+  BPB8D: bpb8dCashflows,
+  BPC7D: bpc7dCashflows,
+  BPD7D: bpd7dCashflows,
+  BPY6D: bpy6dCashflows,
+  BA37D: ba37dCashflows,
+  BB37D: bb37dCashflows,
+  BC37D: bc37dCashflows,
+  CO26D:  co26Cashflows,
+  CO32D: co32dCashflows,
+  ERF25D: erf25Cashflows,
+  ERM33D: erm33Cashflows,
+  NDT5D: ndt25Cashflows,
+  PM29D: pmm29Cashflows,
+  S24DD: sa24dCashflows,
+  SFD4D: sfd34Cashflows,
+  BAF27: baf27Cashflows,
+  BDC28: bdc28Cashflows,
+  PBY26: pby26Cashflows,
+  PMD26: pmd26Cashflows,
   YPF24: ypf24Cashflows,
   PAMP27: pamp27Cashflows,
   TECO27: teco27Cashflows,
@@ -941,7 +1964,39 @@ const cerConfigMap: Record<string, number> = {
   // CER bonds — valorTecnico = residual × 100 (same basis as cashflows % of original VN)
   // parityPct = price / valorTecnico; price = paridad × residual × 100
   TX28: 60,     // residual=60% → VT=60; price=57.74 (=96.23% parity × 60)
+  TX26: 20,     // residual≈20% (8/10 amort paid) → VT=20; TODO: refresh
+  TX31: 100,    // residual=100% (no amort yet) → VT=100
   TZX28: 100,   // residual=100% → VT=100; price=84.68 (=84.68% parity × 100)
+  TZX26: 100,   // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
+  TZX27: 100,   // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
+  TZXD6: 100,
+  TZXO6: 100,
+  TZXM7: 100,
+  TZXD7: 100,
+  TZXA7: 100,
+  DICP:  30,    // residual≈30% (approximate March 2026) → VT=30
+  PARP:  100,   // residual=100% (bullet) → VT=100
+  CUAP:  100,   // residual=100% → VT=100
+  DIP0:  100,
+  PAP0:  100,
+  // New LECAP
+  S15Y6: 105.0,
+  S29Y6: 104.5,
+  S31G6: 100.5,
+  S30S6: 100.0,
+  S30O6: 100.0,
+  S30N6: 100.0,
+  // New BONCAP
+  T15E7: 136.0,
+  T30A7: 132.0,
+  T31Y7: 130.0,
+  T30J7: 128.0,
+  // Dual
+  TTD26: 143.0,
+  // TAMAR
+  M30A6: 101.5,
+  M31G6: 100.0,
+  CO2D7: 100.0,
 };
 
 async function seed(): Promise<void> {

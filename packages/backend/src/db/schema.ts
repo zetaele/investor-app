@@ -12,7 +12,7 @@ export const instruments = sqliteTable("instruments", {
   maturityDate: text("maturity_date").notNull(),
   subtype: text("subtype", {
     enum: [
-      "BONCAP", "DUAL", "SOV_USD_ARG", "SOV_USD_EXT",
+      "BONCAP", "BOPREAL", "DUAL", "SOV_USD_ARG", "SOV_USD_EXT",
       "TASA_FIJA_ARS", "TASA_CER", "TASA_FLOTANTE",
       "SUBSOBERANO_DL", "SUBSOBERANO_FIJA_USD", "SUBSOBERANO_FLOTANTE",
       "LECAP", "LECER", "TAMAR", "LELINK",
