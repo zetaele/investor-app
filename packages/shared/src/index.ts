@@ -17,6 +17,8 @@ export type {
   CompareEntry,
 } from "./types/analytics.js";
 export type { FxRate, FxRates } from "./types/fx.js";
+export type { CalendarPayment, CalendarMonth } from "./types/calendar.js";
+export type { PortfolioSummary, PortfolioDetail, PortfolioHolding } from "./types/portfolio.js";
 
 // Schemas
 export {

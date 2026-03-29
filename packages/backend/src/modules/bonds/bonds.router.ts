@@ -84,6 +84,8 @@ export function bondsRouter(bondsService: BondsService) {
           params.data.ticker,
           input,
           query.data.displayCurrency,
+          query.data.quantity,
+          query.data.settlementDate,
         );
         return reply.send({ data: result });
       } catch (err) {

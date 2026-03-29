@@ -53,9 +53,16 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/calendar",
-      name: "calendar",
-      component: () => import("@/views/CalendarView.vue"),
+      path: "/portfolios",
+      name: "portfolios",
+      component: () => import("@/views/PortfoliosView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/portfolios/:id",
+      name: "portfolio",
+      component: () => import("@/views/PortfolioView.vue"),
+      props: true,
       meta: { requiresAuth: true },
     },
     {

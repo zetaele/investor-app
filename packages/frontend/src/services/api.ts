@@ -6,7 +6,13 @@ import type {
   InstrumentAnalysis,
   SimulationResult,
   InstrumentType,
+  PortfolioSummary,
+  PortfolioDetail,
+  CalendarMonth,
+  CalendarPayment,
 } from "@investor-app/shared";
+
+export type { CalendarPayment, CalendarMonth, PortfolioSummary, PortfolioDetail };
 
 const BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "/api/v1";
 
@@ -41,12 +47,37 @@ async function get<T>(path: string, params?: Record<string, string>): Promise<T>
   return response.json() as Promise<T>;
 }
 
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const url = new URL(`${BASE_URL}${path}`, window.location.origin);
+  const response = await fetch(url.toString(), {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new ApiError(response.status, (err as { error: string }).error ?? "Unknown error");
+  }
+  return response.json() as Promise<T>;
+}
+
+async function del(path: string): Promise<void> {
+  const url = new URL(`${BASE_URL}${path}`, window.location.origin);
+  const response = await fetch(url.toString(), { method: "DELETE", credentials: "include" });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new ApiError(response.status, (err as { error: string }).error ?? "Unknown error");
+  }
+}
+
 // ── Instruments ───────────────────────────────────────────────────────────────
 
 /** Simulates bond metrics at a hypothetical price or YTM. */
 export async function fetchSimulation(
   ticker: string,
   input: { price: number } | { ytm: number },
+  options?: { quantity?: number; settlementDate?: string },
 ): Promise<SimulationResult> {
   const params: Record<string, string> = {};
   if ("price" in input) {
@@ -54,6 +85,8 @@ export async function fetchSimulation(
   } else {
     params["ytm"] = String(input.ytm);
   }
+  if (options?.quantity !== undefined) params["quantity"] = String(options.quantity);
+  if (options?.settlementDate !== undefined) params["settlementDate"] = options.settlementDate;
   const res = await get<{ data: SimulationResult }>(`/instruments/${ticker}/simulate`, params);
   return res.data;
 }
@@ -68,7 +101,9 @@ export async function fetchInstruments(filters?: {
   if (filters?.currency !== undefined) params["currency"] = filters.currency;
 
   const res = await get<{ data: Instrument[] }>("/instruments", params);
-  return res.data;
+  return res.data.sort((a, b) => {
+    return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+  });
 }
 
 /** Returns static data for a single instrument. */
@@ -109,26 +144,50 @@ export async function fetchFxRates(): Promise<FxRates> {
   return res.data;
 }
 
-export interface CalendarPayment {
-  paymentDate: string;
-  ticker: string;
-  instrumentName: string;
-  instrumentType: "BOND" | "LETTER" | "ON";
-  currency: "ARS" | "USD" | "USD_LINKED";
-  coupon: number;
-  amortization: number;
-  totalFlow: number;
-  residualAfter: number;
-}
-
-export interface CalendarMonth {
-  month: string;
-  label: string;
-  payments: CalendarPayment[];
-}
+// ── Calendar ──────────────────────────────────────────────────────────────────
 
 export async function fetchCalendar(daysAhead = 730): Promise<CalendarMonth[]> {
   const res = await get<{ data: CalendarMonth[] }>("/calendar", {
+    days: String(daysAhead),
+  });
+  return res.data;
+}
+
+// ── Portfolios ────────────────────────────────────────────────────────────────
+
+export async function fetchPortfolios(): Promise<PortfolioSummary[]> {
+  const res = await get<{ data: PortfolioSummary[] }>("/portfolios");
+  return res.data;
+}
+
+export async function createPortfolio(name: string): Promise<PortfolioSummary> {
+  const res = await post<{ data: PortfolioSummary }>("/portfolios", { name });
+  return res.data;
+}
+
+export async function fetchPortfolioDetail(id: number): Promise<PortfolioDetail> {
+  const res = await get<{ data: PortfolioDetail }>(`/portfolios/${id}`);
+  return res.data;
+}
+
+export async function addToPortfolio(
+  portfolioId: number,
+  ticker: string,
+  quantity: number,
+  purchasePrice?: number,
+): Promise<void> {
+  await post(`/portfolios/${portfolioId}/instruments`, { ticker, quantity, purchasePrice });
+}
+
+export async function removeFromPortfolio(portfolioId: number, ticker: string): Promise<void> {
+  await del(`/portfolios/${portfolioId}/instruments/${ticker}`);
+}
+
+export async function fetchPortfolioCalendar(
+  portfolioId: number,
+  daysAhead = 730,
+): Promise<CalendarMonth[]> {
+  const res = await get<{ data: CalendarMonth[] }>(`/portfolios/${portfolioId}/calendar`, {
     days: String(daysAhead),
   });
   return res.data;

@@ -47,6 +47,8 @@ export const simulateQuerySchema = z
     price: z.coerce.number().positive().optional(),
     ytm: z.coerce.number().min(-0.999).max(100).optional(),
     displayCurrency: currencySchema.optional(),
+    quantity: z.coerce.number().positive().optional(),
+    settlementDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   })
   .refine((d) => (d.price !== undefined) !== (d.ytm !== undefined), {
     message: "Provide exactly one of: price or ytm",

@@ -61,12 +61,23 @@ export class BondsService {
     const settlement = new Date();
     settlement.setDate(settlement.getDate() + 1);
 
-    // 5. Run financial calculations
+    // 5. Resolve valor técnico:
+    //    - Static config value (CER/TAMAR/DUAL) takes precedence.
+    //    - Otherwise compute dynamically as sum of remaining amortizations —
+    //      this correctly handles partially-amortized bonds (AL29, GD29, etc.)
+    //      where the residual changes over time.
+    const effectiveVT =
+      valorTecnico ??
+      cashflows
+        .filter((cf) => new Date(cf.paymentDate) > settlement)
+        .reduce((sum, cf) => sum + cf.amortization, 0);
+
+    // 6. Run financial calculations
     const { cashflowsWithPV, ...calculations } = calcBondAnalysis(
       cashflows,
       displayPrice,
       settlement,
-      valorTecnico !== undefined ? { valorTecnico } : undefined,
+      { valorTecnico: effectiveVT },
     );
 
     // Include past cashflows (PV = 0) so the UI can optionally display them.
@@ -107,6 +118,8 @@ export class BondsService {
     ticker: string,
     input: { price: number } | { ytm: number },
     displayCurrency: Currency | undefined,
+    quantity?: number,
+    settlementDateStr?: string,
   ): Promise<SimulationResult> {
     const [instrument, cashflows, valorTecnico] = await Promise.all([
       getInstrument(ticker),
@@ -116,15 +129,21 @@ export class BondsService {
 
     const effectiveCurrency = displayCurrency ?? instrument.currency;
 
-    const settlement = new Date();
-    settlement.setDate(settlement.getDate() + 1);
+    // Use user-supplied settlement date or default to T+1
+    const settlement = settlementDateStr
+      ? new Date(`${settlementDateStr}T12:00:00Z`)
+      : (() => {
+          const d = new Date();
+          d.setDate(d.getDate() + 1);
+          return d;
+        })();
 
-    let dirtyPrice: number;
+    let cleanPrice: number;
     let inputType: "price" | "ytm";
     let inputValue: number;
 
     if ("price" in input) {
-      // price → YTM: convert input price to instrument currency for calculation
+      // price → YTM: input is a clean (quoted) price, convert currency if needed
       let calcPrice = input.price;
       if (effectiveCurrency !== instrument.currency) {
         const rates = await this.fxService.getRates();
@@ -135,16 +154,16 @@ export class BondsService {
           rates.mep.rate,
         );
       }
-      dirtyPrice = calcPrice;
+      cleanPrice = calcPrice;
       inputType = "price";
       inputValue = input.price;
     } else {
-      // YTM → price: solve theoretical price in instrument currency, then convert to display
-      dirtyPrice = calcPriceFromYTM(cashflows, settlement, input.ytm);
+      // YTM → price: solve theoretical clean price in instrument currency, then convert to display
+      cleanPrice = calcPriceFromYTM(cashflows, settlement, input.ytm);
       if (effectiveCurrency !== instrument.currency) {
         const rates = await this.fxService.getRates();
-        dirtyPrice = this.convertPrice(
-          dirtyPrice,
+        cleanPrice = this.convertPrice(
+          cleanPrice,
           instrument.currency,
           effectiveCurrency,
           rates.mep.rate,
@@ -154,20 +173,36 @@ export class BondsService {
       inputValue = input.ytm;
     }
 
+    const effectiveVT =
+      valorTecnico ??
+      cashflows
+        .filter((cf) => new Date(cf.paymentDate) > settlement)
+        .reduce((sum, cf) => sum + cf.amortization, 0);
+
     const { cashflowsWithPV, ...calculations } = calcBondAnalysis(
       cashflows,
-      dirtyPrice,
+      cleanPrice,
       settlement,
-      valorTecnico !== undefined ? { valorTecnico } : undefined,
+      { valorTecnico: effectiveVT },
     );
 
-    return {
+    const settlementDate = settlement.toISOString().slice(0, 10);
+
+    const result: SimulationResult = {
       ticker,
       inputType,
       inputValue,
+      settlementDate,
       calculations,
       cashflows: cashflowsWithPV,
     };
+
+    if (quantity !== undefined) {
+      result.quantity = quantity;
+      result.totalCost = Math.round(quantity * calculations.dirtyPrice) / 100;
+    }
+
+    return result;
   }
 
   // ── Private helpers ──────────────────────────────────────────────────────────

@@ -122,3 +122,35 @@ export const sessions = sqliteTable("sessions", {
     .references(() => users.id),
   expiresAt: text("expires_at").notNull(),
 });
+
+/** Investment portfolios — one per user initially, multiple in future. */
+export const portfolios = sqliteTable("portfolios", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  name: text("name").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+});
+
+/** Instruments held in a portfolio with quantity and optional purchase price. */
+export const portfolioInstruments = sqliteTable("portfolio_instruments", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  portfolioId: integer("portfolio_id")
+    .notNull()
+    .references(() => portfolios.id),
+  /** Instrument ticker (e.g. "AL30D"). Denormalized for query simplicity. */
+  ticker: text("ticker").notNull(),
+  /** Nominal value held (VN). e.g. 10000 means 10,000 VN. */
+  quantity: real("quantity").notNull(),
+  /** Clean price at time of purchase (optional). Used for P&L in Phase 3. */
+  purchasePrice: real("purchase_price"),
+  addedAt: text("added_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
+});

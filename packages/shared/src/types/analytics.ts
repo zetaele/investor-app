@@ -24,6 +24,8 @@ export interface BondCalculations {
   parityPct: number;
   /** Tasa Nominal Anual: m × ((1+YTM)^(1/m) − 1), where m = payments per year. */
   tna: number;
+  /** Tasa Efectiva Mensual: (1+YTM)^(1/12) − 1. */
+  tem: number;
   /** Current yield: annual coupon / dirty price. NaN for zero-coupon instruments. */
   currentYield: number;
 }
@@ -58,6 +60,12 @@ export interface SimulationResult {
   inputType: "price" | "ytm";
   /** The value supplied by the user (price in currency units or YTM as decimal). */
   inputValue: number;
+  /** The settlement date used for the calculation (ISO date string YYYY-MM-DD). */
+  settlementDate: string;
+  /** Number of nominal units (VN) to purchase. */
+  quantity?: number;
+  /** Total acquisition cost = quantity × dirtyPrice / 100. Only present when quantity is given. */
+  totalCost?: number;
   calculations: BondCalculations;
   cashflows: CashflowWithPV[];
 }

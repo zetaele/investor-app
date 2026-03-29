@@ -17,7 +17,7 @@ const MOCK_PRICES: Record<string, number> = {
   AL30D: 60.55,
   GD30D: 62.33,
   AL35D: 74.07,
-  GD35D: 75.30,
+  GD35D: 75.3,
   AO27D: 101.9,
   AL29D: 61.69,
   AN29D: 91.3,
@@ -28,10 +28,10 @@ const MOCK_PRICES: Record<string, number> = {
   D30S6: 137500,
 
   // ── Floating-rate ARS sovereign bonds ────────────────────────────────────
-  PR17: 795.6,  // price in ARS per unit (VN≈855)
+  PR17: 795.6, // price in ARS per unit (VN≈855)
 
   // ── Fixed-rate ARS sovereign bonds ───────────────────────────────────────
-  TO26:  100.95,
+  TO26: 100.95,
   TY30P: 117.4,
 
   // ── Treasury letters — ARS CER-adjusted (LECER, price in ARS) ────────────
@@ -49,8 +49,8 @@ const MOCK_PRICES: Record<string, number> = {
   S15Y6: 101.94,
   S29Y6: 126.8,
   S31G6: 114.14,
-  S30S6: 103.00,
-  S30O6: 116.00,
+  S30S6: 103.0,
+  S30O6: 116.0,
   S30N6: 109.1,
 
   // ── TAMAR / Dual sovereign bonds — ARS ───────────────────────────────────
@@ -59,7 +59,7 @@ const MOCK_PRICES: Record<string, number> = {
   TTS26: 151.9,
 
   // ── CER-adjusted sovereign bonds — ARS (price in ARS) ────────────────────
-  TX28: 1915.00,
+  TX28: 1915.0,
   TZX28: 308.4,
 
   // ── BOPREAL — BCRA bonds USD ──────────────────────────────────────────────
@@ -72,10 +72,10 @@ const MOCK_PRICES: Record<string, number> = {
   BPY6D: 36.3,
 
   // ── BONCAP — ARS (price in ARS per 100 VN) ───────────────────────────────
-  T15E7: 130.60,
+  T15E7: 130.6,
   T30A7: 118.2,
   T31Y7: 111.45,
-  T30J7: 113.00,
+  T30J7: 113.0,
 
   // ── Dual ──────────────────────────────────────────────────────────────────
   TTD26: 150.25,
@@ -95,35 +95,35 @@ const MOCK_PRICES: Record<string, number> = {
   TZXA7: 110.5,
 
   // ── CER bonds with coupon — ARS (price in ARS) ────────────────────────────
-  TX26:  1314.00,
-  TX31:  1359.00,
-  DICP:  48570.00,
-  PARP:  32690.00,
-  CUAP:  39870.00,
-  DIP0:  48500.00,
-  PAP0:  32750.00,
+  TX26: 1314.0,
+  TX31: 1359.0,
+  DICP: 48570.0,
+  PARP: 32690.0,
+  CUAP: 39870.0,
+  DIP0: 48500.0,
+  PAP0: 32750.0,
 
   // ── Sub-soberanos USD ─────────────────────────────────────────────────────
-  BA37D:  69.6,
-  BB37D:  70.0,
-  BC37D:  67.7,
-  CO26D:  10.59,
-  CO32D:  109.45,
+  BA37D: 69.6,
+  BB37D: 70.0,
+  BC37D: 67.7,
+  CO26D: 10.59,
+  CO32D: 109.45,
   ERF25D: 45.6,
   ERM33D: 101.0,
-  NDT5D:  72.75,
-  PM29D:  45.85,
-  S24DD:  51.9,
-  SFD4D:  102.0,
+  NDT5D: 72.75,
+  PM29D: 45.85,
+  S24DD: 51.9,
+  SFD4D: 102.0,
 
   // ── Sub-soberanos ARS flotante ────────────────────────────────────────────
-  BAF27:  103.0,
-  BDC28:  103.0,
-  PBY26:  105.3,
-  PMD26:  101.5,
+  BAF27: 103.0,
+  BDC28: 103.0,
+  PBY26: 105.3,
+  PMD26: 101.5,
 
   // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
-  YPF24:  99.5,
+  YPF24: 99.5,
   PAMP27: 95.5,
   TECO27: 98.2,
 };

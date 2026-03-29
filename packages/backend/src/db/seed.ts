@@ -130,7 +130,7 @@ const instrumentsData = [
     subtype: "SOV_USD_EXT" as const,
     currency: "USD" as const,
     issuer: "Tesoro Nacional",
-    maturityDate: "2029-01-09",
+    maturityDate: "2029-07-09",
   },
   // ── BOPREAL — Bonos para la Reconstrucción de una Argentina Libre (BCRA) ──
   {
@@ -1088,31 +1088,34 @@ const gd46dCashflows: CF[] = [
 
 /**
  * AO27 — Bonar 2027 (Ley Argentina)
- * Bullet: cupón 6% TNA pagadero mensualmente (6%/12 = 0.50 por c/100 nominal).
- * Licitación inaugural feb-2026: precio de corte USD 1.004,50 / USD 1.000 VN → TIREA 5,89%.
- * Vencimiento: 29-oct-2027. Fechas ajustadas por calendario BYMA (fin de mes hábil).
+ * Bullet: cupón 6% TNA pagadero mensualmente. Convención: US 30/360 (NASD).
+ * Fecha de emisión/inicio de devengamiento: 27-feb-2026 (Balanz data).
+ * Cupones calculados como: 6% × días_30360US(prev, next) / 360 × 100 VN.
+ * Phantom row (2026-02-27, coupon=0) marca el inicio del primer período para el cálculo
+ * de interés corrido; el frontend lo filtra automáticamente de la tabla de flujos.
  */
 const ao27dCashflows: CF[] = [
-  { paymentDate: "2026-03-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-04-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-05-29", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-06-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-07-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-08-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-09-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-10-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-11-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-12-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-01-29", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-02-26", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-03-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-04-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-05-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-06-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-07-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-08-31", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-09-30", coupon: 0.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-10-29", coupon: 0.5, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-02-27", coupon: 0.0, amortization: 0.0, residual: 1.0 }, // issue date marker
+  { paymentDate: "2026-03-31", coupon: 0.5667, amortization: 0.0, residual: 1.0 }, // 34 days
+  { paymentDate: "2026-04-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2026-05-29", coupon: 0.4833, amortization: 0.0, residual: 1.0 }, // 29 days (adj)
+  { paymentDate: "2026-06-30", coupon: 0.5167, amortization: 0.0, residual: 1.0 }, // 31 days (adj)
+  { paymentDate: "2026-07-31", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2026-08-31", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2026-09-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2026-10-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2026-11-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2026-12-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-01-29", coupon: 0.4833, amortization: 0.0, residual: 1.0 }, // 29 days (adj)
+  { paymentDate: "2027-02-26", coupon: 0.45, amortization: 0.0, residual: 1.0 }, // 27 days (adj)
+  { paymentDate: "2027-03-31", coupon: 0.5833, amortization: 0.0, residual: 1.0 }, // 35 days (adj)
+  { paymentDate: "2027-04-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-05-31", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-06-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-07-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-08-31", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-09-30", coupon: 0.5, amortization: 0.0, residual: 1.0 }, // 30 days
+  { paymentDate: "2027-10-29", coupon: 0.4833, amortization: 100.0, residual: 0.0 }, // 29 days (adj)
 ];
 
 /**
@@ -1123,8 +1126,8 @@ const ao27dCashflows: CF[] = [
  * Reference date for VT calculations: 2026-03-26.
  */
 const s17a6Cashflows: CF[] = [
-  // S17A6: TNM=3.0%, VT=1.060938, maturity 2026-04-17 → months=0.7 → VT_mat≈109.89
-  { paymentDate: "2026-04-17", coupon: 0.0, amortization: 109.89, residual: 0.0 },
+  // S17A6: issue 15/12/2025, TEM=2.40%, 122 days (30/360) → VT_mat=110.13
+  { paymentDate: "2026-04-17", coupon: 0.0, amortization: 110.13, residual: 0.0 },
 ];
 const s30a6Cashflows: CF[] = [
   // S30A6: TNM=3.0%, VT=1.074016, maturity 2026-04-30 → months=1.133 → VT_mat≈125.56
@@ -1146,28 +1149,28 @@ const t30j6Cashflows: CF[] = [
  * Refresh from BYMA/Abbaco as CER/TEM accretes.
  */
 const s15y6Cashflows: CF[] = [
-  // S15Y6: VT_now≈105.0, TEM~2.5%, days=48 → VT_mat≈109.7
-  { paymentDate: "2026-05-15", coupon: 0.0, amortization: 109.70, residual: 0.0 },
+  // S15Y6: issue 16/03/2026, TEM=2.60%, 59 days (30/360) → VT_mat=105.18
+  { paymentDate: "2026-05-15", coupon: 0.0, amortization: 105.18, residual: 0.0 },
 ];
 const s29y6Cashflows: CF[] = [
   // S29Y6: VT_now≈104.5, TEM~2.5%, days=62 → VT_mat≈110.4
-  { paymentDate: "2026-05-29", coupon: 0.0, amortization: 110.40, residual: 0.0 },
+  { paymentDate: "2026-05-29", coupon: 0.0, amortization: 110.4, residual: 0.0 },
 ];
 const s31g6Cashflows: CF[] = [
   // S31G6: VT_now≈100.5, TEM~2.5%, days=156 → VT_mat≈114.0
-  { paymentDate: "2026-08-31", coupon: 0.0, amortization: 114.00, residual: 0.0 },
+  { paymentDate: "2026-08-31", coupon: 0.0, amortization: 114.0, residual: 0.0 },
 ];
 const s30s6Cashflows: CF[] = [
   // S30S6: VT_now≈100.0, TEM~2.5%, days=186 → VT_mat≈115.8
-  { paymentDate: "2026-09-30", coupon: 0.0, amortization: 115.80, residual: 0.0 },
+  { paymentDate: "2026-09-30", coupon: 0.0, amortization: 115.8, residual: 0.0 },
 ];
 const s30o6Cashflows: CF[] = [
   // S30O6: VT_now≈100.0, TEM~2.5%, days=216 → VT_mat≈117.4
-  { paymentDate: "2026-10-30", coupon: 0.0, amortization: 117.40, residual: 0.0 },
+  { paymentDate: "2026-10-30", coupon: 0.0, amortization: 117.4, residual: 0.0 },
 ];
 const s30n6Cashflows: CF[] = [
   // S30N6: VT_now≈100.0, TEM~2.5%, days=247 → VT_mat≈119.4
-  { paymentDate: "2026-11-30", coupon: 0.0, amortization: 119.40, residual: 0.0 },
+  { paymentDate: "2026-11-30", coupon: 0.0, amortization: 119.4, residual: 0.0 },
 ];
 
 /**
@@ -1176,19 +1179,19 @@ const s30n6Cashflows: CF[] = [
  */
 const t15e7Cashflows: CF[] = [
   // T15E7: VT_now≈136, ~9.5 months → VT_mat≈166
-  { paymentDate: "2027-01-15", coupon: 0.0, amortization: 166.00, residual: 0.0 },
+  { paymentDate: "2027-01-15", coupon: 0.0, amortization: 166.0, residual: 0.0 },
 ];
 const t30a7Cashflows: CF[] = [
   // T30A7: VT_now≈132, ~13 months → VT_mat≈176
-  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 176.00, residual: 0.0 },
+  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 176.0, residual: 0.0 },
 ];
 const t31y7Cashflows: CF[] = [
   // T31Y7: VT_now≈130, ~14 months → VT_mat≈180
-  { paymentDate: "2027-05-31", coupon: 0.0, amortization: 180.00, residual: 0.0 },
+  { paymentDate: "2027-05-31", coupon: 0.0, amortization: 180.0, residual: 0.0 },
 ];
 const t30j7Cashflows: CF[] = [
   // T30J7: VT_now≈128, ~15 months → VT_mat≈184
-  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 184.00, residual: 0.0 },
+  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 184.0, residual: 0.0 },
 ];
 
 /**
@@ -1196,7 +1199,7 @@ const t30j7Cashflows: CF[] = [
  * YTW: CAP leg (fixed). VT_CAP estimated ≈ 143 (similar to TTJ26/TTS26 siblings).
  */
 const ttd26Cashflows: CF[] = [
-  { paymentDate: "2025-01-29", coupon: 0.0, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2025-01-29", coupon: 0.0, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2026-12-31", coupon: 0.0, amortization: 158.0, residual: 0.0 },
 ];
 
@@ -1206,15 +1209,15 @@ const ttd26Cashflows: CF[] = [
  */
 const m30a6Cashflows: CF[] = [
   // M30A6: ~33 days → VT_mat ≈ 101.5 × (1.30)^(33/365) ≈ 103.7
-  { paymentDate: "2026-04-30", coupon: 0.0, amortization: 103.70, residual: 0.0 },
+  { paymentDate: "2026-04-30", coupon: 0.0, amortization: 103.7, residual: 0.0 },
 ];
 const m31g6Cashflows: CF[] = [
   // M31G6: ~156 days → VT_mat ≈ 100 × (1.30)^(156/365) ≈ 112.5
-  { paymentDate: "2026-08-31", coupon: 0.0, amortization: 112.50, residual: 0.0 },
+  { paymentDate: "2026-08-31", coupon: 0.0, amortization: 112.5, residual: 0.0 },
 ];
 const co2d7Cashflows: CF[] = [
   // CO2D7: ~614 days → VT_mat ≈ 100 × (1.30)^(614/365) ≈ 162.0 (approximate)
-  { paymentDate: "2027-12-02", coupon: 0.0, amortization: 162.00, residual: 0.0 },
+  { paymentDate: "2027-12-02", coupon: 0.0, amortization: 162.0, residual: 0.0 },
 ];
 
 /**
@@ -1252,17 +1255,17 @@ const tzxa7Cashflows: CF[] = [
  */
 const tx26Cashflows: CF[] = [
   // ── Past payments (approximate) ──────────────────────────────────────────
-  { paymentDate: "2022-05-09", coupon: 1.00, amortization: 0.0,  residual: 1.0 },
-  { paymentDate: "2022-11-09", coupon: 1.00, amortization: 0.0,  residual: 1.0 },
-  { paymentDate: "2023-05-09", coupon: 1.00, amortization: 0.0,  residual: 1.0 },
-  { paymentDate: "2023-11-09", coupon: 1.00, amortization: 10.0, residual: 0.9 },
-  { paymentDate: "2024-05-09", coupon: 0.90, amortization: 10.0, residual: 0.8 },
-  { paymentDate: "2024-11-09", coupon: 0.80, amortization: 10.0, residual: 0.7 },
-  { paymentDate: "2025-05-09", coupon: 0.70, amortization: 10.0, residual: 0.6 },
-  { paymentDate: "2025-11-09", coupon: 0.60, amortization: 10.0, residual: 0.5 },
+  { paymentDate: "2022-05-09", coupon: 1.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2022-11-09", coupon: 1.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-05-09", coupon: 1.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-11-09", coupon: 1.0, amortization: 10.0, residual: 0.9 },
+  { paymentDate: "2024-05-09", coupon: 0.9, amortization: 10.0, residual: 0.8 },
+  { paymentDate: "2024-11-09", coupon: 0.8, amortization: 10.0, residual: 0.7 },
+  { paymentDate: "2025-05-09", coupon: 0.7, amortization: 10.0, residual: 0.6 },
+  { paymentDate: "2025-11-09", coupon: 0.6, amortization: 10.0, residual: 0.5 },
   // ── Future payments ───────────────────────────────────────────────────────
-  { paymentDate: "2026-05-09", coupon: 0.50, amortization: 10.0, residual: 0.4 },
-  { paymentDate: "2026-11-09", coupon: 0.40, amortization: 40.0, residual: 0.0 }, // final bulk
+  { paymentDate: "2026-05-09", coupon: 0.5, amortization: 10.0, residual: 0.4 },
+  { paymentDate: "2026-11-09", coupon: 0.4, amortization: 40.0, residual: 0.0 }, // final bulk
 ];
 
 /**
@@ -1281,13 +1284,13 @@ const tx31Cashflows: CF[] = [
   { paymentDate: "2025-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2025-11-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
   // ── Future coupon-only ────────────────────────────────────────────────────
-  { paymentDate: "2026-05-09", coupon: 1.13, amortization: 0.0,  residual: 1.0 },
-  { paymentDate: "2026-11-09", coupon: 1.13, amortization: 0.0,  residual: 1.0 },
-  { paymentDate: "2027-05-09", coupon: 1.13, amortization: 0.0,  residual: 1.0 },
+  { paymentDate: "2026-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-11-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-05-09", coupon: 1.13, amortization: 0.0, residual: 1.0 },
   // ── Amortization phase ────────────────────────────────────────────────────
   { paymentDate: "2027-11-09", coupon: 1.13, amortization: 10.0, residual: 0.9 },
   { paymentDate: "2028-05-09", coupon: 1.01, amortization: 10.0, residual: 0.8 },
-  { paymentDate: "2028-11-09", coupon: 0.90, amortization: 10.0, residual: 0.7 },
+  { paymentDate: "2028-11-09", coupon: 0.9, amortization: 10.0, residual: 0.7 },
   { paymentDate: "2029-05-09", coupon: 0.79, amortization: 10.0, residual: 0.6 },
   { paymentDate: "2029-11-09", coupon: 0.68, amortization: 10.0, residual: 0.5 },
   { paymentDate: "2030-05-09", coupon: 0.56, amortization: 10.0, residual: 0.4 },
@@ -1305,11 +1308,11 @@ const tx31Cashflows: CF[] = [
 const dicpCashflows: CF[] = [
   // ── Future payments only (past history omitted for brevity) ────────────────
   { paymentDate: "2026-06-30", coupon: 0.44, amortization: 5.0, residual: 0.25 },
-  { paymentDate: "2026-09-30", coupon: 0.36, amortization: 5.0, residual: 0.20 },
+  { paymentDate: "2026-09-30", coupon: 0.36, amortization: 5.0, residual: 0.2 },
   { paymentDate: "2026-12-31", coupon: 0.29, amortization: 5.0, residual: 0.15 },
-  { paymentDate: "2027-03-31", coupon: 0.22, amortization: 5.0, residual: 0.10 },
+  { paymentDate: "2027-03-31", coupon: 0.22, amortization: 5.0, residual: 0.1 },
   { paymentDate: "2027-06-30", coupon: 0.15, amortization: 5.0, residual: 0.05 },
-  { paymentDate: "2027-09-30", coupon: 0.07, amortization: 5.0, residual: 0.00 },
+  { paymentDate: "2027-09-30", coupon: 0.07, amortization: 5.0, residual: 0.0 },
 ];
 
 /**
@@ -1319,56 +1322,56 @@ const dicpCashflows: CF[] = [
  */
 const parpCashflows: CF[] = [
   // ── Future payments (quarterly coupon = 2.51/4 = 0.6275% per 100 VN) ─────
-  { paymentDate: "2026-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2026-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2026-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2034-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2034-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2034-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2034-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2035-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2035-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2035-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2035-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2036-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2036-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2036-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2036-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2037-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2037-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2037-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2037-12-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2038-03-31", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2038-06-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2038-09-30", coupon: 0.63, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2034-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2034-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2034-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2034-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2035-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2035-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2035-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2035-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2036-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2036-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2036-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2036-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2037-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2037-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2037-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2037-12-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2038-03-31", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2038-06-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2038-09-30", coupon: 0.63, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2038-12-31", coupon: 0.63, amortization: 100.0, residual: 0.0 },
 ];
 
@@ -1388,33 +1391,41 @@ const pap0Cashflows: CF[] = [
 
 /**
  * GD29D — Bono del Tesoro en Dólares 2029 (Ley Nueva York)
- * Bullet bond (no amortization). Step-up coupon schedule (semi-annual).
- * Part of the 2020 restructuring. Approximate coupon schedule.
+ * AL29D — Bono del Tesoro en Dólares 2029 (Ley Argentina)
+ *
+ * From the 2020 restructuring. Semi-annual payments (Jan 9 / Jul 9).
+ * Coupon: 1% TNA on residual (0.5% per period). Amortizes 10% per period
+ * starting 2025-01-09 (8 periods paid, 7 remaining as of Mar 2026).
+ * Residual column = residual AFTER payment.
+ *
+ * Sources: Balanz / Abbaco cashflow schedule.
  */
 const gd29dCashflows: CF[] = [
+  // ── Issue date (phantom — anchors accrued interest for first period) ───────
+  { paymentDate: "2020-09-04", coupon: 0.0, amortization: 0.0, residual: 1.0 },
   // ── Past payments ─────────────────────────────────────────────────────────
-  { paymentDate: "2021-07-09", coupon: 0.25, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2022-01-09", coupon: 0.25, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2022-07-09", coupon: 0.25, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2023-01-09", coupon: 0.38, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2023-07-09", coupon: 0.38, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2024-01-09", coupon: 0.50, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2024-07-09", coupon: 0.50, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2025-01-09", coupon: 0.88, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2025-07-09", coupon: 0.88, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2026-01-09", coupon: 0.88, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2021-07-09", coupon: 0.85, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2022-01-09", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2022-07-09", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-01-09", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2023-07-09", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2024-01-09", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2024-07-09", coupon: 0.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2025-01-09", coupon: 0.5, amortization: 10.0, residual: 0.9 },
+  { paymentDate: "2025-07-09", coupon: 0.45, amortization: 10.0, residual: 0.8 },
+  { paymentDate: "2026-01-09", coupon: 0.4, amortization: 10.0, residual: 0.7 },
   // ── Future payments ───────────────────────────────────────────────────────
-  { paymentDate: "2026-07-09", coupon: 1.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-01-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-07-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-01-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-07-09", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-01-09", coupon: 1.81, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-07-09", coupon: 0.35, amortization: 10.0, residual: 0.6 },
+  { paymentDate: "2027-01-09", coupon: 0.3, amortization: 10.0, residual: 0.5 },
+  { paymentDate: "2027-07-09", coupon: 0.25, amortization: 10.0, residual: 0.4 },
+  { paymentDate: "2028-01-09", coupon: 0.2, amortization: 10.0, residual: 0.3 },
+  { paymentDate: "2028-07-09", coupon: 0.15, amortization: 10.0, residual: 0.2 },
+  { paymentDate: "2029-01-09", coupon: 0.1, amortization: 10.0, residual: 0.1 },
+  { paymentDate: "2029-07-09", coupon: 0.05, amortization: 10.0, residual: 0.0 },
 ];
 
 /**
- * AL29D — Bono del Tesoro en Dólares 2029 (Ley Argentina)
- * Same structure as GD29D (Argentine law counterpart).
+ * AL29D — identical schedule to GD29D (Argentine law counterpart).
  */
 const al29dCashflows: CF[] = gd29dCashflows;
 
@@ -1423,11 +1434,11 @@ const al29dCashflows: CF[] = gd29dCashflows;
  * Approximate: semi-annual coupon, bullet. TODO: confirm exact schedule.
  */
 const an29dCashflows: CF[] = [
-  { paymentDate: "2026-09-07", coupon: 1.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-03-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-09-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-03-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-09-07", coupon: 1.81, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-09-07", coupon: 1.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-03-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-09-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-03-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-09-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2029-09-07", coupon: 1.81, amortization: 100.0, residual: 0.0 },
 ];
 
@@ -1436,41 +1447,41 @@ const an29dCashflows: CF[] = [
  * Semi-annual coupon ~3% TNA. Approximate schedules — confirm from BCRA prospectus.
  */
 const bpa7dCashflows: CF[] = [
-  { paymentDate: "2026-08-28", coupon: 1.50, amortization: 25.0, residual: 0.75 },
-  { paymentDate: "2027-02-28", coupon: 1.13, amortization: 25.0, residual: 0.50 },
+  { paymentDate: "2026-08-28", coupon: 1.5, amortization: 25.0, residual: 0.75 },
+  { paymentDate: "2027-02-28", coupon: 1.13, amortization: 25.0, residual: 0.5 },
   { paymentDate: "2027-08-28", coupon: 0.75, amortization: 25.0, residual: 0.25 },
-  { paymentDate: "2027-02-28", coupon: 0.38, amortization: 25.0, residual: 0.00 },
+  { paymentDate: "2027-02-28", coupon: 0.38, amortization: 25.0, residual: 0.0 },
 ];
 const bpa8dCashflows: CF[] = [
-  { paymentDate: "2026-08-28", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
-  { paymentDate: "2027-02-28", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
-  { paymentDate: "2027-08-28", coupon: 1.50, amortization: 25.0, residual: 0.75 },
-  { paymentDate: "2028-02-28", coupon: 1.13, amortization: 25.0, residual: 0.50 },
+  { paymentDate: "2026-08-28", coupon: 1.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-02-28", coupon: 1.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-08-28", coupon: 1.5, amortization: 25.0, residual: 0.75 },
+  { paymentDate: "2028-02-28", coupon: 1.13, amortization: 25.0, residual: 0.5 },
   { paymentDate: "2028-08-28", coupon: 0.75, amortization: 25.0, residual: 0.25 },
-  { paymentDate: "2028-02-28", coupon: 0.38, amortization: 25.0, residual: 0.00 },
+  { paymentDate: "2028-02-28", coupon: 0.38, amortization: 25.0, residual: 0.0 },
 ];
 const bpb7dCashflows: CF[] = [
-  { paymentDate: "2026-11-30", coupon: 1.50, amortization: 33.0, residual: 0.67 },
-  { paymentDate: "2027-05-31", coupon: 1.00, amortization: 33.0, residual: 0.34 },
-  { paymentDate: "2027-05-31", coupon: 0.51, amortization: 34.0, residual: 0.00 },
+  { paymentDate: "2026-11-30", coupon: 1.5, amortization: 33.0, residual: 0.67 },
+  { paymentDate: "2027-05-31", coupon: 1.0, amortization: 33.0, residual: 0.34 },
+  { paymentDate: "2027-05-31", coupon: 0.51, amortization: 34.0, residual: 0.0 },
 ];
 const bpb8dCashflows: CF[] = [
-  { paymentDate: "2026-11-30", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
-  { paymentDate: "2027-05-31", coupon: 1.50, amortization: 0.0,  residual: 1.00 },
-  { paymentDate: "2027-11-30", coupon: 1.50, amortization: 33.0, residual: 0.67 },
-  { paymentDate: "2028-05-31", coupon: 1.00, amortization: 33.0, residual: 0.34 },
-  { paymentDate: "2028-05-31", coupon: 0.51, amortization: 34.0, residual: 0.00 },
+  { paymentDate: "2026-11-30", coupon: 1.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-05-31", coupon: 1.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-11-30", coupon: 1.5, amortization: 33.0, residual: 0.67 },
+  { paymentDate: "2028-05-31", coupon: 1.0, amortization: 33.0, residual: 0.34 },
+  { paymentDate: "2028-05-31", coupon: 0.51, amortization: 34.0, residual: 0.0 },
 ];
 const bpc7dCashflows: CF[] = [
-  { paymentDate: "2027-02-28", coupon: 1.50, amortization: 50.0, residual: 0.50 },
-  { paymentDate: "2027-08-31", coupon: 0.75, amortization: 50.0, residual: 0.00 },
+  { paymentDate: "2027-02-28", coupon: 1.5, amortization: 50.0, residual: 0.5 },
+  { paymentDate: "2027-08-31", coupon: 0.75, amortization: 50.0, residual: 0.0 },
 ];
 const bpd7dCashflows: CF[] = [
-  { paymentDate: "2027-05-31", coupon: 1.50, amortization: 50.0, residual: 0.50 },
-  { paymentDate: "2027-11-30", coupon: 0.75, amortization: 50.0, residual: 0.00 },
+  { paymentDate: "2027-05-31", coupon: 1.5, amortization: 50.0, residual: 0.5 },
+  { paymentDate: "2027-11-30", coupon: 0.75, amortization: 50.0, residual: 0.0 },
 ];
 const bpy6dCashflows: CF[] = [
-  { paymentDate: "2026-06-30", coupon: 1.50, amortization: 100.0, residual: 0.00 },
+  { paymentDate: "2026-06-30", coupon: 1.5, amortization: 100.0, residual: 0.0 },
 ];
 
 /**
@@ -1478,27 +1489,27 @@ const bpy6dCashflows: CF[] = [
  * TODO: replace with exact schedules from each province's prospectus.
  */
 const ba37dCashflows: CF[] = [
-  { paymentDate: "2026-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2034-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2034-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2035-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2035-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2036-01-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2036-07-26", coupon: 3.94, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2034-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2034-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2035-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2035-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2036-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2036-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2037-01-26", coupon: 3.94, amortization: 100.0, residual: 0.0 },
 ];
 // BB37D, BC37D — use similar structure as BA37D placeholder
@@ -1506,41 +1517,41 @@ const bb37dCashflows: CF[] = ba37dCashflows;
 const bc37dCashflows: CF[] = ba37dCashflows;
 
 const co26Cashflows: CF[] = [
-  { paymentDate: "2026-06-10", coupon: 3.5,  amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2026-12-10", coupon: 3.5,  amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-06-10", coupon: 3.5, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2026-12-10", coupon: 3.5, amortization: 100.0, residual: 0.0 },
 ];
 const co32dCashflows: CF[] = [
-  { paymentDate: "2026-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-03-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-09-01", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-09-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-03-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-09-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-03-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-09-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-03-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-09-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-03-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-09-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-03-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-09-01", coupon: 3.75, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2032-03-01", coupon: 3.75, amortization: 100.0, residual: 0.0 },
 ];
 const erf25Cashflows: CF[] = [
   { paymentDate: "2025-02-28", coupon: 4.25, amortization: 100.0, residual: 0.0 },
 ];
 const erm33Cashflows: CF[] = [
-  { paymentDate: "2026-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-02-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-08-08", coupon: 4.00, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-08-08", coupon: 4.00, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-08-08", coupon: 4.0, amortization: 100.0, residual: 0.0 },
 ];
 const ndt25Cashflows: CF[] = [
   { paymentDate: "2025-07-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
@@ -1549,52 +1560,52 @@ const pmm29Cashflows: CF[] = [
   { paymentDate: "2029-01-01", coupon: 3.75, amortization: 100.0, residual: 0.0 },
 ];
 const sa24dCashflows: CF[] = [
-  { paymentDate: "2024-03-01", coupon: 4.00, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2024-03-01", coupon: 4.0, amortization: 100.0, residual: 0.0 },
 ];
 const sfd34Cashflows: CF[] = [
-  { paymentDate: "2026-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2027-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2028-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2029-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2030-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2031-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2032-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-03-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
-  { paymentDate: "2033-09-15", coupon: 3.75, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2027-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2028-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2029-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2030-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2031-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2032-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
+  { paymentDate: "2033-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
   { paymentDate: "2034-03-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
 ];
 
 // Sub-sovereign ARS floating — approximate BADLAR structure similar to PR17.
 // TODO: replace with exact schedules per province prospectus.
 const baf27Cashflows: CF[] = [
-  { paymentDate: "2026-05-01", coupon: 6.50, amortization: 10.0, residual: 0.90 },
-  { paymentDate: "2026-08-01", coupon: 5.85, amortization: 10.0, residual: 0.80 },
-  { paymentDate: "2026-11-01", coupon: 5.20, amortization: 10.0, residual: 0.70 },
-  { paymentDate: "2027-02-01", coupon: 4.55, amortization: 10.0, residual: 0.60 },
-  { paymentDate: "2027-05-01", coupon: 3.90, amortization: 60.0, residual: 0.00 },
+  { paymentDate: "2026-05-01", coupon: 6.5, amortization: 10.0, residual: 0.9 },
+  { paymentDate: "2026-08-01", coupon: 5.85, amortization: 10.0, residual: 0.8 },
+  { paymentDate: "2026-11-01", coupon: 5.2, amortization: 10.0, residual: 0.7 },
+  { paymentDate: "2027-02-01", coupon: 4.55, amortization: 10.0, residual: 0.6 },
+  { paymentDate: "2027-05-01", coupon: 3.9, amortization: 60.0, residual: 0.0 },
 ];
 const bdc28Cashflows: CF[] = [
-  { paymentDate: "2026-07-01", coupon: 6.50, amortization: 10.0, residual: 0.90 },
-  { paymentDate: "2026-10-01", coupon: 5.85, amortization: 10.0, residual: 0.80 },
-  { paymentDate: "2027-01-01", coupon: 5.20, amortization: 10.0, residual: 0.70 },
-  { paymentDate: "2027-04-01", coupon: 4.55, amortization: 10.0, residual: 0.60 },
-  { paymentDate: "2027-07-01", coupon: 3.90, amortization: 10.0, residual: 0.50 },
-  { paymentDate: "2027-10-01", coupon: 3.25, amortization: 10.0, residual: 0.40 },
-  { paymentDate: "2028-01-01", coupon: 2.60, amortization: 40.0, residual: 0.00 },
+  { paymentDate: "2026-07-01", coupon: 6.5, amortization: 10.0, residual: 0.9 },
+  { paymentDate: "2026-10-01", coupon: 5.85, amortization: 10.0, residual: 0.8 },
+  { paymentDate: "2027-01-01", coupon: 5.2, amortization: 10.0, residual: 0.7 },
+  { paymentDate: "2027-04-01", coupon: 4.55, amortization: 10.0, residual: 0.6 },
+  { paymentDate: "2027-07-01", coupon: 3.9, amortization: 10.0, residual: 0.5 },
+  { paymentDate: "2027-10-01", coupon: 3.25, amortization: 10.0, residual: 0.4 },
+  { paymentDate: "2028-01-01", coupon: 2.6, amortization: 40.0, residual: 0.0 },
 ];
 const pby26Cashflows: CF[] = [
-  { paymentDate: "2026-06-01", coupon: 6.50, amortization: 50.0, residual: 0.50 },
-  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.00 },
+  { paymentDate: "2026-06-01", coupon: 6.5, amortization: 50.0, residual: 0.5 },
+  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.0 },
 ];
 const pmd26Cashflows: CF[] = [
-  { paymentDate: "2026-06-01", coupon: 6.50, amortization: 50.0, residual: 0.50 },
-  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.00 },
+  { paymentDate: "2026-06-01", coupon: 6.5, amortization: 50.0, residual: 0.5 },
+  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.0 },
 ];
 
 /**
@@ -1605,7 +1616,7 @@ const pmd26Cashflows: CF[] = [
  */
 const tmf27Cashflows: CF[] = [
   // ── Past payments ─────────────────────────────────────────────────────────
-  { paymentDate: "2026-02-13", coupon: 0.0, amortization: 0.0,   residual: 1.0 },
+  { paymentDate: "2026-02-13", coupon: 0.0, amortization: 0.0, residual: 1.0 },
   // ── Future payments ───────────────────────────────────────────────────────
   { paymentDate: "2027-02-26", coupon: 0.0, amortization: 139.5, residual: 0.0 },
 ];
@@ -1722,35 +1733,35 @@ const teco27Cashflows: CF[] = [
  */
 const pr17Cashflows: CF[] = [
   // ── Past coupon payments (BADLAR × 100% residual; approximate rates) ─────
-  { paymentDate: "2022-08-02", coupon: 18.75, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2022-11-02", coupon: 18.75, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2023-02-02", coupon: 20.00, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2023-05-02", coupon: 20.00, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2023-08-02", coupon: 20.00, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2023-11-02", coupon: 20.00, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2024-02-02", coupon: 20.00, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2024-05-02", coupon: 13.75, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2024-08-02", coupon: 13.75, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2024-11-04", coupon: 12.50, amortization: 0,   residual: 1.00 },
-  { paymentDate: "2025-02-03", coupon: 8.75,  amortization: 0,   residual: 1.00 },
-  { paymentDate: "2025-05-02", coupon: 8.75,  amortization: 0,   residual: 1.00 },
-  { paymentDate: "2025-08-04", coupon: 7.50,  amortization: 0,   residual: 1.00 },
-  { paymentDate: "2025-11-03", coupon: 7.50,  amortization: 0,   residual: 1.00 },
-  { paymentDate: "2026-02-02", coupon: 6.25,  amortization: 0,   residual: 1.00 },
+  { paymentDate: "2022-08-02", coupon: 18.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2022-11-02", coupon: 18.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2023-02-02", coupon: 20.0, amortization: 0, residual: 1.0 },
+  { paymentDate: "2023-05-02", coupon: 20.0, amortization: 0, residual: 1.0 },
+  { paymentDate: "2023-08-02", coupon: 20.0, amortization: 0, residual: 1.0 },
+  { paymentDate: "2023-11-02", coupon: 20.0, amortization: 0, residual: 1.0 },
+  { paymentDate: "2024-02-02", coupon: 20.0, amortization: 0, residual: 1.0 },
+  { paymentDate: "2024-05-02", coupon: 13.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2024-08-02", coupon: 13.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2024-11-04", coupon: 12.5, amortization: 0, residual: 1.0 },
+  { paymentDate: "2025-02-03", coupon: 8.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2025-05-02", coupon: 8.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2025-08-04", coupon: 7.5, amortization: 0, residual: 1.0 },
+  { paymentDate: "2025-11-03", coupon: 7.5, amortization: 0, residual: 1.0 },
+  { paymentDate: "2026-02-02", coupon: 6.25, amortization: 0, residual: 1.0 },
   // ── Future: coupon = 5.5% × residual (BADLAR@22%TNA snapshot) + amortization
-  { paymentDate: "2026-05-04", coupon: 5.50,  amortization: 7,   residual: 0.93 },
-  { paymentDate: "2026-08-03", coupon: 5.12,  amortization: 7,   residual: 0.86 },
-  { paymentDate: "2026-11-02", coupon: 4.73,  amortization: 7,   residual: 0.79 },
-  { paymentDate: "2027-02-02", coupon: 4.35,  amortization: 7,   residual: 0.72 },
-  { paymentDate: "2027-05-03", coupon: 3.96,  amortization: 7,   residual: 0.65 },
-  { paymentDate: "2027-08-02", coupon: 3.58,  amortization: 7,   residual: 0.58 },
-  { paymentDate: "2027-11-02", coupon: 3.19,  amortization: 7,   residual: 0.51 },
-  { paymentDate: "2028-02-02", coupon: 2.81,  amortization: 7,   residual: 0.44 },
-  { paymentDate: "2028-05-02", coupon: 2.42,  amortization: 7,   residual: 0.37 },
-  { paymentDate: "2028-08-02", coupon: 2.04,  amortization: 7,   residual: 0.30 },
-  { paymentDate: "2028-11-02", coupon: 1.65,  amortization: 9,   residual: 0.21 },
-  { paymentDate: "2029-02-02", coupon: 1.16,  amortization: 9,   residual: 0.12 },
-  { paymentDate: "2029-05-02", coupon: 0.66,  amortization: 12,  residual: 0.00 },
+  { paymentDate: "2026-05-04", coupon: 5.5, amortization: 7, residual: 0.93 },
+  { paymentDate: "2026-08-03", coupon: 5.12, amortization: 7, residual: 0.86 },
+  { paymentDate: "2026-11-02", coupon: 4.73, amortization: 7, residual: 0.79 },
+  { paymentDate: "2027-02-02", coupon: 4.35, amortization: 7, residual: 0.72 },
+  { paymentDate: "2027-05-03", coupon: 3.96, amortization: 7, residual: 0.65 },
+  { paymentDate: "2027-08-02", coupon: 3.58, amortization: 7, residual: 0.58 },
+  { paymentDate: "2027-11-02", coupon: 3.19, amortization: 7, residual: 0.51 },
+  { paymentDate: "2028-02-02", coupon: 2.81, amortization: 7, residual: 0.44 },
+  { paymentDate: "2028-05-02", coupon: 2.42, amortization: 7, residual: 0.37 },
+  { paymentDate: "2028-08-02", coupon: 2.04, amortization: 7, residual: 0.3 },
+  { paymentDate: "2028-11-02", coupon: 1.65, amortization: 9, residual: 0.21 },
+  { paymentDate: "2029-02-02", coupon: 1.16, amortization: 9, residual: 0.12 },
+  { paymentDate: "2029-05-02", coupon: 0.66, amortization: 12, residual: 0.0 },
 ];
 
 /**
@@ -1759,26 +1770,26 @@ const pr17Cashflows: CF[] = [
  */
 const to26Cashflows: CF[] = [
   // ── Past payments ─────────────────────────────────────────────────────────
-  { paymentDate: "2017-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2017-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2018-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2018-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2019-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2019-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2020-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2020-10-19", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2021-04-19", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2021-10-18", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2022-04-18", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2022-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2023-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2023-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2024-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2024-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2025-04-21", coupon: 7.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2025-10-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
+  { paymentDate: "2017-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2017-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2018-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2018-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2019-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2019-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2020-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2020-10-19", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2021-04-19", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2021-10-18", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2022-04-18", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2022-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2023-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2023-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2024-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2024-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2025-04-21", coupon: 7.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2025-10-17", coupon: 7.75, amortization: 0, residual: 1.0 },
   // ── Future payments ───────────────────────────────────────────────────────
-  { paymentDate: "2026-04-17", coupon: 7.75, amortization: 0,   residual: 1.0 },
+  { paymentDate: "2026-04-17", coupon: 7.75, amortization: 0, residual: 1.0 },
   { paymentDate: "2026-10-19", coupon: 7.75, amortization: 100, residual: 0.0 },
 ];
 
@@ -1788,16 +1799,16 @@ const to26Cashflows: CF[] = [
  */
 const ty30pCashflows: CF[] = [
   // ── Past payments ─────────────────────────────────────────────────────────
-  { paymentDate: "2025-12-01", coupon: 14.75, amortization: 0,   residual: 1.0 },
+  { paymentDate: "2025-12-01", coupon: 14.75, amortization: 0, residual: 1.0 },
   // ── Future payments ───────────────────────────────────────────────────────
-  { paymentDate: "2026-06-01", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2026-11-30", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2027-05-31", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2027-11-30", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2028-05-31", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2028-11-30", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2029-05-31", coupon: 14.75, amortization: 0,   residual: 1.0 },
-  { paymentDate: "2029-11-30", coupon: 14.75, amortization: 0,   residual: 1.0 },
+  { paymentDate: "2026-06-01", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2026-11-30", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2027-05-31", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2027-11-30", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2028-05-31", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2028-11-30", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2029-05-31", coupon: 14.75, amortization: 0, residual: 1.0 },
+  { paymentDate: "2029-11-30", coupon: 14.75, amortization: 0, residual: 1.0 },
   { paymentDate: "2030-05-30", coupon: 14.75, amortization: 100, residual: 0.0 },
 ];
 
@@ -1856,8 +1867,8 @@ const cashflowMap: Record<string, CF[]> = {
   AO27D: ao27dCashflows,
   D30A6: d30a6Cashflows,
   D30S6: d30s6Cashflows,
-  PR17:  pr17Cashflows,
-  TO26:  to26Cashflows,
+  PR17: pr17Cashflows,
+  TO26: to26Cashflows,
   TY30P: ty30pCashflows,
   X15Y6: x15y6Cashflows,
   X29Y6: x29y6Cashflows,
@@ -1890,11 +1901,11 @@ const cashflowMap: Record<string, CF[]> = {
   TZXM7: tzxm7Cashflows,
   TZXD7: tzxd7Cashflows,
   TZXA7: tzxa7Cashflows,
-  DICP:  dicpCashflows,
-  PARP:  parpCashflows,
-  CUAP:  cuapCashflows,
-  DIP0:  dip0Cashflows,
-  PAP0:  pap0Cashflows,
+  DICP: dicpCashflows,
+  PARP: parpCashflows,
+  CUAP: cuapCashflows,
+  DIP0: dip0Cashflows,
+  PAP0: pap0Cashflows,
   S15Y6: s15y6Cashflows,
   S29Y6: s29y6Cashflows,
   S31G6: s31g6Cashflows,
@@ -1914,7 +1925,7 @@ const cashflowMap: Record<string, CF[]> = {
   BA37D: ba37dCashflows,
   BB37D: bb37dCashflows,
   BC37D: bc37dCashflows,
-  CO26D:  co26Cashflows,
+  CO26D: co26Cashflows,
   CO32D: co32dCashflows,
   ERF25D: erf25Cashflows,
   ERM33D: erm33Cashflows,
@@ -1943,44 +1954,44 @@ const cashflowMap: Record<string, CF[]> = {
  */
 const cerConfigMap: Record<string, number> = {
   // LELINK (VT = ARS/USD rate × VN, refreshed from BCRA/BYMA daily)
-  D30A6: 139344,  // VT per 100 VN = ARS/USD × 100; snapshot 2026-03-27
-  D30S6: 139344,  // same USD rate snapshot — VT_maturity will differ as rate changes
+  D30A6: 139344, // VT per 100 VN = ARS/USD × 100; snapshot 2026-03-27
+  D30S6: 139344, // same USD rate snapshot — VT_maturity will differ as rate changes
   // LECER (VT tracks CER index daily; refresh from BCRA/INDEC)
-  X15Y6: 102.85,  // VT=102.8464; Abbaco 2026-03-27
-  X29Y6: 110.69,  // VT=110.6899
-  X31L6: 105.26,  // VT=105.2563
-  X30S6: 100.92,  // VT=100.9231
-  X30N6: 109.38,  // VT=109.3843
+  X15Y6: 102.85, // VT=102.8464; Abbaco 2026-03-27
+  X29Y6: 110.69, // VT=110.6899
+  X31L6: 105.26, // VT=105.2563
+  X30S6: 100.92, // VT=100.9231
+  X30N6: 109.38, // VT=109.3843
   // CAPITALIZABLE (LECAP / BONCAP)
-  S17A6: 106.09, // VT=1.060938 per 1 VN → 106.09 per 100 VN
+  S17A6: 108.31, // issue 15/12/2025, TEM=2.40%, 101 days → VT_now at 2026-03-26
   S30A6: 107.4, // VT=1.074016 per 1 VN → 107.40 per 100 VN
   S31L6: 105.13, // VT=1.051333 per 1 VN → 105.13 per 100 VN
   T30J6: 136.9083, // VT per Abbaco 2026-03-26
   // TAMAR
-  TMF27: 104.56,   // VT_now per Abbaco 2026-03-27 (106.65/1.02=104.56)
+  TMF27: 104.56, // VT_now per Abbaco 2026-03-27 (106.65/1.02=104.56)
   // DUAL — stored as VT_CAP (YTW leg); paridad = price / VT_CAP
   TTJ26: 136.507, // VT_CAP per Abbaco ~2026-03-26 (TODO: confirm fresh data)
   TTS26: 137.16, // VT_CAP per Bonistas/Abbaco confirmed 2026-03-26
   // CER bonds — valorTecnico = residual × 100 (same basis as cashflows % of original VN)
   // parityPct = price / valorTecnico; price = paridad × residual × 100
-  TX28: 60,     // residual=60% → VT=60; price=57.74 (=96.23% parity × 60)
-  TX26: 20,     // residual≈20% (8/10 amort paid) → VT=20; TODO: refresh
-  TX31: 100,    // residual=100% (no amort yet) → VT=100
-  TZX28: 100,   // residual=100% → VT=100; price=84.68 (=84.68% parity × 100)
-  TZX26: 100,   // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
-  TZX27: 100,   // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
+  TX28: 60, // residual=60% → VT=60; price=57.74 (=96.23% parity × 60)
+  TX26: 20, // residual≈20% (8/10 amort paid) → VT=20; TODO: refresh
+  TX31: 100, // residual=100% (no amort yet) → VT=100
+  TZX28: 100, // residual=100% → VT=100; price=84.68 (=84.68% parity × 100)
+  TZX26: 100, // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
+  TZX27: 100, // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
   TZXD6: 100,
   TZXO6: 100,
   TZXM7: 100,
   TZXD7: 100,
   TZXA7: 100,
-  DICP:  30,    // residual≈30% (approximate March 2026) → VT=30
-  PARP:  100,   // residual=100% (bullet) → VT=100
-  CUAP:  100,   // residual=100% → VT=100
-  DIP0:  100,
-  PAP0:  100,
+  DICP: 30, // residual≈30% (approximate March 2026) → VT=30
+  PARP: 100, // residual=100% (bullet) → VT=100
+  CUAP: 100, // residual=100% → VT=100
+  DIP0: 100,
+  PAP0: 100,
   // New LECAP
-  S15Y6: 105.0,
+  S15Y6: 100.86, // issue 16/03/2026, TEM=2.60%, 10 days → VT_now at 2026-03-26
   S29Y6: 104.5,
   S31G6: 100.5,
   S30S6: 100.0,

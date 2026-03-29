@@ -252,6 +252,18 @@ export function calcTNA(ytm: number, paymentsPerYear: number): number {
   return paymentsPerYear * (Math.pow(1 + ytm, 1 / paymentsPerYear) - 1);
 }
 
+// ── TEM ───────────────────────────────────────────────────────────────────────
+
+/**
+ * Tasa Efectiva Mensual: the effective monthly rate equivalent to the annual YTM.
+ *
+ * TEM = (1 + ytm)^(1/12) − 1
+ */
+export function calcTEM(ytm: number): number {
+  if (isNaN(ytm)) return NaN;
+  return Math.pow(1 + ytm, 1 / 12) - 1;
+}
+
 // ── Current yield ─────────────────────────────────────────────────────────────
 
 /**
@@ -328,6 +340,7 @@ export function calcBondAnalysis(
   const cashflowsWithPV = calcCashflowsWithPV(cashflows, settlement, ytm);
   const paymentsPerYear = inferPaymentsPerYear(cashflows, settlement);
   const tna = calcTNA(ytm, paymentsPerYear);
+  const tem = calcTEM(ytm);
   const currentYield = calcCurrentYield(cashflows, dirtyPrice, settlement);
 
   return {
@@ -338,6 +351,7 @@ export function calcBondAnalysis(
     accruedInterest: Math.round(accruedInterest * 10000) / 10000,
     parityPct: Math.round((cleanPrice / (options?.valorTecnico ?? 100)) * 10000) / 10000,
     tna: isNaN(tna) ? 0 : Math.round(tna * 1e7) / 1e7,
+    tem: isNaN(tem) ? 0 : Math.round(tem * 1e7) / 1e7,
     currentYield: isNaN(currentYield) ? 0 : Math.round(currentYield * 1e7) / 1e7,
     cashflowsWithPV,
   };

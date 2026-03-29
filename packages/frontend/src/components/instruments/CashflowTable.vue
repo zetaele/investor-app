@@ -14,9 +14,11 @@ const today = new Date().toISOString().slice(0, 10);
 
 const hasPast = computed(() => props.cashflows.some((cf) => cf.paymentDate < today));
 
-const visible = computed(() =>
-  showPast.value ? props.cashflows : props.cashflows.filter((cf) => cf.paymentDate >= today),
-);
+const visible = computed(() => {
+  // Filter out phantom cashflows (issue-date markers with zero flow)
+  const real = props.cashflows.filter((cf) => cf.coupon + cf.amortization > 0);
+  return showPast.value ? real : real.filter((cf) => cf.paymentDate >= today);
+});
 </script>
 
 <template>

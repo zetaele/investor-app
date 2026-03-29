@@ -52,11 +52,11 @@ async function handleLogout(): Promise<void> {
         </li>
         <li>
           <RouterLink
-            to="/calendar"
+            to="/portfolios"
             class="nav-link"
-            :class="{ active: route.name === 'calendar' }"
+            :class="{ active: route.name === 'portfolios' || route.name === 'portfolio' }"
           >
-            Calendario
+            Portafolio
           </RouterLink>
         </li>
       </ul>

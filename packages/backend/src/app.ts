@@ -19,6 +19,8 @@ import { calendarRouter } from "./modules/calendar/calendar.router.js";
 import { adminRouter } from "./modules/admin/admin.router.js";
 import { authRouter } from "./modules/auth/auth.router.js";
 import { purgeExpiredSessions } from "./modules/auth/auth.service.js";
+import { PortfolioService } from "./modules/portfolio/portfolio.service.js";
+import { portfolioRouter } from "./modules/portfolio/portfolio.router.js";
 
 const app = Fastify({
   logger: { level: env.NODE_ENV === "production" ? "warn" : "info" },
@@ -33,7 +35,7 @@ const corsOrigin =
   env.CORS_ORIGIN === "*"
     ? true
     : env.CORS_ORIGIN.split(",").map((o) => o.trim());
-await app.register(cors, { origin: corsOrigin, methods: ["GET", "POST"], credentials: true });
+await app.register(cors, { origin: corsOrigin, methods: ["GET", "POST", "DELETE"], credentials: true });
 await app.register(rateLimit, { max: 500, timeWindow: "1 minute" });
 
 // ── Auth plugins (cookie before oauth2) ───────────────────────────────────────
@@ -64,6 +66,7 @@ const priceCache = new PriceCacheService(bymaClient);
 const fxService = new FxService();
 const bondsService = new BondsService(priceCache, fxService);
 const compareService = new CompareService(bondsService);
+const portfolioService = new PortfolioService(bondsService);
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
@@ -79,6 +82,7 @@ await app.register(instrumentsRouter, { prefix: "/api/v1/instruments" });
 await app.register(bondsRouter(bondsService), { prefix: "/api/v1/instruments" });
 await app.register(fxRouter(fxService), { prefix: "/api/v1/fx" });
 await app.register(compareRouter(compareService), { prefix: "/api/v1/compare" });
+await app.register(portfolioRouter(portfolioService), { prefix: "/api/v1/portfolios" });
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 
