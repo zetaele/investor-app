@@ -12,6 +12,11 @@ const envSchema = z.object({
   CACHE_TTL_PRICE_SECONDS: z.coerce.number().int().positive().default(300),
   CACHE_TTL_FX_SECONDS: z.coerce.number().int().positive().default(600),
   ADMIN_TOKEN: z.string().min(8).default("change-me-in-production"),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+  GOOGLE_CALLBACK_URL: z.string().url().default("http://localhost:3001/auth/callback"),
+  SESSION_SECRET: z.string().min(32).default("change-this-secret-in-production-min32"),
+  FRONTEND_URL: z.string().url().default("http://localhost:5173"),
 });
 
 /**

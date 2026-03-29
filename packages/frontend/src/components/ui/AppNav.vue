@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useThemeStore } from "@/stores/themeStore";
+import { useAuthStore } from "@/stores/authStore";
 
 const route = useRoute();
+const router = useRouter();
 const themeStore = useThemeStore();
+const authStore = useAuthStore();
+
+async function handleLogout(): Promise<void> {
+  await authStore.logout();
+  router.push("/login");
+}
 </script>
 
 <template>
@@ -64,6 +72,19 @@ const themeStore = useThemeStore();
           <span v-if="themeStore.isDark()">☀︎</span>
           <span v-else>◑</span>
         </button>
+
+        <!-- User menu -->
+        <template v-if="authStore.isAuthenticated">
+          <img
+            v-if="authStore.user?.avatarUrl"
+            :src="authStore.user.avatarUrl"
+            :alt="authStore.user.name ?? authStore.user.email"
+            class="user-avatar"
+            :title="authStore.user.email"
+          />
+          <button class="control-btn" title="Cerrar sesión" @click="handleLogout">↪</button>
+        </template>
+        <RouterLink v-else to="/login" class="control-btn login-btn">Ingresar</RouterLink>
       </div>
     </div>
   </nav>
@@ -169,6 +190,21 @@ const themeStore = useThemeStore();
   border-color: var(--color-accent);
   color: var(--color-accent);
   background-color: var(--color-accent-dim);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  object-fit: cover;
+}
+
+.login-btn {
+  width: auto;
+  padding: 0 0.75rem;
+  font-size: 0.8rem;
+  text-decoration: none;
 }
 
 @media (max-width: 640px) {

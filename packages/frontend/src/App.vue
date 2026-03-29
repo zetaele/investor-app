@@ -1,11 +1,26 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { onMounted } from "vue";
+import { useRouter, useRoute, RouterView } from "vue-router";
 import AppNav from "@/components/ui/AppNav.vue";
 import ToastContainer from "@/components/ui/ToastContainer.vue";
 import { useThemeStore } from "@/stores/themeStore";
+import { useAuthStore } from "@/stores/authStore";
 
 // Initialize theme store on app mount — applies the stored/system theme
 useThemeStore();
+
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+
+// Handle redirect back from Google OAuth
+onMounted(async () => {
+  if (route.query["login"] === "success") {
+    await authStore.fetchMe();
+    const redirect = route.query["redirect"] as string | undefined;
+    await router.replace(redirect ?? "/");
+  }
+});
 </script>
 
 <template>

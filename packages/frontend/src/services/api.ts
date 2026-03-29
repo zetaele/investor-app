@@ -31,7 +31,7 @@ async function get<T>(path: string, params?: Record<string, string>): Promise<T>
     });
   }
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), { credentials: "include" });
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ error: "Unknown error" }));

@@ -103,6 +103,9 @@ export const instrumentConfig = sqliteTable("instrument_config", {
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   email: text("email").notNull().unique(),
+  googleId: text("google_id").unique(),
+  name: text("name"),
+  avatarUrl: text("avatar_url"),
   passwordHash: text("password_hash"),
   plan: text("plan", { enum: ["FREE", "PRO", "ADVANCED"] })
     .notNull()
