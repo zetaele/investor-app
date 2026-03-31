@@ -1434,15 +1434,18 @@ const al29dCashflows: CF[] = gd29dCashflows;
 
 /**
  * AN29D — Bono del Tesoro en Dólares 2029 Serie II (Ley Argentina)
- * Approximate: semi-annual coupon, bullet. TODO: confirm exact schedule.
+ * 6.5% annual, semiannual, bullet 2029-11-30. D30/360. Source: Balanz.
  */
 const an29dCashflows: CF[] = [
-  { paymentDate: "2026-09-07", coupon: 1.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-03-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-09-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-03-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-09-07", coupon: 1.81, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-09-07", coupon: 1.81, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2025-12-12", coupon: 0.00, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2026-05-30", coupon: 3.03, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2026-11-30", coupon: 3.25, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2027-05-30", coupon: 3.25, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2027-11-30", coupon: 3.25, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2028-05-30", coupon: 3.25, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2028-11-30", coupon: 3.25, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2029-05-30", coupon: 3.25, amortization:   0.0, residual: 1.0 },
+  { paymentDate: "2029-11-30", coupon: 3.25, amortization: 100.0, residual: 0.0 },
 ];
 
 /**
