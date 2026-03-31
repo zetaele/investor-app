@@ -66,15 +66,28 @@ export class BondsService {
     //    - Otherwise compute dynamically as sum of remaining amortizations —
     //      this correctly handles partially-amortized bonds (AL29, GD29, etc.)
     //      where the residual changes over time.
-    const effectiveVT =
-      valorTecnico ??
-      cashflows
-        .filter((cf) => new Date(cf.paymentDate) > settlement)
-        .reduce((sum, cf) => sum + cf.amortization, 0);
+    const futureCfs = cashflows.filter((cf) => new Date(cf.paymentDate) > settlement);
+    const nominalFace = futureCfs.reduce((sum, cf) => sum + cf.amortization, 0);
+    const effectiveVT = valorTecnico ?? nominalFace;
 
-    // 6. Run financial calculations
+    // 6. For coupon-paying CER bonds (TX26, TX28, DICP…) cashflows are stored in
+    //    nominal VN units while the market price is in current ARS. Scale cashflows
+    //    to ARS so the YTM solver operates in consistent units.
+    //    cerScale = VT_now_ARS / nominalFace_nominal. For all other bond types
+    //    (TZX, LECER, LECAP, regular bonds) this ratio is ≈ 1 so no change occurs.
+    const cerScale = nominalFace > 0 ? effectiveVT / nominalFace : 1;
+    const calcCashflows =
+      cerScale > 5
+        ? cashflows.map((cf) => ({
+            ...cf,
+            coupon: cf.coupon * cerScale,
+            amortization: cf.amortization * cerScale,
+          }))
+        : cashflows;
+
+    // 7. Run financial calculations
     const { cashflowsWithPV, ...calculations } = calcBondAnalysis(
-      cashflows,
+      calcCashflows,
       displayPrice,
       settlement,
       { valorTecnico: effectiveVT },
@@ -138,6 +151,19 @@ export class BondsService {
           return d;
         })();
 
+    const simFutureCfs = cashflows.filter((cf) => new Date(cf.paymentDate) > settlement);
+    const simNominalFace = simFutureCfs.reduce((s, cf) => s + cf.amortization, 0);
+    const effectiveVT = valorTecnico ?? simNominalFace;
+    const simCerScale = simNominalFace > 0 ? effectiveVT / simNominalFace : 1;
+    const calcCashflows =
+      simCerScale > 5
+        ? cashflows.map((cf) => ({
+            ...cf,
+            coupon: cf.coupon * simCerScale,
+            amortization: cf.amortization * simCerScale,
+          }))
+        : cashflows;
+
     let cleanPrice: number;
     let inputType: "price" | "ytm";
     let inputValue: number;
@@ -158,8 +184,8 @@ export class BondsService {
       inputType = "price";
       inputValue = input.price;
     } else {
-      // YTM → price: solve theoretical clean price in instrument currency, then convert to display
-      cleanPrice = calcPriceFromYTM(cashflows, settlement, input.ytm);
+      // YTM → price: solve theoretical clean price using ARS-scaled cashflows
+      cleanPrice = calcPriceFromYTM(calcCashflows, settlement, input.ytm);
       if (effectiveCurrency !== instrument.currency) {
         const rates = await this.fxService.getRates();
         cleanPrice = this.convertPrice(
@@ -173,14 +199,8 @@ export class BondsService {
       inputValue = input.ytm;
     }
 
-    const effectiveVT =
-      valorTecnico ??
-      cashflows
-        .filter((cf) => new Date(cf.paymentDate) > settlement)
-        .reduce((sum, cf) => sum + cf.amortization, 0);
-
     const { cashflowsWithPV, ...calculations } = calcBondAnalysis(
-      cashflows,
+      calcCashflows,
       cleanPrice,
       settlement,
       { valorTecnico: effectiveVT },
