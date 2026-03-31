@@ -5,7 +5,12 @@ import { useAuthStore } from "@/stores/authStore";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: "/", redirect: "/bonos" },
+    {
+      path: "/",
+      name: "home",
+      component: () => import("@/views/HomeView.vue"),
+      meta: { requiresAuth: false },
+    },
     {
       path: "/login",
       name: "login",
@@ -95,9 +100,9 @@ router.beforeEach(async (to) => {
     return { name: "login", query: { redirect: to.fullPath } };
   }
 
-  // Redirect authenticated users away from login page
-  if (to.name === "login" && authStore.isAuthenticated) {
-    return { path: "/" };
+  // Redirect authenticated users away from login/home to the app
+  if ((to.name === "login" || to.name === "home") && authStore.isAuthenticated) {
+    return { name: "bonos" };
   }
 });
 
