@@ -27,24 +27,104 @@ const sections = ref<CurveSection[]>([
     error: null,
   },
   {
-    title: "LECAP y Bonos Capitalizables",
-    subtitle: "TIR implícita vs. duration modificada — LECAP y BONCAP",
-    subtypes: ["LECAP", "BONCAP"],
+    title: "BOPREAL",
+    subtitle: "TIR vs. duration modificada — Bonos para la Reconstrucción de una Argentina Libre",
+    subtypes: ["BOPREAL"],
     entries: [],
     loading: true,
     error: null,
   },
   {
-    title: "Instrumentos CER",
-    subtitle: "TIR real vs. duration modificada — LECER y Bonos CER",
-    subtypes: ["LECER", "TASA_CER"],
+    title: "Sub-soberanos USD",
+    subtitle: "TIR vs. duration modificada — deuda provincial tasa fija en dólares",
+    subtypes: ["SUBSOBERANO_FIJA_USD"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Sub-soberanos Tasa Flotante ARS",
+    subtitle: "TIR vs. duration modificada — deuda provincial tasa flotante en pesos",
+    subtypes: ["SUBSOBERANO_FLOTANTE"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Bonos CER",
+    subtitle: "TIR real vs. duration modificada — bonos soberanos ajustables por CER",
+    subtypes: ["TASA_CER"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Bonos Tasa Fija ARS",
+    subtitle: "TIR vs. duration modificada — bonos soberanos ARS tasa fija",
+    subtypes: ["TASA_FIJA_ARS"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Bonos Tasa Flotante ARS",
+    subtitle: "TIR vs. duration modificada — bonos soberanos ARS tasa flotante",
+    subtypes: ["TASA_FLOTANTE"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Bonos Duales",
+    subtitle: "TIR vs. duration modificada — bonos soberanos duales (LECAP + TAMAR)",
+    subtypes: ["DUAL"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "BONCAP",
+    subtitle: "TIR implícita vs. duration modificada — bonos de capitalización ARS",
+    subtypes: ["BONCAP"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "LECAP",
+    subtitle: "TIR implícita vs. duration modificada — letras de capitalización ARS",
+    subtypes: ["LECAP"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Letras CER (LECER)",
+    subtitle: "TIR real vs. duration modificada — letras ajustables por CER",
+    subtypes: ["LECER"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "TAMAR",
+    subtitle: "TIR vs. duration modificada — letras y bonos TAMAR",
+    subtypes: ["TAMAR"],
+    entries: [],
+    loading: true,
+    error: null,
+  },
+  {
+    title: "Letras Dollar-Linked (LELINK)",
+    subtitle: "TIR vs. duration modificada — letras ajustables por tipo de cambio",
+    subtypes: ["LELINK"],
     entries: [],
     loading: true,
     error: null,
   },
   {
     title: "Obligaciones Negociables",
-    subtitle: "TIR vs. duration modificada — deuda corporativa USD",
+    subtitle: "TIR vs. duration modificada — deuda corporativa",
     instrumentType: "ON",
     entries: [],
     loading: true,
@@ -98,7 +178,12 @@ onMounted(async () => {
       </p>
     </header>
 
-    <section v-for="(section, i) in sections" :key="i" class="curve-section">
+    <section
+      v-for="(section, i) in sections"
+      :key="i"
+      v-show="section.loading || section.error || section.entries.length >= 2"
+      class="curve-section"
+    >
       <h2 class="section-title">{{ section.title }}</h2>
       <p class="section-subtitle">{{ section.subtitle }}</p>
 
@@ -107,9 +192,6 @@ onMounted(async () => {
           <div class="skeleton" style="height: 260px; border-radius: 0.5rem" />
         </div>
         <ErrorBanner v-else-if="section.error" :message="section.error" />
-        <div v-else-if="section.entries.length < 2" class="chart-empty">
-          Se necesitan al menos 2 instrumentos para trazar la curva.
-        </div>
         <YieldCurveChart v-else :entries="section.entries" />
       </div>
     </section>

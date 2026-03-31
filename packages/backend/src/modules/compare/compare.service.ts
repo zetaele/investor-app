@@ -32,6 +32,7 @@ export class CompareService {
           ticker: a.ticker,
           name: a.name,
           type: a.type,
+          subtype: a.subtype,
           currency: a.currency,
           maturityDate: a.maturityDate,
           price: a.market.price,

@@ -75,6 +75,7 @@ export interface CompareEntry {
   ticker: string;
   name: string;
   type: string;
+  subtype: InstrumentSubtype;
   currency: Currency;
   maturityDate: string;
   price: number;

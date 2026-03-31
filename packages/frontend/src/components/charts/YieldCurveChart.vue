@@ -69,14 +69,29 @@ function evalPoly(coeffs: number[], x: number): number {
   return coeffs.reduce((sum, c, i) => sum + c * x ** i, 0);
 }
 
-/** Color per instrument index */
+/** Color per instrument index (dots) */
 const COLORS = [
   { border: "#f59e0b", bg: "rgba(245,158,11,0.85)" },
   { border: "#22c55e", bg: "rgba(34,197,94,0.85)" },
   { border: "#60a5fa", bg: "rgba(96,165,250,0.85)" },
   { border: "#a78bfa", bg: "rgba(167,139,250,0.85)" },
   { border: "#fb7185", bg: "rgba(251,113,133,0.85)" },
+  { border: "#34d399", bg: "rgba(52,211,153,0.85)" },
+  { border: "#f472b6", bg: "rgba(244,114,182,0.85)" },
+  { border: "#fbbf24", bg: "rgba(251,191,36,0.85)" },
 ];
+
+/** Color per subtype curve */
+const SUBTYPE_CURVE_COLORS: Record<string, string> = {
+  SOV_USD_ARG: "rgba(96,165,250,0.8)",
+  SOV_USD_EXT: "rgba(167,139,250,0.8)",
+  LECAP:       "rgba(251,191,36,0.8)",
+  BONCAP:      "rgba(245,158,11,0.8)",
+  LECER:       "rgba(52,211,153,0.8)",
+  TASA_CER:    "rgba(34,197,94,0.8)",
+  BON_CER:     "rgba(16,185,129,0.8)",
+  ON:          "rgba(251,113,133,0.8)",
+};
 
 /** Point shape by instrument type */
 const TYPE_SHAPES: Record<string, "circle" | "triangle" | "rect"> = {
@@ -86,37 +101,43 @@ const TYPE_SHAPES: Record<string, "circle" | "triangle" | "rect"> = {
 };
 
 const chartData = computed((): ChartData<"scatter", Point[]> => {
-  const allPts = props.entries.map((e) => ({
-    x: e.calculations.modifiedDuration,
-    y: e.calculations.ytm * 100,
-  }));
+  // Group entries by subtype for per-subtype curve fitting
+  const bySubtype = new Map<string, typeof props.entries>();
+  for (const entry of props.entries) {
+    const key = entry.subtype;
+    if (!bySubtype.has(key)) bySubtype.set(key, []);
+    bySubtype.get(key)!.push(entry);
+  }
 
-  const curveColor = isDark.value ? "rgba(120,190,150,0.7)" : "rgba(60,120,80,0.6)";
-  const curveFill = isDark.value ? "rgba(120,190,150,0.08)" : "rgba(60,120,80,0.07)";
+  const defaultCurveColor = isDark.value ? "rgba(120,190,150,0.7)" : "rgba(60,120,80,0.6)";
+  const STEPS = 80;
 
-  // Need ≥3 points for a meaningful quadratic fit; fall back to linear (degree 1) with 2 points
-  const fitDegree = allPts.length >= 3 ? 2 : 1;
-  const curveDataset: ChartDataset<"scatter", Point[]>[] = [];
+  const curveDatasets: ChartDataset<"scatter", Point[]>[] = [];
 
-  if (allPts.length >= 2) {
-    const coeffs = polyFit(allPts, fitDegree);
-    const xs = allPts.map((p) => p.x);
-    const xMin = Math.min(...xs) - 0.3;
-    const xMax = Math.max(...xs) + 0.3;
-    const STEPS = 80;
+  for (const [subtype, group] of bySubtype) {
+    if (group.length < 2) continue;
+    const pts = group.map((e) => ({
+      x: e.calculations.modifiedDuration,
+      y: e.calculations.ytm * 100,
+    }));
+    const degree = pts.length >= 3 ? 2 : 1;
+    const coeffs = polyFit(pts, degree);
+    const xs = pts.map((p) => p.x);
+    const xMin = Math.min(...xs) - 0.2;
+    const xMax = Math.max(...xs) + 0.2;
     const fittedPoints = Array.from({ length: STEPS + 1 }, (_, i) => {
       const x = xMin + (i / STEPS) * (xMax - xMin);
       return { x, y: evalPoly(coeffs, x) };
     });
-
-    curveDataset.push({
-      label: "__curve__",
+    const color = SUBTYPE_CURVE_COLORS[subtype] ?? defaultCurveColor;
+    curveDatasets.push({
+      label: `__curve__${subtype}`,
       data: fittedPoints,
       showLine: true,
       tension: 0,
-      borderColor: curveColor,
+      borderColor: color,
       borderWidth: 2,
-      backgroundColor: curveFill,
+      backgroundColor: "transparent",
       fill: false,
       pointRadius: 0,
       pointHoverRadius: 0,
@@ -138,7 +159,21 @@ const chartData = computed((): ChartData<"scatter", Point[]> => {
     };
   });
 
-  return { datasets: [...curveDataset, ...pointDatasets] };
+  return { datasets: [...curveDatasets, ...pointDatasets] };
+});
+
+/** Active subtype curves (≥2 points) with their assigned color, for the legend. */
+const subtypeLegend = computed(() => {
+  const counts = new Map<string, number>();
+  for (const e of props.entries) {
+    counts.set(e.subtype, (counts.get(e.subtype) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .filter(([, n]) => n >= 2)
+    .map(([subtype]) => ({
+      subtype,
+      color: SUBTYPE_CURVE_COLORS[subtype] ?? "rgba(120,190,150,0.7)",
+    }));
 });
 
 const chartOptions = computed((): ChartOptions<"scatter"> => ({
@@ -153,7 +188,7 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
       display: false, // labels on chart make legend redundant
     },
     tooltip: {
-      filter: (item: { dataset: { label?: string } }) => item.dataset.label !== "__curve__",
+      filter: (item: { dataset: { label?: string } }) => !item.dataset.label?.startsWith("__curve__"),
       backgroundColor: isDark.value ? "#141918" : "#faf7f2",
       borderColor: isDark.value ? "#2a3330" : "#d6cfc0",
       borderWidth: 1,
@@ -165,13 +200,13 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
       callbacks: {
         title: (items: { dataset: { label?: string } }[]) => {
           const ticker = items[0]?.dataset.label;
-          if (!ticker || ticker === "__curve__") return "";
+          if (!ticker || ticker.startsWith("__curve__")) return "";
           const entry = props.entries.find((e) => e.ticker === ticker);
           return entry ? `${entry.ticker} — ${entry.type}` : "";
         },
         label: (ctx: { dataset: { label?: string } }) => {
           const ticker = ctx.dataset.label;
-          if (!ticker || ticker === "__curve__") return "";
+          if (!ticker || ticker.startsWith("__curve__")) return "";
           const entry = props.entries.find((e) => e.ticker === ticker);
           if (!entry) return "";
           return [
@@ -187,7 +222,7 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
       display: true,
       formatter: (_: unknown, ctx: { dataset: { label?: string } }) => {
         const ticker = ctx.dataset.label;
-        if (!ticker || ticker === "__curve__") return "";
+        if (!ticker || ticker.startsWith("__curve__")) return "";
         return ticker;
       },
       color: isDark.value ? "#e8ede8" : "#1a1612",
@@ -266,6 +301,13 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
         Letra
       </span>
     </div>
+    <!-- Curve legend by subtype -->
+    <div v-if="subtypeLegend.length > 1" class="curve-legend">
+      <span v-for="item in subtypeLegend" :key="item.subtype" class="legend-item">
+        <span class="curve-swatch" :style="{ background: item.color }" />
+        {{ item.subtype }}
+      </span>
+    </div>
     <Scatter :data="chartData" :options="chartOptions" />
   </div>
 </template>
@@ -278,6 +320,13 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
   padding-left: 0.5rem;
 }
 
+.curve-legend {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 0.5rem;
+}
+
 .legend-item {
   display: flex;
   align-items: center;
@@ -285,5 +334,12 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
   font-size: 0.72rem;
   font-family: var(--font-mono);
   color: var(--color-text-dim);
+}
+
+.curve-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  border-radius: 1px;
 }
 </style>
