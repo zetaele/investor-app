@@ -1744,8 +1744,26 @@ const erm33Cashflows: CF[] = [
 const ndt25Cashflows: CF[] = [
   { paymentDate: "2025-07-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
 ];
+// PM29D — Provincia de Mendoza 2029 USD 5.75% semiannual sinkable. USP6480JAH07. Source: Balanz.
+// Residual today (2026-03-31): 46.153846%. D30/360.
 const pmm29Cashflows: CF[] = [
-  { paymentDate: "2029-01-01", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2020-05-19", coupon: 0.00, amortization: 0.00, residual: 1.000000 },
+  { paymentDate: "2021-09-19", coupon: 3.67, amortization: 0.00, residual: 1.000000 },
+  { paymentDate: "2022-03-19", coupon: 2.13, amortization: 0.00, residual: 1.000000 },
+  { paymentDate: "2022-09-19", coupon: 2.13, amortization: 0.00, residual: 1.000000 },
+  { paymentDate: "2023-03-19", coupon: 2.13, amortization: 7.69, residual: 0.923100 },
+  { paymentDate: "2023-09-19", coupon: 2.65, amortization: 7.69, residual: 0.846200 },
+  { paymentDate: "2024-03-19", coupon: 2.43, amortization: 7.69, residual: 0.769200 },
+  { paymentDate: "2024-09-19", coupon: 2.21, amortization: 7.69, residual: 0.692300 },
+  { paymentDate: "2025-03-19", coupon: 1.99, amortization: 7.69, residual: 0.615400 },
+  { paymentDate: "2025-09-19", coupon: 1.77, amortization: 7.69, residual: 0.538500 },
+  { paymentDate: "2026-03-19", coupon: 1.55, amortization: 7.69, residual: 0.461500 },
+  { paymentDate: "2026-09-19", coupon: 1.33, amortization: 7.69, residual: 0.384600 },
+  { paymentDate: "2027-03-19", coupon: 1.11, amortization: 7.69, residual: 0.307700 },
+  { paymentDate: "2027-09-19", coupon: 0.88, amortization: 7.69, residual: 0.230800 },
+  { paymentDate: "2028-03-19", coupon: 0.66, amortization: 7.69, residual: 0.153800 },
+  { paymentDate: "2028-09-19", coupon: 0.44, amortization: 7.69, residual: 0.076900 },
+  { paymentDate: "2029-03-19", coupon: 0.22, amortization: 7.69, residual: 0.000000 },
 ];
 const sa24dCashflows: CF[] = [
   { paymentDate: "2024-03-01", coupon: 4.0, amortization: 100.0, residual: 0.0 },
