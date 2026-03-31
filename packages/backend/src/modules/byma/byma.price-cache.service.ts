@@ -1,3 +1,4 @@
+import type { FastifyBaseLogger } from "fastify";
 import { and, eq, gt, inArray } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { instruments, priceCache } from "../../db/schema.js";
@@ -17,7 +18,10 @@ import type { MarketPrice } from "@investor-app/shared";
  * No other module should call IBYMAClient directly.
  */
 export class PriceCacheService {
-  constructor(private readonly bymaClient: IBYMAClient) {}
+  constructor(
+    private readonly bymaClient: IBYMAClient,
+    private readonly log: FastifyBaseLogger,
+  ) {}
 
   /**
    * Returns the current market price for a ticker.
@@ -25,8 +29,12 @@ export class PriceCacheService {
    */
   async getPrice(ticker: string, currency: "ARS" | "USD" = "USD"): Promise<MarketPrice> {
     const cached = await this.getFromCache(ticker);
-    if (cached !== null) return cached;
+    if (cached !== null) {
+      this.log.debug({ ticker }, "price-cache: hit");
+      return cached;
+    }
 
+    this.log.debug({ ticker }, "price-cache: miss — fetching from data source");
     const fresh = await this.bymaClient.getPrice(ticker);
     await this.saveToCache(fresh.ticker, fresh.price, currency);
 
@@ -55,6 +63,11 @@ export class PriceCacheService {
         staleTickers.push(ticker);
       }
     }
+
+    this.log.info(
+      { total: tickers.length, hits: tickers.length - staleTickers.length, misses: staleTickers.length },
+      "price-cache: bulk lookup",
+    );
 
     // Fetch all stale tickers in one call
     if (staleTickers.length > 0) {

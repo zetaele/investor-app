@@ -55,8 +55,8 @@ await app.register(oauth2, {
 
 // ── Dependency injection ──────────────────────────────────────────────────────
 
-const bymaClient = new Data912Client();
-const priceCache = new PriceCacheService(bymaClient);
+const bymaClient = new Data912Client(app.log);
+const priceCache = new PriceCacheService(bymaClient, app.log);
 const fxService = new FxService();
 const bondsService = new BondsService(priceCache, fxService);
 const compareService = new CompareService(bondsService);

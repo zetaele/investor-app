@@ -1,3 +1,4 @@
+import type { FastifyBaseLogger } from "fastify";
 import type { BymaMarketPrice, IBYMAClient } from "./byma.types.js";
 import { BymaClientError, BymaInstrumentNotFoundError } from "./byma.types.js";
 
@@ -22,6 +23,9 @@ interface Data912Item {
  * SNAPSHOT_TTL_MS milliseconds so individual price lookups don't trigger
  * redundant HTTP calls — the outer PriceCacheService handles the longer SQLite TTL.
  *
+ * Concurrent callers that arrive while a fetch is in progress all await the
+ * same promise, so data912 receives at most 3 requests per refresh cycle.
+ *
  * No authentication required. Rate limit: 120 req/min.
  * @see https://data912.com/openapi.json
  */
@@ -30,6 +34,8 @@ export class Data912Client implements IBYMAClient {
   private snapshotAt = 0;
   /** In-flight fetch promise shared across all concurrent callers. */
   private fetchInFlight: Promise<Map<string, BymaMarketPrice>> | null = null;
+
+  constructor(private readonly log: FastifyBaseLogger) {}
 
   // ── Snapshot management ────────────────────────────────────────────────────
 
@@ -42,9 +48,11 @@ export class Data912Client implements IBYMAClient {
     // Deduplicate concurrent callers: all await the same in-flight promise
     // instead of each firing their own 3 HTTP requests to data912.
     if (this.fetchInFlight !== null) {
+      this.log.debug("data912: snapshot stale, in-flight fetch in progress — awaiting");
       return this.fetchInFlight;
     }
 
+    this.log.info("data912: fetching all endpoints");
     this.fetchInFlight = this.fetchAllEndpoints().finally(() => {
       this.fetchInFlight = null;
     });
@@ -53,11 +61,19 @@ export class Data912Client implements IBYMAClient {
   }
 
   private async fetchAllEndpoints(): Promise<Map<string, BymaMarketPrice>> {
-    const [bonds, notes, corp] = await Promise.all([
-      this.fetchEndpoint("/live/arg_bonds"),
-      this.fetchEndpoint("/live/arg_notes"),
-      this.fetchEndpoint("/live/arg_corp"),
-    ]);
+    const t0 = Date.now();
+
+    let bonds: Data912Item[], notes: Data912Item[], corp: Data912Item[];
+    try {
+      [bonds, notes, corp] = await Promise.all([
+        this.fetchEndpoint("/live/arg_bonds"),
+        this.fetchEndpoint("/live/arg_notes"),
+        this.fetchEndpoint("/live/arg_corp"),
+      ]);
+    } catch (err) {
+      this.log.error({ err }, "data912: fetch failed");
+      throw err;
+    }
 
     const updatedAt = new Date().toISOString();
     const map = new Map<string, BymaMarketPrice>();
@@ -75,6 +91,11 @@ export class Data912Client implements IBYMAClient {
 
     this.snapshot = map;
     this.snapshotAt = Date.now();
+    this.log.info(
+      { instruments: map.size, ms: Date.now() - t0 },
+      "data912: snapshot updated",
+    );
+
     return map;
   }
 
