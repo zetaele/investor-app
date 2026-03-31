@@ -778,7 +778,7 @@ const instrumentsData = [
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
     issuer: "Provincia de Santa Fe",
-    maturityDate: "2034-03-15",
+    maturityDate: "2034-12-11",
   },
   // ── SubSoberanos — Tasa Flotante ARS ──────────────────────────────────────
   {
@@ -1774,23 +1774,27 @@ const pmm29Cashflows: CF[] = [
 const sa24dCashflows: CF[] = [
   { paymentDate: "2024-03-01", coupon: 4.0, amortization: 100.0, residual: 0.0 },
 ];
+// SFD4D — Santa Fe 2034 USD 8.1% semiannual sinkable. US74409AAE91. Source: Balanz.
 const sfd34Cashflows: CF[] = [
-  { paymentDate: "2026-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2030-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2030-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2031-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2031-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2032-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2032-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2033-03-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2033-09-15", coupon: 3.75, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2034-03-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2025-12-11", coupon: 0.00, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-06-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-12-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2027-06-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2027-12-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2028-06-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2028-12-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2029-06-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2029-12-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2030-06-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2030-12-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2031-06-11", coupon: 4.05, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2031-12-11", coupon: 4.05, amortization: 25.0, residual: 0.75 },
+  { paymentDate: "2032-06-11", coupon: 3.04, amortization:  0.0, residual: 0.75 },
+  { paymentDate: "2032-12-11", coupon: 3.04, amortization: 25.0, residual: 0.50 },
+  { paymentDate: "2033-06-11", coupon: 2.03, amortization:  0.0, residual: 0.50 },
+  { paymentDate: "2033-12-11", coupon: 2.03, amortization: 25.0, residual: 0.25 },
+  { paymentDate: "2034-06-11", coupon: 1.01, amortization:  0.0, residual: 0.25 },
+  { paymentDate: "2034-12-11", coupon: 1.01, amortization: 25.0, residual: 0.00 },
 ];
 
 // Sub-sovereign ARS floating — approximate BADLAR structure similar to PR17.
