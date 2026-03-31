@@ -100,6 +100,43 @@ const TYPE_SHAPES: Record<string, "circle" | "triangle" | "rect"> = {
   LETTER: "rect",
 };
 
+type LabelAlign = "top" | "bottom" | "right" | "left";
+const LABEL_ALIGNS: LabelAlign[] = ["top", "bottom", "right", "left"];
+
+/**
+ * Assigns label positions to avoid overlaps in clustered points.
+ * Points within X_THRESH (MD units) and Y_THRESH (TIR % units) of each other
+ * are grouped into a cluster and assigned rotating directions.
+ */
+function assignLabelPositions(entries: CompareEntry[]): LabelAlign[] {
+  const X_THRESH = 0.25;
+  const Y_THRESH = 1.0;
+  const positions: LabelAlign[] = new Array(entries.length).fill("top");
+  const assigned = new Set<number>();
+
+  for (let i = 0; i < entries.length; i++) {
+    if (assigned.has(i)) continue;
+    const cluster: number[] = [i];
+    for (let j = i + 1; j < entries.length; j++) {
+      if (assigned.has(j)) continue;
+      const dx = Math.abs(
+        entries[i]!.calculations.modifiedDuration - entries[j]!.calculations.modifiedDuration,
+      );
+      const dy = Math.abs(entries[i]!.calculations.ytm - entries[j]!.calculations.ytm) * 100;
+      if (dx < X_THRESH && dy < Y_THRESH) {
+        cluster.push(j);
+        assigned.add(j);
+      }
+    }
+    cluster.forEach((idx, pos) => {
+      positions[idx] = LABEL_ALIGNS[pos % LABEL_ALIGNS.length]!;
+    });
+    assigned.add(i);
+  }
+
+  return positions;
+}
+
 const chartData = computed((): ChartData<"scatter", Point[]> => {
   // Group entries by subtype for per-subtype curve fitting
   const bySubtype = new Map<string, typeof props.entries>();
@@ -145,8 +182,12 @@ const chartData = computed((): ChartData<"scatter", Point[]> => {
     });
   }
 
+  const labelPositions = assignLabelPositions(props.entries);
+
   const pointDatasets = props.entries.map((entry, i) => {
     const color = COLORS[i % COLORS.length] ?? COLORS[0]!;
+    const align = labelPositions[i] ?? "top";
+    const anchor = align === "top" ? "end" : align === "bottom" ? "start" : "center";
     return {
       label: entry.ticker,
       data: [{ x: entry.calculations.modifiedDuration, y: entry.calculations.ytm * 100 }],
@@ -156,6 +197,11 @@ const chartData = computed((): ChartData<"scatter", Point[]> => {
       pointRadius: 12,
       pointHoverRadius: 15,
       pointStyle: TYPE_SHAPES[entry.type] ?? "circle",
+      datalabels: {
+        anchor,
+        align,
+        offset: 6,
+      },
     };
   });
 
@@ -231,9 +277,6 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
         size: 11,
         weight: 600,
       },
-      anchor: "end" as const,
-      align: "top" as const,
-      offset: 6,
     },
   },
   scales: {
