@@ -1475,9 +1475,16 @@ const bpb8dCashflows: CF[] = [
   { paymentDate: "2028-05-31", coupon: 1.0, amortization: 33.0, residual: 0.34 },
   { paymentDate: "2028-05-31", coupon: 0.51, amortization: 34.0, residual: 0.0 },
 ];
+// BPC7D — BOPREAL Serie 1-C USD. Schedule from prospectus.
 const bpc7dCashflows: CF[] = [
-  { paymentDate: "2027-02-28", coupon: 1.5, amortization: 50.0, residual: 0.5 },
-  { paymentDate: "2027-08-31", coupon: 0.75, amortization: 50.0, residual: 0.0 },
+  { paymentDate: "2024-01-05", coupon: 0.00, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2024-10-31", coupon: 4.10, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-04-30", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-10-31", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-04-30", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-10-31", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2027-04-30", coupon: 2.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2027-10-31", coupon: 1.25, amortization: 50.0, residual: 0.00 },
 ];
 // BPD7D — BOPREAL Serie 2-D USD. Schedule from prospectus.
 const bpd7dCashflows: CF[] = [
