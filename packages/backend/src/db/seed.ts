@@ -682,31 +682,31 @@ const instrumentsData = [
   },
   // ── SubSoberanos — Tasa Fija USD ──────────────────────────────────────────
   {
-    ticker: "BA37D",
-    name: "Bono Provincia de Buenos Aires 2037 - USD",
+    ticker: "BA7DD",
+    name: "Bono A Provincia de Buenos Aires 2037 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
     issuer: "Provincia de Buenos Aires",
-    maturityDate: "2037-01-26",
+    maturityDate: "2037-09-01",
   },
   {
-    ticker: "BB37D",
-    name: "Bono Ciudad de Buenos Aires 2037 - USD",
+    ticker: "BB7DD",
+    name: "Bono B Provincia de Buenos Aires 2037 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
-    issuer: "Ciudad Autónoma de Buenos Aires",
-    maturityDate: "2037-03-01",
+    issuer: "Provincia de Buenos Aires",
+    maturityDate: "2037-09-01",
   },
   {
-    ticker: "BC37D",
-    name: "Bono SubSoberano 2037 - USD", // TODO: confirm issuer
+    ticker: "BC7DD",
+    name: "Bono C Provincia de Buenos Aires 2037 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
-    issuer: "Sub-Soberano",
-    maturityDate: "2037-01-01",
+    issuer: "Provincia de Buenos Aires",
+    maturityDate: "2037-09-01",
   },
   {
     ticker: "CO26D",
@@ -1225,26 +1225,29 @@ const co2d7Cashflows: CF[] = [
  * cerConfigMap = 100 (residual=100%; paridad = price / VT_now where VT_now = CER index).
  * VT_now values for cerConfigMap must be refreshed daily as CER accretes.
  */
+// TZX zero-coupon CER bonds: amortization = VT_now snapshot (same approach as LECER).
+// TIR_real = (VT_now / price)^(1/t) - 1. Refresh when re-seeding.
+// Reference date: 2026-03-26.
 const tzx26Cashflows: CF[] = [
-  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 368.4, residual: 0.0 },
 ];
 const tzx27Cashflows: CF[] = [
-  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 348.5, residual: 0.0 },
 ];
 const tzxd6Cashflows: CF[] = [
-  { paymentDate: "2026-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-12-31", coupon: 0.0, amortization: 267.25, residual: 0.0 },
 ];
 const tzxo6Cashflows: CF[] = [
-  { paymentDate: "2026-10-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2026-10-31", coupon: 0.0, amortization: 151.7, residual: 0.0 },
 ];
 const tzxm7Cashflows: CF[] = [
-  { paymentDate: "2027-03-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2027-03-31", coupon: 0.0, amortization: 196.25, residual: 0.0 },
 ];
 const tzxd7Cashflows: CF[] = [
-  { paymentDate: "2027-12-31", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2027-12-31", coupon: 0.0, amortization: 246.2, residual: 0.0 },
 ];
 const tzxa7Cashflows: CF[] = [
-  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 110.5, residual: 0.0 },
 ];
 
 /**
@@ -1485,36 +1488,135 @@ const bpy6dCashflows: CF[] = [
 ];
 
 /**
- * Sub-sovereign USD bonds — approximate cashflows.
- * TODO: replace with exact schedules from each province's prospectus.
+ * BA7DD — Bono A Provincia de Buenos Aires 2037 (USD, XS2385150334)
+ * 6.625% coupon, semiannual, sinkable. Rava data 2026-03-30.
+ * residual = outstanding fraction AFTER each payment.
  */
-const ba37dCashflows: CF[] = [
-  { paymentDate: "2026-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2030-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2030-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2031-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2031-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2032-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2032-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2033-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2033-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2034-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2034-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2035-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2035-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2036-01-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2036-07-26", coupon: 3.94, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2037-01-26", coupon: 3.94, amortization: 100.0, residual: 0.0 },
+const ba7ddCashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2021-06-30", coupon: 0.00, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2021-09-01", coupon: 0.42, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-03-01", coupon: 1.95, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-09-01", coupon: 1.95, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-03-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-09-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2024-03-01", coupon: 3.19, amortization: 1.83, residual: 0.9817 },
+  { paymentDate: "2024-09-01", coupon: 3.13, amortization: 1.83, residual: 0.9634 },
+  { paymentDate: "2025-03-01", coupon: 3.19, amortization: 2.25, residual: 0.9409 },
+  { paymentDate: "2025-09-01", coupon: 3.12, amortization: 2.25, residual: 0.9184 },
+  { paymentDate: "2026-03-01", coupon: 3.04, amortization: 2.90, residual: 0.8894 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-09-01", coupon: 2.95, amortization: 2.90, residual: 0.8604 },
+  { paymentDate: "2027-03-01", coupon: 2.85, amortization: 3.28, residual: 0.8276 },
+  { paymentDate: "2027-09-01", coupon: 2.74, amortization: 3.28, residual: 0.7948 },
+  { paymentDate: "2028-03-01", coupon: 2.63, amortization: 3.47, residual: 0.7601 },
+  { paymentDate: "2028-09-01", coupon: 2.52, amortization: 3.47, residual: 0.7254 },
+  { paymentDate: "2029-03-01", coupon: 2.40, amortization: 3.79, residual: 0.6875 },
+  { paymentDate: "2029-09-01", coupon: 2.28, amortization: 3.79, residual: 0.6496 },
+  { paymentDate: "2030-03-01", coupon: 2.15, amortization: 3.08, residual: 0.6188 },
+  { paymentDate: "2030-09-01", coupon: 2.05, amortization: 3.08, residual: 0.5880 },
+  { paymentDate: "2031-03-01", coupon: 1.95, amortization: 3.59, residual: 0.5521 },
+  { paymentDate: "2031-09-01", coupon: 1.83, amortization: 3.59, residual: 0.5162 },
+  { paymentDate: "2032-03-01", coupon: 1.71, amortization: 3.77, residual: 0.4785 },
+  { paymentDate: "2032-09-01", coupon: 1.59, amortization: 3.77, residual: 0.4408 },
+  { paymentDate: "2033-03-01", coupon: 1.46, amortization: 3.94, residual: 0.4014 },
+  { paymentDate: "2033-09-01", coupon: 1.33, amortization: 3.94, residual: 0.3620 },
+  { paymentDate: "2034-03-01", coupon: 1.20, amortization: 4.20, residual: 0.3200 },
+  { paymentDate: "2034-09-01", coupon: 1.06, amortization: 4.20, residual: 0.2780 },
+  { paymentDate: "2035-03-01", coupon: 0.92, amortization: 4.40, residual: 0.2340 },
+  { paymentDate: "2035-09-01", coupon: 0.78, amortization: 4.40, residual: 0.1900 },
+  { paymentDate: "2036-03-01", coupon: 0.63, amortization: 4.67, residual: 0.1433 },
+  { paymentDate: "2036-09-01", coupon: 0.47, amortization: 4.67, residual: 0.0966 },
+  { paymentDate: "2037-03-01", coupon: 0.32, amortization: 4.83, residual: 0.0483 },
+  { paymentDate: "2037-09-01", coupon: 0.16, amortization: 4.83, residual: 0.0000 },
 ];
-// BB37D, BC37D — use similar structure as BA37D placeholder
-const bb37dCashflows: CF[] = ba37dCashflows;
-const bc37dCashflows: CF[] = ba37dCashflows;
+
+/**
+ * BB7DD — Bono B Provincia de Buenos Aires 2037 (USD, XS2385151738)
+ * 5.875% coupon, semiannual, sinkable. Rava data 2026-03-30.
+ */
+const bb7ddCashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2021-06-30", coupon: 0.00, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2021-09-01", coupon: 0.42, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-03-01", coupon: 1.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-09-01", coupon: 1.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-03-01", coupon: 2.25, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-09-01", coupon: 2.25, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2024-03-01", coupon: 2.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2024-09-01", coupon: 2.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2025-03-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2025-09-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2026-03-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-09-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2027-03-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2027-09-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2028-03-01", coupon: 2.94, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2028-09-01", coupon: 2.94, amortization: 0.75, residual: 0.9925 },
+  { paymentDate: "2029-03-01", coupon: 2.92, amortization: 0.75, residual: 0.9850 },
+  { paymentDate: "2029-09-01", coupon: 2.89, amortization: 0.75, residual: 0.9775 },
+  { paymentDate: "2030-03-01", coupon: 2.87, amortization: 6.15, residual: 0.9160 },
+  { paymentDate: "2030-09-01", coupon: 2.69, amortization: 6.15, residual: 0.8545 },
+  { paymentDate: "2031-03-01", coupon: 2.51, amortization: 6.35, residual: 0.7910 },
+  { paymentDate: "2031-09-01", coupon: 2.32, amortization: 6.35, residual: 0.7275 },
+  { paymentDate: "2032-03-01", coupon: 2.14, amortization: 6.35, residual: 0.6640 },
+  { paymentDate: "2032-09-01", coupon: 1.95, amortization: 6.35, residual: 0.6005 },
+  { paymentDate: "2033-03-01", coupon: 1.76, amortization: 6.35, residual: 0.5370 },
+  { paymentDate: "2033-09-01", coupon: 1.58, amortization: 6.35, residual: 0.4735 },
+  { paymentDate: "2034-03-01", coupon: 1.39, amortization: 5.90, residual: 0.4145 },
+  { paymentDate: "2034-09-01", coupon: 1.22, amortization: 5.90, residual: 0.3555 },
+  { paymentDate: "2035-03-01", coupon: 1.04, amortization: 5.90, residual: 0.2965 },
+  { paymentDate: "2035-09-01", coupon: 0.87, amortization: 5.90, residual: 0.2375 },
+  { paymentDate: "2036-03-01", coupon: 0.70, amortization: 5.90, residual: 0.1785 },
+  { paymentDate: "2036-09-01", coupon: 0.52, amortization: 5.90, residual: 0.1195 },
+  { paymentDate: "2037-03-01", coupon: 0.35, amortization: 5.98, residual: 0.0597 },
+  { paymentDate: "2037-09-01", coupon: 0.18, amortization: 5.97, residual: 0.0000 },
+];
+
+/**
+ * BC7DD — Bono C Provincia de Buenos Aires 2037 (USD, XS2385150847)
+ * 5.25% coupon, semiannual, sinkable. Rava data 2026-03-30.
+ * Illiquid — TIR/Duration not available from Rava.
+ */
+const bc7ddCashflows: CF[] = [
+  // ── Past payments ─────────────────────────────────────────────────────────
+  { paymentDate: "2021-06-30", coupon: 0.00, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2021-09-01", coupon: 0.34, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-03-01", coupon: 1.50, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-09-01", coupon: 1.50, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-03-01", coupon: 2.00, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-09-01", coupon: 2.00, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2024-03-01", coupon: 2.50, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2024-09-01", coupon: 2.50, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2025-03-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2025-09-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2026-03-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-09-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2027-03-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2027-09-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2028-03-01", coupon: 2.63, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2028-09-01", coupon: 2.63, amortization: 0.75, residual: 0.9925 },
+  { paymentDate: "2029-03-01", coupon: 2.61, amortization: 0.75, residual: 0.9850 },
+  { paymentDate: "2029-09-01", coupon: 2.59, amortization: 0.75, residual: 0.9775 },
+  { paymentDate: "2030-03-01", coupon: 2.57, amortization: 6.15, residual: 0.9160 },
+  { paymentDate: "2030-09-01", coupon: 2.40, amortization: 6.15, residual: 0.8545 },
+  { paymentDate: "2031-03-01", coupon: 2.24, amortization: 6.35, residual: 0.7910 },
+  { paymentDate: "2031-09-01", coupon: 2.08, amortization: 6.35, residual: 0.7275 },
+  { paymentDate: "2032-03-01", coupon: 1.91, amortization: 6.35, residual: 0.6640 },
+  { paymentDate: "2032-09-01", coupon: 1.74, amortization: 6.35, residual: 0.6005 },
+  { paymentDate: "2033-03-01", coupon: 1.58, amortization: 6.35, residual: 0.5370 },
+  { paymentDate: "2033-09-01", coupon: 1.41, amortization: 6.35, residual: 0.4735 },
+  { paymentDate: "2034-03-01", coupon: 1.24, amortization: 5.90, residual: 0.4145 },
+  { paymentDate: "2034-09-01", coupon: 1.09, amortization: 5.90, residual: 0.3555 },
+  { paymentDate: "2035-03-01", coupon: 0.93, amortization: 5.90, residual: 0.2965 },
+  { paymentDate: "2035-09-01", coupon: 0.78, amortization: 5.90, residual: 0.2375 },
+  { paymentDate: "2036-03-01", coupon: 0.62, amortization: 5.90, residual: 0.1785 },
+  { paymentDate: "2036-09-01", coupon: 0.47, amortization: 5.90, residual: 0.1195 },
+  { paymentDate: "2037-03-01", coupon: 0.31, amortization: 5.98, residual: 0.0597 },
+  { paymentDate: "2037-09-01", coupon: 0.16, amortization: 5.97, residual: 0.0000 },
+];
 
 const co26Cashflows: CF[] = [
   { paymentDate: "2026-06-10", coupon: 3.5, amortization: 0.0, residual: 1.0 },
@@ -1689,7 +1791,7 @@ const tzx28Cashflows: CF[] = [
   // ── Past payments ─────────────────────────────────────────────────────────
   { paymentDate: "2024-02-01", coupon: 0.0, amortization: 0.0, residual: 1.0 },
   // ── Future payments ───────────────────────────────────────────────────────
-  { paymentDate: "2028-06-30", coupon: 0.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2028-06-30", coupon: 0.0, amortization: 308.4, residual: 0.0 },
 ];
 
 /**
@@ -1814,22 +1916,34 @@ const ty30pCashflows: CF[] = [
 
 /**
  * LECER cashflows — single bullet = VT at maturity (CER-indexed).
- * VT values from Abbaco snapshot 2026-03-27. Refresh as CER index publishes.
+ * amortization = VT_mat (estimated maturity value).
+ * With very low inflation in Argentina (early 2026), CER grows slowly.
+ * VT_mat ≈ VT_now + minimal CER growth → negative real TIR is correct market behavior
+ * (investors accept a premium to par for CER protection).
+ * adjustmentCoefficient (cerConfigMap) = VT_now snapshot (for paridad calculation).
+ *
+ * Calibration source: X15Y6 Rava data 2026-03-30:
+ *   VT_now=1.029521 (=102.9521), price=104.468, TIR=-10.95%, paridad=101.47%
+ *   → VT_mat=103.0 (price × (1-0.1095)^(45/365) ≈ 103.0)
  */
 const x15y6Cashflows: CF[] = [
-  { paymentDate: "2026-05-15", coupon: 0, amortization: 102.85, residual: 0.0 },
+  { paymentDate: "2026-05-15", coupon: 0, amortization: 103.0, residual: 0.0 },
 ];
 const x29y6Cashflows: CF[] = [
-  { paymentDate: "2026-05-29", coupon: 0, amortization: 110.69, residual: 0.0 },
+  // VT_now=110.80, minimal CER growth over 60 days → VT_mat≈110.81; Rava 2026-03-30
+  { paymentDate: "2026-05-29", coupon: 0, amortization: 110.81, residual: 0.0 },
 ];
 const x31l6Cashflows: CF[] = [
-  { paymentDate: "2026-07-31", coupon: 0, amortization: 105.26, residual: 0.0 },
+  // VT_now=105.26, minimal CER growth over 121 days → VT_mat≈105.7
+  { paymentDate: "2026-07-31", coupon: 0, amortization: 105.7, residual: 0.0 },
 ];
 const x30s6Cashflows: CF[] = [
-  { paymentDate: "2026-09-30", coupon: 0, amortization: 100.92, residual: 0.0 },
+  // VT_now=100.92, 183 days → VT_mat≈101.5
+  { paymentDate: "2026-09-30", coupon: 0, amortization: 101.5, residual: 0.0 },
 ];
 const x30n6Cashflows: CF[] = [
-  { paymentDate: "2026-11-30", coupon: 0, amortization: 109.38, residual: 0.0 },
+  // VT_now=109.38, 244 days → VT_mat≈110.0
+  { paymentDate: "2026-11-30", coupon: 0, amortization: 110.0, residual: 0.0 },
 ];
 
 /**
@@ -1922,9 +2036,9 @@ const cashflowMap: Record<string, CF[]> = {
   BPC7D: bpc7dCashflows,
   BPD7D: bpd7dCashflows,
   BPY6D: bpy6dCashflows,
-  BA37D: ba37dCashflows,
-  BB37D: bb37dCashflows,
-  BC37D: bc37dCashflows,
+  BA7DD: ba7ddCashflows,
+  BB7DD: bb7ddCashflows,
+  BC7DD: bc7ddCashflows,
   CO26D: co26Cashflows,
   CO32D: co32dCashflows,
   ERF25D: erf25Cashflows,
@@ -1957,8 +2071,8 @@ const cerConfigMap: Record<string, number> = {
   D30A6: 139344, // VT per 100 VN = ARS/USD × 100; snapshot 2026-03-27
   D30S6: 139344, // same USD rate snapshot — VT_maturity will differ as rate changes
   // LECER (VT tracks CER index daily; refresh from BCRA/INDEC)
-  X15Y6: 102.85, // VT=102.8464; Abbaco 2026-03-27
-  X29Y6: 110.69, // VT=110.6899
+  X15Y6: 102.95, // VT=1.029521 (×100); Rava 2026-03-30
+  X29Y6: 110.8, // VT=1.108026 (×100); Rava 2026-03-30
   X31L6: 105.26, // VT=105.2563
   X30S6: 100.92, // VT=100.9231
   X30N6: 109.38, // VT=109.3843
@@ -1972,24 +2086,26 @@ const cerConfigMap: Record<string, number> = {
   // DUAL — stored as VT_CAP (YTW leg); paridad = price / VT_CAP
   TTJ26: 136.507, // VT_CAP per Abbaco ~2026-03-26 (TODO: confirm fresh data)
   TTS26: 137.16, // VT_CAP per Bonistas/Abbaco confirmed 2026-03-26
-  // CER bonds — valorTecnico = residual × 100 (same basis as cashflows % of original VN)
-  // parityPct = price / valorTecnico; price = paridad × residual × 100
-  TX28: 60, // residual=60% → VT=60; price=57.74 (=96.23% parity × 60)
-  TX26: 20, // residual≈20% (8/10 amort paid) → VT=20; TODO: refresh
-  TX31: 100, // residual=100% (no amort yet) → VT=100
-  TZX28: 100, // residual=100% → VT=100; price=84.68 (=84.68% parity × 100)
-  TZX26: 100, // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
-  TZX27: 100, // zero-coupon CER, VT_now = current CER coefficient (refresh daily)
-  TZXD6: 100,
-  TZXO6: 100,
-  TZXM7: 100,
-  TZXD7: 100,
-  TZXA7: 100,
-  DICP: 30, // residual≈30% (approximate March 2026) → VT=30
-  PARP: 100, // residual=100% (bullet) → VT=100
-  CUAP: 100, // residual=100% → VT=100
-  DIP0: 100,
-  PAP0: 100,
+  // CER coupon bonds — VT_now in ARS (same units as market price).
+  // Cashflows in seed are nominal % of VN; the service scales them to ARS via (VT_now / nominalFace).
+  // Estimated from mock prices / expected paridad (snapshot ~2026-03-27, Abbaco reference).
+  TX28: 2130, // residual=60%, cerScale≈35.5; price=1915 → paridad≈90%
+  TX26: 1327, // residual=50%, cerScale≈26.5; price=1314 → paridad≈99%
+  TX31: 1620, // residual=100%, cerScale≈16.2; price=1359 → paridad≈84%
+  DICP: 54000, // residual≈25%, cerScale≈1800; price=48570 → paridad≈90%
+  PARP: 38000, // residual=100% bullet 2038; cerScale≈380; price=32690 → paridad≈86%
+  CUAP: 45000, // residual=100% bullet 2045; cerScale≈450; price=39870 → paridad≈89%
+  DIP0: 54000, // zero-coupon bullet 2033; price=48500 → paridad≈90%
+  PAP0: 37000, // zero-coupon bullet 2038; price=32750 → paridad≈89%
+  // TZX zero-coupon CER bonds: VT_now snapshot ≈ mock price (at-par assumption). Refresh periodically.
+  TZX26: 368.4,
+  TZX27: 348.5,
+  TZXD6: 267.25,
+  TZXO6: 151.7,
+  TZXM7: 196.25,
+  TZXD7: 246.2,
+  TZXA7: 110.5,
+  TZX28: 308.4,
   // New LECAP
   S15Y6: 100.86, // issue 16/03/2026, TEM=2.60%, 10 days → VT_now at 2026-03-26
   S29Y6: 104.5,

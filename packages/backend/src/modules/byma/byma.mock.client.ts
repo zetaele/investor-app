@@ -36,7 +36,7 @@ const MOCK_PRICES: Record<string, number> = {
 
   // ── Treasury letters — ARS CER-adjusted (LECER, price in ARS) ────────────
   X15Y6: 104.47,
-  X29Y6: 111.37,
+  X29Y6: 112.94, // Rava 2026-03-30
   X31L6: 108.1,
   X30S6: 100.45,
   X30N6: 110.5,
@@ -104,9 +104,9 @@ const MOCK_PRICES: Record<string, number> = {
   PAP0: 32750.0,
 
   // ── Sub-soberanos USD ─────────────────────────────────────────────────────
-  BA37D: 69.6,
-  BB37D: 70.0,
-  BC37D: 67.7,
+  BA7DD: 70.33, // Rava 2026-03-30
+  BB7DD: 71.5,  // Rava 2026-03-30
+  BC7DD: 67.7,  // Rava 2026-03-30
   CO26D: 10.59,
   CO32D: 109.45,
   ERF25D: 45.6,
