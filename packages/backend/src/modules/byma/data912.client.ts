@@ -28,15 +28,31 @@ interface Data912Item {
 export class Data912Client implements IBYMAClient {
   private snapshot: Map<string, BymaMarketPrice> | null = null;
   private snapshotAt = 0;
+  /** In-flight fetch promise shared across all concurrent callers. */
+  private fetchInFlight: Promise<Map<string, BymaMarketPrice>> | null = null;
 
   // ── Snapshot management ────────────────────────────────────────────────────
 
-  private async getSnapshot(): Promise<Map<string, BymaMarketPrice>> {
+  private getSnapshot(): Promise<Map<string, BymaMarketPrice>> {
     const now = Date.now();
     if (this.snapshot !== null && now - this.snapshotAt < SNAPSHOT_TTL_MS) {
-      return this.snapshot;
+      return Promise.resolve(this.snapshot);
     }
 
+    // Deduplicate concurrent callers: all await the same in-flight promise
+    // instead of each firing their own 3 HTTP requests to data912.
+    if (this.fetchInFlight !== null) {
+      return this.fetchInFlight;
+    }
+
+    this.fetchInFlight = this.fetchAllEndpoints().finally(() => {
+      this.fetchInFlight = null;
+    });
+
+    return this.fetchInFlight;
+  }
+
+  private async fetchAllEndpoints(): Promise<Map<string, BymaMarketPrice>> {
     const [bonds, notes, corp] = await Promise.all([
       this.fetchEndpoint("/live/arg_bonds"),
       this.fetchEndpoint("/live/arg_notes"),
@@ -58,7 +74,7 @@ export class Data912Client implements IBYMAClient {
     }
 
     this.snapshot = map;
-    this.snapshotAt = now;
+    this.snapshotAt = Date.now();
     return map;
   }
 
