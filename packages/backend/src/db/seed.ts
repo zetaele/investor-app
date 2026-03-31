@@ -1449,31 +1449,49 @@ const an29dCashflows: CF[] = [
  * BOPREAL cashflows — USD bonds issued by BCRA in 2024 to settle importer debts.
  * Semi-annual coupon ~3% TNA. Approximate schedules — confirm from BCRA prospectus.
  */
+// BPA7D — BOPREAL Serie 1-A USD. Schedule from prospectus.
 const bpa7dCashflows: CF[] = [
-  { paymentDate: "2026-08-28", coupon: 1.5, amortization: 25.0, residual: 0.75 },
-  { paymentDate: "2027-02-28", coupon: 1.13, amortization: 25.0, residual: 0.5 },
-  { paymentDate: "2027-08-28", coupon: 0.75, amortization: 25.0, residual: 0.25 },
-  { paymentDate: "2027-02-28", coupon: 0.38, amortization: 25.0, residual: 0.0 },
+  { paymentDate: "2024-01-05", coupon: 0.00, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2024-10-31", coupon: 4.10, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-04-30", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-10-31", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-04-30", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-10-31", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2027-04-30", coupon: 2.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2027-10-31", coupon: 1.25, amortization: 50.0, residual: 0.00 },
 ];
+// BPA8D — BOPREAL Serie 2-A USD. Schedule from prospectus.
 const bpa8dCashflows: CF[] = [
-  { paymentDate: "2026-08-28", coupon: 1.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-02-28", coupon: 1.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-08-28", coupon: 1.5, amortization: 25.0, residual: 0.75 },
-  { paymentDate: "2028-02-28", coupon: 1.13, amortization: 25.0, residual: 0.5 },
-  { paymentDate: "2028-08-28", coupon: 0.75, amortization: 25.0, residual: 0.25 },
-  { paymentDate: "2028-02-28", coupon: 0.38, amortization: 25.0, residual: 0.0 },
+  { paymentDate: "2025-06-24", coupon: 0.00, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2025-10-31", coupon: 1.06, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2026-04-30", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2026-10-31", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2027-04-30", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2027-10-31", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2028-04-30", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2028-10-31", coupon: 1.50, amortization: 100.0, residual: 0.00 },
 ];
+// BPB7D — BOPREAL Serie 1-B USD. Schedule from prospectus.
 const bpb7dCashflows: CF[] = [
-  { paymentDate: "2026-11-30", coupon: 1.5, amortization: 33.0, residual: 0.67 },
-  { paymentDate: "2027-05-31", coupon: 1.0, amortization: 33.0, residual: 0.34 },
-  { paymentDate: "2027-05-31", coupon: 0.51, amortization: 34.0, residual: 0.0 },
+  { paymentDate: "2024-01-05", coupon: 0.00, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2024-10-31", coupon: 4.10, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-04-30", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-10-31", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-04-30", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-10-31", coupon: 2.50, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2027-04-30", coupon: 2.50, amortization: 50.0, residual: 0.50 },
+  { paymentDate: "2027-10-31", coupon: 1.25, amortization: 50.0, residual: 0.00 },
 ];
+// BPB8D — BOPREAL Serie 2-B USD. Schedule from prospectus.
 const bpb8dCashflows: CF[] = [
-  { paymentDate: "2026-11-30", coupon: 1.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-05-31", coupon: 1.5, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-11-30", coupon: 1.5, amortization: 33.0, residual: 0.67 },
-  { paymentDate: "2028-05-31", coupon: 1.0, amortization: 33.0, residual: 0.34 },
-  { paymentDate: "2028-05-31", coupon: 0.51, amortization: 34.0, residual: 0.0 },
+  { paymentDate: "2025-06-24", coupon: 0.00, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2025-10-31", coupon: 1.06, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2026-04-30", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2026-10-31", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2027-04-30", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2027-10-31", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2028-04-30", coupon: 1.50, amortization:   0.0, residual: 1.00 },
+  { paymentDate: "2028-10-31", coupon: 1.50, amortization: 100.0, residual: 0.00 },
 ];
 // BPC7D — BOPREAL Serie 1-C USD. Schedule from prospectus.
 const bpc7dCashflows: CF[] = [
