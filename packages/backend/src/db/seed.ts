@@ -1227,27 +1227,27 @@ const co2d7Cashflows: CF[] = [
  */
 // TZX zero-coupon CER bonds: amortization = VT_now snapshot (same approach as LECER).
 // TIR_real = (VT_now / price)^(1/t) - 1. Refresh when re-seeding.
-// Reference date: 2026-03-26.
+// Reference date: 2026-03-31. Source: Balanz.
 const tzx26Cashflows: CF[] = [
-  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 368.4, residual: 0.0 },
+  { paymentDate: "2026-06-30", coupon: 0.0, amortization: 361.8975, residual: 0.0 },
 ];
 const tzx27Cashflows: CF[] = [
-  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 348.5, residual: 0.0 },
+  { paymentDate: "2027-06-30", coupon: 0.0, amortization: 361.8975, residual: 0.0 },
 ];
 const tzxd6Cashflows: CF[] = [
-  { paymentDate: "2026-12-31", coupon: 0.0, amortization: 267.25, residual: 0.0 },
+  { paymentDate: "2026-12-31", coupon: 0.0, amortization: 267.5545, residual: 0.0 },
 ];
 const tzxo6Cashflows: CF[] = [
-  { paymentDate: "2026-10-31", coupon: 0.0, amortization: 151.7, residual: 0.0 },
+  { paymentDate: "2026-10-31", coupon: 0.0, amortization: 152.95, residual: 0.0 },
 ];
 const tzxm7Cashflows: CF[] = [
-  { paymentDate: "2027-03-31", coupon: 0.0, amortization: 196.25, residual: 0.0 },
+  { paymentDate: "2027-03-31", coupon: 0.0, amortization: 200.7103, residual: 0.0 },
 ];
 const tzxd7Cashflows: CF[] = [
-  { paymentDate: "2027-12-31", coupon: 0.0, amortization: 246.2, residual: 0.0 },
+  { paymentDate: "2027-12-31", coupon: 0.0, amortization: 267.5545, residual: 0.0 },
 ];
 const tzxa7Cashflows: CF[] = [
-  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 110.5, residual: 0.0 },
+  { paymentDate: "2027-04-30", coupon: 0.0, amortization: 111.245, residual: 0.0 },
 ];
 
 /**
@@ -1833,7 +1833,7 @@ const tzx28Cashflows: CF[] = [
   // ── Past payments ─────────────────────────────────────────────────────────
   { paymentDate: "2024-02-01", coupon: 0.0, amortization: 0.0, residual: 1.0 },
   // ── Future payments ───────────────────────────────────────────────────────
-  { paymentDate: "2028-06-30", coupon: 0.0, amortization: 308.4, residual: 0.0 },
+  { paymentDate: "2028-06-30", coupon: 0.0, amortization: 361.8975, residual: 0.0 },
 ];
 
 /**
@@ -2139,15 +2139,15 @@ const cerConfigMap: Record<string, number> = {
   CUAP: 45000, // residual=100% bullet 2045; cerScale≈450; price=39870 → paridad≈89%
   DIP0: 54000, // zero-coupon bullet 2033; price=48500 → paridad≈90%
   PAP0: 37000, // zero-coupon bullet 2038; price=32750 → paridad≈89%
-  // TZX zero-coupon CER bonds: VT_now snapshot ≈ mock price (at-par assumption). Refresh periodically.
-  TZX26: 368.4,
-  TZX27: 348.5,
-  TZXD6: 267.25,
-  TZXO6: 151.7,
-  TZXM7: 196.25,
-  TZXD7: 246.2,
-  TZXA7: 110.5,
-  TZX28: 308.4,
+  // TZX zero-coupon CER bonds: VT_now per 100 VN. Source: Balanz 2026-03-31.
+  TZX26: 361.8975,
+  TZX27: 361.8975,
+  TZXD6: 267.5545,
+  TZXO6: 152.95,
+  TZXM7: 200.7103,
+  TZXD7: 267.5545,
+  TZXA7: 111.245,
+  TZX28: 361.8975,
   // New LECAP
   S15Y6: 100.86, // issue 16/03/2026, TEM=2.60%, 10 days → VT_now at 2026-03-26
   S29Y6: 104.5,
