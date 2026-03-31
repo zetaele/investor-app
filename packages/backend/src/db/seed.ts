@@ -736,13 +736,13 @@ const instrumentsData = [
     maturityDate: "2025-02-28",
   },
   {
-    ticker: "ERM33D",
+    ticker: "EM33D",
     name: "Bono Provincia de Entre Ríos 2033 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
     issuer: "Provincia de Entre Ríos",
-    maturityDate: "2033-08-08",
+    maturityDate: "2033-03-04",
   },
   {
     ticker: "NDT5D",
@@ -1729,21 +1729,23 @@ const co32dCashflows: CF[] = [
 const erf25Cashflows: CF[] = [
   { paymentDate: "2025-02-28", coupon: 4.25, amortization: 100.0, residual: 0.0 },
 ];
-const erm33Cashflows: CF[] = [
-  { paymentDate: "2026-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2027-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2028-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2029-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2030-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2030-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2031-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2031-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2032-02-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2032-08-08", coupon: 4.0, amortization: 0.0, residual: 1.0 },
-  { paymentDate: "2033-08-08", coupon: 4.0, amortization: 100.0, residual: 0.0 },
+// EM33D — Entre Ríos 2033 USD 9.55% semiannual sinkable. USP37341AC17. Source: Balanz.
+const em33dCashflows: CF[] = [
+  { paymentDate: "2026-03-04", coupon: 0.00, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2026-09-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2027-03-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2027-09-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2028-03-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2028-09-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2029-03-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2029-09-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2030-03-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2030-09-04", coupon: 4.78, amortization:  0.00, residual: 1.0000 },
+  { paymentDate: "2031-03-04", coupon: 4.78, amortization: 33.33, residual: 0.6667 },
+  { paymentDate: "2031-09-04", coupon: 3.18, amortization:  0.00, residual: 0.6667 },
+  { paymentDate: "2032-03-04", coupon: 3.18, amortization: 33.33, residual: 0.3334 },
+  { paymentDate: "2032-09-04", coupon: 1.59, amortization:  0.00, residual: 0.3334 },
+  { paymentDate: "2033-03-04", coupon: 1.59, amortization: 33.34, residual: 0.0000 },
 ];
 const ndt25Cashflows: CF[] = [
   { paymentDate: "2025-07-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
@@ -2150,7 +2152,7 @@ const cashflowMap: Record<string, CF[]> = {
   CO26D: co26Cashflows,
   CO32D: co32dCashflows,
   ERF25D: erf25Cashflows,
-  ERM33D: erm33Cashflows,
+  EM33D: em33dCashflows,
   NDT5D: ndt25Cashflows,
   PM29D: pmm29Cashflows,
   S24DD: sa24dCashflows,

@@ -110,7 +110,7 @@ const MOCK_PRICES: Record<string, number> = {
   CO26D: 10.59,
   CO32D: 109.45,
   ERF25D: 45.6,
-  ERM33D: 101.0,
+  EM33D: 101.0,
   NDT5D: 72.75,
   PM29D: 45.85,
   S24DD: 51.9,
