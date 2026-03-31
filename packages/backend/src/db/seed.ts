@@ -783,13 +783,13 @@ const instrumentsData = [
   // ── SubSoberanos — Tasa Flotante ARS ──────────────────────────────────────
   {
     ticker: "BAF27",
-    name: "Bono Provincia de Buenos Aires BADLAR 2027",
+    name: "Título de Deuda Municipalidad de Córdoba TAMAR Serie II 2027",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FLOTANTE" as const,
     currency: "ARS" as const,
-    issuer: "Provincia de Buenos Aires",
-    maturityDate: "2027-05-01",
-    flowType: "AMORTIZABLE" as const,
+    issuer: "Municipalidad de Córdoba",
+    maturityDate: "2027-02-13",
+    flowType: "CAPITALIZABLE" as const,
   },
   {
     ticker: "BDC28",
@@ -804,16 +804,6 @@ const instrumentsData = [
   {
     ticker: "PBY26",
     name: "Bono SubSoberano BADLAR 2026",
-    type: "BOND" as const,
-    subtype: "SUBSOBERANO_FLOTANTE" as const,
-    currency: "ARS" as const,
-    issuer: "Sub-Soberano",
-    maturityDate: "2026-12-01",
-    flowType: "AMORTIZABLE" as const,
-  },
-  {
-    ticker: "PMD26",
-    name: "Bono SubSoberano BADLAR 2026 (II)",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FLOTANTE" as const,
     currency: "ARS" as const,
@@ -1877,12 +1867,25 @@ const sfd34Cashflows: CF[] = [
 
 // Sub-sovereign ARS floating — approximate BADLAR structure similar to PR17.
 // TODO: replace with exact schedules per province prospectus.
+// BAF27 — Municipalidad de Córdoba TAMAR Serie II 2027. AR0562543014. Source: Balanz.
+// Monthly coupon (TAMAR-linked). Approximate future coupons based on current TAMAR rate.
 const baf27Cashflows: CF[] = [
-  { paymentDate: "2026-05-01", coupon: 6.5, amortization: 10.0, residual: 0.9 },
-  { paymentDate: "2026-08-01", coupon: 5.85, amortization: 10.0, residual: 0.8 },
-  { paymentDate: "2026-11-01", coupon: 5.2, amortization: 10.0, residual: 0.7 },
-  { paymentDate: "2027-02-01", coupon: 4.55, amortization: 10.0, residual: 0.6 },
-  { paymentDate: "2027-05-01", coupon: 3.9, amortization: 60.0, residual: 0.0 },
+  { paymentDate: "2025-11-13", coupon: 0.00, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-12-13", coupon: 3.34, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-01-13", coupon: 2.79, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-02-13", coupon: 3.23, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-03-13", coupon: 3.21, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-04-13", coupon: 2.82, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-05-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-06-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-07-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-08-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-09-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-10-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-11-13", coupon: 2.66, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2026-12-13", coupon: 2.66, amortization: 25.0, residual: 0.75 },
+  { paymentDate: "2027-01-13", coupon: 2.00, amortization: 25.0, residual: 0.50 },
+  { paymentDate: "2027-02-13", coupon: 1.33, amortization: 50.0, residual: 0.00 },
 ];
 const bdc28Cashflows: CF[] = [
   { paymentDate: "2026-07-01", coupon: 6.5, amortization: 10.0, residual: 0.9 },
@@ -1894,10 +1897,6 @@ const bdc28Cashflows: CF[] = [
   { paymentDate: "2028-01-01", coupon: 2.6, amortization: 40.0, residual: 0.0 },
 ];
 const pby26Cashflows: CF[] = [
-  { paymentDate: "2026-06-01", coupon: 6.5, amortization: 50.0, residual: 0.5 },
-  { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.0 },
-];
-const pmd26Cashflows: CF[] = [
   { paymentDate: "2026-06-01", coupon: 6.5, amortization: 50.0, residual: 0.5 },
   { paymentDate: "2026-12-01", coupon: 3.25, amortization: 50.0, residual: 0.0 },
 ];
@@ -2242,7 +2241,6 @@ const cashflowMap: Record<string, CF[]> = {
   BAF27: baf27Cashflows,
   BDC28: bdc28Cashflows,
   PBY26: pby26Cashflows,
-  PMD26: pmd26Cashflows,
   YPF24: ypf24Cashflows,
   PAMP27: pamp27Cashflows,
   TECO27: teco27Cashflows,

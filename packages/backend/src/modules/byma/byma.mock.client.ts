@@ -117,10 +117,9 @@ const MOCK_PRICES: Record<string, number> = {
   SFD4D: 102.0,
 
   // ── Sub-soberanos ARS flotante ────────────────────────────────────────────
-  BAF27: 103.0,
+  BAF27: 101.79, // Balanz 2026-03-31 (paridad 1.007934 × VT 1.016931 × 100 ≈ 101.79 ARS)
   BDC28: 103.0,
   PBY26: 105.3,
-  PMD26: 101.5,
 
   // ── Corporate bonds / ONs — USD ──────────────────────────────────────────
   YPF24: 99.5,

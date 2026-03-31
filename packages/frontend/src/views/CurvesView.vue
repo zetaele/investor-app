@@ -13,6 +13,7 @@ interface CurveSection {
   /** Filter by instrument type (for ONs) */
   instrumentType?: string;
   entries: CompareEntry[];
+  failed?: string[];
   loading: boolean;
   error: string | null;
 }
@@ -150,8 +151,9 @@ onMounted(async () => {
         return;
       }
       try {
-        const { entries } = await fetchCompare(tickers);
+        const { entries, failed } = await fetchCompare(tickers);
         sections.value[idx]!.entries = entries;
+        if (failed && failed.length > 0) sections.value[idx]!.failed = failed;
       } catch (err) {
         sections.value[idx]!.error = err instanceof Error ? err.message : "Error al cargar curva.";
       } finally {
@@ -192,7 +194,12 @@ onMounted(async () => {
           <div class="skeleton" style="height: 260px; border-radius: 0.5rem" />
         </div>
         <ErrorBanner v-else-if="section.error" :message="section.error" />
-        <YieldCurveChart v-else :entries="section.entries" />
+        <template v-else>
+          <YieldCurveChart :entries="section.entries" />
+          <p v-if="section.failed && section.failed.length > 0" class="stale-warning">
+            ⚠ Sin precio en tiempo real: {{ section.failed.join(", ") }}. Los datos mostrados son estimativos y pueden no reflejar la realidad del mercado.
+          </p>
+        </template>
       </div>
     </section>
   </div>
@@ -252,5 +259,13 @@ onMounted(async () => {
   padding: 3rem 1rem;
   font-size: 0.85rem;
   color: var(--color-text-dim);
+}
+
+.stale-warning {
+  margin: 0.5rem 0.5rem 0;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--color-text-dim);
+  opacity: 0.75;
 }
 </style>
