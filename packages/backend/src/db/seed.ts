@@ -727,13 +727,13 @@ const instrumentsData = [
     maturityDate: "2032-03-01",
   },
   {
-    ticker: "ERF25D",
-    name: "Bono Provincia de Entre Ríos Tasa Fija 2025 - USD",
+    ticker: "EF25D",
+    name: "Bono Provincia de Entre Ríos Step-Up 2028 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
     issuer: "Provincia de Entre Ríos",
-    maturityDate: "2025-02-28",
+    maturityDate: "2028-08-08",
   },
   {
     ticker: "EM33D",
@@ -746,12 +746,12 @@ const instrumentsData = [
   },
   {
     ticker: "NDT5D",
-    name: "Bono Provincia del Neuquén 2025 - USD",
+    name: "Bono Provincia del Neuquén 2030 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
     issuer: "Provincia del Neuquén",
-    maturityDate: "2025-07-15",
+    maturityDate: "2030-04-27",
   },
   {
     ticker: "PM29D",
@@ -764,12 +764,12 @@ const instrumentsData = [
   },
   {
     ticker: "S24DD",
-    name: "Bono Provincia de Salta 2024 - USD",
+    name: "Bono Provincia de Salta Step-Up 2027 - USD",
     type: "BOND" as const,
     subtype: "SUBSOBERANO_FIJA_USD" as const,
     currency: "USD" as const,
     issuer: "Provincia de Salta",
-    maturityDate: "2024-03-01",
+    maturityDate: "2027-12-01",
   },
   {
     ticker: "SFD4D",
@@ -1726,8 +1726,33 @@ const co32dCashflows: CF[] = [
   { paymentDate: "2032-01-02", coupon: 1.66, amortization:  0.0, residual: 0.34 },
   { paymentDate: "2032-07-02", coupon: 1.66, amortization: 34.0, residual: 0.00 },
 ];
+// EF25D — Entre Ríos 2028 Step-Up USD semiannual sinkable. USP37341AA50. Source: Balanz.
+// Residual today (2026-03-31): 45%. D30/360.
 const erf25Cashflows: CF[] = [
-  { paymentDate: "2025-02-28", coupon: 4.25, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2017-02-08", coupon: 0.00, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2017-08-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2018-02-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2018-08-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2019-02-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2019-08-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2020-02-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2020-08-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2021-02-08", coupon: 4.38, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2021-08-08", coupon: 2.50, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2022-02-08", coupon: 2.50, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2022-08-08", coupon: 2.50, amortization: 0.0, residual: 1.00 },
+  { paymentDate: "2023-02-08", coupon: 2.88, amortization:  5.0, residual: 0.95 },
+  { paymentDate: "2023-08-08", coupon: 3.85, amortization:  5.0, residual: 0.90 },
+  { paymentDate: "2024-02-08", coupon: 3.71, amortization:  9.0, residual: 0.81 },
+  { paymentDate: "2024-08-08", coupon: 3.34, amortization:  9.0, residual: 0.72 },
+  { paymentDate: "2025-02-08", coupon: 2.97, amortization:  9.0, residual: 0.63 },
+  { paymentDate: "2025-08-08", coupon: 2.60, amortization:  9.0, residual: 0.54 },
+  { paymentDate: "2026-02-08", coupon: 2.23, amortization:  9.0, residual: 0.45 },
+  { paymentDate: "2026-08-08", coupon: 1.86, amortization:  9.0, residual: 0.36 },
+  { paymentDate: "2027-02-08", coupon: 1.49, amortization:  9.0, residual: 0.27 },
+  { paymentDate: "2027-08-08", coupon: 1.11, amortization:  9.0, residual: 0.18 },
+  { paymentDate: "2028-02-08", coupon: 0.74, amortization:  9.0, residual: 0.09 },
+  { paymentDate: "2028-08-08", coupon: 0.37, amortization:  9.0, residual: 0.00 },
 ];
 // EM33D — Entre Ríos 2033 USD 9.55% semiannual sinkable. USP37341AC17. Source: Balanz.
 const em33dCashflows: CF[] = [
@@ -1747,8 +1772,36 @@ const em33dCashflows: CF[] = [
   { paymentDate: "2032-09-04", coupon: 1.59, amortization:  0.00, residual: 0.3334 },
   { paymentDate: "2033-03-04", coupon: 1.59, amortization: 33.34, residual: 0.0000 },
 ];
+// NDT5D — Neuquén 2030 USD 6.875% semiannual sinkable. USP7169GAA78. Source: Balanz.
+// Residual today (2026-03-31): 69.23%. D30/360.
 const ndt25Cashflows: CF[] = [
-  { paymentDate: "2025-07-15", coupon: 3.75, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2017-04-27", coupon: 0.00, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2017-10-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2018-04-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2018-10-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2019-04-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2019-10-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2020-04-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2020-10-27", coupon: 3.75, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2021-04-27", coupon: 1.25, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2021-10-27", coupon: 1.25, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-04-27", coupon: 2.31, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2022-10-27", coupon: 2.31, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-04-27", coupon: 3.31, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2023-10-27", coupon: 3.31, amortization: 0.00, residual: 1.0000 },
+  { paymentDate: "2024-04-27", coupon: 3.38, amortization: 7.69, residual: 0.9231 },
+  { paymentDate: "2024-10-27", coupon: 3.12, amortization: 7.69, residual: 0.8462 },
+  { paymentDate: "2025-04-27", coupon: 2.91, amortization: 7.69, residual: 0.7692 },
+  { paymentDate: "2025-10-27", coupon: 2.64, amortization: 7.69, residual: 0.6923 },
+  { paymentDate: "2026-04-27", coupon: 2.38, amortization: 7.69, residual: 0.6154 },
+  { paymentDate: "2026-10-27", coupon: 2.12, amortization: 7.69, residual: 0.5385 },
+  { paymentDate: "2027-04-27", coupon: 1.85, amortization: 7.69, residual: 0.4615 },
+  { paymentDate: "2027-10-27", coupon: 1.59, amortization: 7.69, residual: 0.3846 },
+  { paymentDate: "2028-04-27", coupon: 1.32, amortization: 7.69, residual: 0.3077 },
+  { paymentDate: "2028-10-27", coupon: 1.06, amortization: 7.69, residual: 0.2308 },
+  { paymentDate: "2029-04-27", coupon: 0.79, amortization: 7.69, residual: 0.1538 },
+  { paymentDate: "2029-10-27", coupon: 0.53, amortization: 7.69, residual: 0.0769 },
+  { paymentDate: "2030-04-27", coupon: 0.26, amortization: 7.69, residual: 0.0000 },
 ];
 // PM29D — Provincia de Mendoza 2029 USD 5.75% semiannual sinkable. USP6480JAH07. Source: Balanz.
 // Residual today (2026-03-31): 46.153846%. D30/360.
@@ -1771,8 +1824,33 @@ const pmm29Cashflows: CF[] = [
   { paymentDate: "2028-09-19", coupon: 0.44, amortization: 7.69, residual: 0.076900 },
   { paymentDate: "2029-03-19", coupon: 0.22, amortization: 7.69, residual: 0.000000 },
 ];
+// S24DD — Salta Step-Up 2027 USD semiannual sinkable. USP8388TAB00. Source: Balanz.
+// Residual today (2026-03-31): 50%. D30/360.
 const sa24dCashflows: CF[] = [
-  { paymentDate: "2024-03-01", coupon: 4.0, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2016-07-07", coupon: 0.00, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2017-01-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2017-07-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2018-01-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2018-07-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2019-01-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2019-07-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2020-01-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2020-07-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2021-01-07", coupon: 4.56, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2021-06-01", coupon: 1.08, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2021-12-01", coupon: 2.50, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2022-06-01", coupon: 2.50, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2022-12-01", coupon: 4.25, amortization:  0.0, residual: 1.000 },
+  { paymentDate: "2023-06-01", coupon: 4.25, amortization:  5.0, residual: 0.950 },
+  { paymentDate: "2023-12-01", coupon: 4.04, amortization:  5.0, residual: 0.900 },
+  { paymentDate: "2024-06-01", coupon: 3.83, amortization:  7.5, residual: 0.825 },
+  { paymentDate: "2024-12-01", coupon: 3.51, amortization:  7.5, residual: 0.750 },
+  { paymentDate: "2025-06-01", coupon: 3.19, amortization: 12.5, residual: 0.625 },
+  { paymentDate: "2025-12-01", coupon: 2.66, amortization: 12.5, residual: 0.500 },
+  { paymentDate: "2026-06-01", coupon: 2.13, amortization: 12.5, residual: 0.375 },
+  { paymentDate: "2026-12-01", coupon: 1.59, amortization: 12.5, residual: 0.250 },
+  { paymentDate: "2027-06-01", coupon: 1.06, amortization: 12.5, residual: 0.125 },
+  { paymentDate: "2027-12-01", coupon: 0.53, amortization: 12.5, residual: 0.000 },
 ];
 // SFD4D — Santa Fe 2034 USD 8.1% semiannual sinkable. US74409AAE91. Source: Balanz.
 const sfd34Cashflows: CF[] = [
@@ -2155,7 +2233,7 @@ const cashflowMap: Record<string, CF[]> = {
   BC7DD: bc7ddCashflows,
   CO26D: co26Cashflows,
   CO32D: co32dCashflows,
-  ERF25D: erf25Cashflows,
+  EF25D: erf25Cashflows,
   EM33D: em33dCashflows,
   NDT5D: ndt25Cashflows,
   PM29D: pmm29Cashflows,

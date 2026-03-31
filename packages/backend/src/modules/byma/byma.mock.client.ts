@@ -109,7 +109,7 @@ const MOCK_PRICES: Record<string, number> = {
   BC7DD: 67.7,  // Rava 2026-03-30
   CO26D: 10.59,
   CO32D: 109.45,
-  ERF25D: 45.6,
+  EF25D: 45.6,
   EM33D: 101.0,
   NDT5D: 72.75,
   PM29D: 45.85,
