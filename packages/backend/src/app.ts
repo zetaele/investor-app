@@ -6,7 +6,7 @@ import rateLimit from "@fastify/rate-limit";
 import cookie from "@fastify/cookie";
 import oauth2 from "@fastify/oauth2";
 import { env } from "./config/env.js";
-import { MockBymaClient } from "./modules/byma/byma.mock.client.js";
+import { Data912Client } from "./modules/byma/data912.client.js";
 import { PriceCacheService } from "./modules/byma/byma.price-cache.service.js";
 import { FxService } from "./modules/fx/fx.service.js";
 import { BondsService } from "./modules/bonds/bonds.service.js";
@@ -55,13 +55,7 @@ await app.register(oauth2, {
 
 // ── Dependency injection ──────────────────────────────────────────────────────
 
-/**
- * To switch from mock to live BYMA data:
- * 1. Replace MockBymaClient with BymaOfficialClient
- * 2. Set BYMA_API_KEY in .env if using BymaOfficialClient
- * Nothing else needs to change.
- */
-const bymaClient = new MockBymaClient();
+const bymaClient = new Data912Client();
 const priceCache = new PriceCacheService(bymaClient);
 const fxService = new FxService();
 const bondsService = new BondsService(priceCache, fxService);

@@ -1,0 +1,107 @@
+import type { BymaMarketPrice, IBYMAClient } from "./byma.types.js";
+import { BymaClientError, BymaInstrumentNotFoundError } from "./byma.types.js";
+
+const BASE_URL = "https://data912.com";
+
+/** Match the data912 source refresh rate to avoid redundant fetches. */
+const SNAPSHOT_TTL_MS = 20_000;
+
+interface Data912Item {
+  symbol: string;
+  /** Close / last price */
+  c: number;
+  /** Trading volume */
+  v: number;
+}
+
+/**
+ * Data source client backed by the data912.com free market data API.
+ *
+ * Fetches all three endpoints (arg_bonds, arg_notes, arg_corp) in parallel
+ * and merges them into a single in-memory snapshot. The snapshot is reused for
+ * SNAPSHOT_TTL_MS milliseconds so individual price lookups don't trigger
+ * redundant HTTP calls — the outer PriceCacheService handles the longer SQLite TTL.
+ *
+ * No authentication required. Rate limit: 120 req/min.
+ * @see https://data912.com/openapi.json
+ */
+export class Data912Client implements IBYMAClient {
+  private snapshot: Map<string, BymaMarketPrice> | null = null;
+  private snapshotAt = 0;
+
+  // ── Snapshot management ────────────────────────────────────────────────────
+
+  private async getSnapshot(): Promise<Map<string, BymaMarketPrice>> {
+    const now = Date.now();
+    if (this.snapshot !== null && now - this.snapshotAt < SNAPSHOT_TTL_MS) {
+      return this.snapshot;
+    }
+
+    const [bonds, notes, corp] = await Promise.all([
+      this.fetchEndpoint("/live/arg_bonds"),
+      this.fetchEndpoint("/live/arg_notes"),
+      this.fetchEndpoint("/live/arg_corp"),
+    ]);
+
+    const updatedAt = new Date().toISOString();
+    const map = new Map<string, BymaMarketPrice>();
+
+    for (const item of [...bonds, ...notes, ...corp]) {
+      if (item.symbol && item.c > 0) {
+        map.set(item.symbol, {
+          ticker: item.symbol,
+          price: item.c,
+          volume: item.v ?? null,
+          updatedAt,
+        });
+      }
+    }
+
+    this.snapshot = map;
+    this.snapshotAt = now;
+    return map;
+  }
+
+  private async fetchEndpoint(path: string): Promise<Data912Item[]> {
+    let response: Response;
+
+    try {
+      response = await fetch(`${BASE_URL}${path}`, {
+        headers: { Accept: "application/json" },
+      });
+    } catch (err) {
+      throw new BymaClientError(`Failed to reach data912 API at ${path}`, err);
+    }
+
+    if (!response.ok) {
+      throw new BymaClientError(`data912 API returned ${response.status} for ${path}`);
+    }
+
+    const raw: unknown = await response.json();
+
+    if (!Array.isArray(raw)) {
+      throw new BymaClientError(`Unexpected response shape from data912 at ${path}`);
+    }
+
+    return raw as Data912Item[];
+  }
+
+  // ── IBYMAClient ────────────────────────────────────────────────────────────
+
+  async getPrice(ticker: string): Promise<BymaMarketPrice> {
+    const snapshot = await this.getSnapshot();
+    const price = snapshot.get(ticker);
+    if (!price) throw new BymaInstrumentNotFoundError(ticker);
+    return price;
+  }
+
+  async getPrices(tickers: string[]): Promise<Map<string, BymaMarketPrice>> {
+    const snapshot = await this.getSnapshot();
+    const result = new Map<string, BymaMarketPrice>();
+    for (const ticker of tickers) {
+      const price = snapshot.get(ticker);
+      if (price !== undefined) result.set(ticker, price);
+    }
+    return result;
+  }
+}
