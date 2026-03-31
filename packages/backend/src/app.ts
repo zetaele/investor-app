@@ -7,6 +7,8 @@ import cookie from "@fastify/cookie";
 import oauth2 from "@fastify/oauth2";
 import { env } from "./config/env.js";
 import { Data912Client } from "./modules/byma/data912.client.js";
+import { MockBymaClient } from "./modules/byma/byma.mock.client.js";
+import { FallbackBymaClient } from "./modules/byma/byma.fallback.client.js";
 import { PriceCacheService } from "./modules/byma/byma.price-cache.service.js";
 import { FxService } from "./modules/fx/fx.service.js";
 import { BondsService } from "./modules/bonds/bonds.service.js";
@@ -55,7 +57,10 @@ await app.register(oauth2, {
 
 // ── Dependency injection ──────────────────────────────────────────────────────
 
-const bymaClient = new Data912Client(app.log);
+const bymaClient = new FallbackBymaClient(
+  new Data912Client(app.log),
+  new MockBymaClient(),
+);
 const priceCache = new PriceCacheService(bymaClient, app.log);
 const fxService = new FxService();
 const bondsService = new BondsService(priceCache, fxService);
