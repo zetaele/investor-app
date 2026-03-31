@@ -44,6 +44,7 @@ export class BymaOfficialClient implements IBYMAClient {
       price: Number(data["price"] ?? data["lastPrice"] ?? data["settlementPrice"] ?? 0),
       volume: data["volume"] !== undefined ? Number(data["volume"]) : null,
       updatedAt: String(data["updatedAt"] ?? data["timestamp"] ?? new Date().toISOString()),
+      source: "live",
     };
   }
 

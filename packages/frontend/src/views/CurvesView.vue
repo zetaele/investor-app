@@ -14,6 +14,7 @@ interface CurveSection {
   instrumentType?: string;
   entries: CompareEntry[];
   failed?: string[];
+  estimated?: string[];
   loading: boolean;
   error: string | null;
 }
@@ -151,9 +152,10 @@ onMounted(async () => {
         return;
       }
       try {
-        const { entries, failed } = await fetchCompare(tickers);
+        const { entries, failed, estimated } = await fetchCompare(tickers);
         sections.value[idx]!.entries = entries;
         if (failed && failed.length > 0) sections.value[idx]!.failed = failed;
+        if (estimated && estimated.length > 0) sections.value[idx]!.estimated = estimated;
       } catch (err) {
         sections.value[idx]!.error = err instanceof Error ? err.message : "Error al cargar curva.";
       } finally {
@@ -196,8 +198,8 @@ onMounted(async () => {
         <ErrorBanner v-else-if="section.error" :message="section.error" />
         <template v-else>
           <YieldCurveChart :entries="section.entries" />
-          <p v-if="section.failed && section.failed.length > 0" class="stale-warning">
-            ⚠ Sin precio en tiempo real: {{ section.failed.join(", ") }}. Los datos mostrados son estimativos y pueden no reflejar la realidad del mercado.
+          <p v-if="section.estimated && section.estimated.length > 0" class="stale-warning">
+            ⚠ Precio estimativo: {{ section.estimated.join(", ") }}. Sin datos en tiempo real, puede no reflejar la realidad del mercado.
           </p>
         </template>
       </div>

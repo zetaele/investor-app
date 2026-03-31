@@ -43,6 +43,7 @@ export class PriceCacheService {
       price: fresh.price,
       currency,
       fetchedAt: fresh.updatedAt,
+      source: fresh.source,
     };
   }
 
@@ -91,6 +92,7 @@ export class PriceCacheService {
           price: data.price,
           currency,
           fetchedAt: data.updatedAt,
+          source: data.source,
         };
         result.set(ticker, price);
       }
@@ -119,6 +121,7 @@ export class PriceCacheService {
       price: row.price,
       currency: row.currency,
       fetchedAt: row.fetchedAt,
+      source: "live",
     };
   }
 

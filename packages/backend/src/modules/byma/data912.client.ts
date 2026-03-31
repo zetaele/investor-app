@@ -13,6 +13,8 @@ interface Data912Item {
   c: number;
   /** Trading volume */
   v: number;
+  px_bid: number;
+  px_ask: number;
 }
 
 /**
@@ -79,22 +81,20 @@ export class Data912Client implements IBYMAClient {
     const map = new Map<string, BymaMarketPrice>();
 
     for (const item of [...bonds, ...notes, ...corp]) {
-      if (item.symbol && item.c > 0) {
+      if (item.symbol && item.px_ask > 0) {
         map.set(item.symbol, {
           ticker: item.symbol,
-          price: item.c,
+          price: item.px_ask,
           volume: item.v ?? null,
           updatedAt,
+          source: "live",
         });
       }
     }
 
     this.snapshot = map;
     this.snapshotAt = Date.now();
-    this.log.info(
-      { instruments: map.size, ms: Date.now() - t0 },
-      "data912: snapshot updated",
-    );
+    this.log.info({ instruments: map.size, ms: Date.now() - t0 }, "data912: snapshot updated");
 
     return map;
   }

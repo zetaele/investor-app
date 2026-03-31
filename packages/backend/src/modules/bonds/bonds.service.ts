@@ -110,6 +110,7 @@ export class BondsService {
         price: marketPrice.price,
         currency: marketPrice.currency,
         fetchedAt: marketPrice.fetchedAt,
+        source: marketPrice.source,
       },
       calculations,
       cashflows: [...pastCashflows, ...cashflowsWithPV],

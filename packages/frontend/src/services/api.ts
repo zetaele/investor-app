@@ -129,11 +129,11 @@ export async function fetchAnalysis(ticker: string): Promise<InstrumentAnalysis>
 /** Returns a side-by-side analysis for 2–5 instruments. */
 export async function fetchCompare(
   tickers: string[],
-): Promise<{ entries: CompareEntry[]; failed?: string[] }> {
-  const res = await get<{ data: CompareEntry[]; failed?: string[] }>("/compare", {
+): Promise<{ entries: CompareEntry[]; failed?: string[]; estimated?: string[] }> {
+  const res = await get<{ data: CompareEntry[]; failed?: string[]; estimated?: string[] }>("/compare", {
     tickers: tickers.join(","),
   });
-  return { entries: res.data, failed: res.failed };
+  return { entries: res.data, failed: res.failed, estimated: res.estimated };
 }
 
 // ── FX ────────────────────────────────────────────────────────────────────────

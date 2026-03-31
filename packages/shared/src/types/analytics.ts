@@ -6,6 +6,8 @@ export interface MarketPrice {
   price: number;
   currency: Currency;
   fetchedAt: string;
+  /** "live" = sourced from live feed; "mock" = static fallback price. */
+  source: "live" | "mock";
 }
 
 /** Results of the financial calculations for a bond/letter/ON. */

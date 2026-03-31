@@ -29,7 +29,7 @@ export function compareRouter(compareService: CompareService) {
       }
 
       const { tickers, displayCurrency } = query.data;
-      const { entries, failed } = await compareService.compareInstruments(tickers, displayCurrency);
+      const { entries, failed, estimated } = await compareService.compareInstruments(tickers, displayCurrency);
 
       if (entries.length === 0) {
         return reply.status(404).send({
@@ -42,6 +42,7 @@ export function compareRouter(compareService: CompareService) {
         data: entries,
         count: entries.length,
         ...(failed.length > 0 && { failed }),
+        ...(estimated.length > 0 && { estimated }),
       });
     });
   };

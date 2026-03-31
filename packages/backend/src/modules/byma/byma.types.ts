@@ -9,6 +9,8 @@ export interface BymaMarketPrice {
   volume: number | null;
   /** Last update timestamp from the data source. */
   updatedAt: string;
+  /** Origin of the price: live feed or static mock fallback. */
+  source: "live" | "mock";
 }
 
 /**

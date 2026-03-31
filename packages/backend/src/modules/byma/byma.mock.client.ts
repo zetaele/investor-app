@@ -146,6 +146,7 @@ export class MockBymaClient implements IBYMAClient {
       price: this.jitter(base),
       volume: Math.floor(Math.random() * 500_000) + 50_000,
       updatedAt: new Date().toISOString(),
+      source: "mock",
     };
   }
 

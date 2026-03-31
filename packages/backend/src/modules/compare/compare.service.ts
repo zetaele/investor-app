@@ -15,13 +15,14 @@ export class CompareService {
   async compareInstruments(
     tickers: string[],
     displayCurrency: Currency | undefined,
-  ): Promise<{ entries: CompareEntry[]; failed: string[] }> {
+  ): Promise<{ entries: CompareEntry[]; failed: string[]; estimated: string[] }> {
     const results = await Promise.allSettled(
       tickers.map((ticker) => this.bondsService.analyzeInstrument(ticker, displayCurrency)),
     );
 
     const entries: CompareEntry[] = [];
     const failed: string[] = [];
+    const estimated: string[] = [];
 
     results.forEach((result, index) => {
       const ticker = tickers[index] ?? "";
@@ -38,6 +39,7 @@ export class CompareService {
           price: a.market.price,
           calculations: a.calculations,
         });
+        if (a.market.source === "mock") estimated.push(ticker);
       } else {
         failed.push(ticker);
       }
@@ -46,6 +48,6 @@ export class CompareService {
     // Sort by YTM descending so highest-yielding instruments appear first
     entries.sort((a, b) => b.calculations.ytm - a.calculations.ytm);
 
-    return { entries, failed };
+    return { entries, failed, estimated };
   }
 }
