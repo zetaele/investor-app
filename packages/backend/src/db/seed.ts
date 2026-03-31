@@ -1483,8 +1483,18 @@ const bpd7dCashflows: CF[] = [
   { paymentDate: "2027-05-31", coupon: 1.5, amortization: 50.0, residual: 0.5 },
   { paymentDate: "2027-11-30", coupon: 0.75, amortization: 50.0, residual: 0.0 },
 ];
+// BPY6D — BOPREAL Serie 1-D USD. Schedule from prospectus.
+// Renta efectiva expressed as % of VN100. Residual = outstanding AFTER each payment.
 const bpy6dCashflows: CF[] = [
-  { paymentDate: "2026-06-30", coupon: 1.5, amortization: 100.0, residual: 0.0 },
+  { paymentDate: "2024-03-07", coupon: 0.00, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2024-08-31", coupon: 1.45, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2024-11-30", coupon: 0.75, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-02-28", coupon: 0.73, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-05-31", coupon: 0.75, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-08-31", coupon: 0.75, amortization:  0.0, residual: 1.00 },
+  { paymentDate: "2025-11-30", coupon: 0.75, amortization: 33.0, residual: 0.67 },
+  { paymentDate: "2026-02-28", coupon: 0.49, amortization: 33.0, residual: 0.34 },
+  { paymentDate: "2026-05-31", coupon: 0.26, amortization: 34.0, residual: 0.00 },
 ];
 
 /**
