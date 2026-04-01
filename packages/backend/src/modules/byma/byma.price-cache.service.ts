@@ -36,7 +36,7 @@ export class PriceCacheService {
 
     this.log.debug({ ticker }, "price-cache: miss — fetching from data source");
     const fresh = await this.bymaClient.getPrice(ticker);
-    await this.saveToCache(fresh.ticker, fresh.price, currency);
+    await this.saveToCache(fresh.ticker, fresh.price, currency, fresh.source);
 
     return {
       ticker: fresh.ticker,
@@ -66,7 +66,11 @@ export class PriceCacheService {
     }
 
     this.log.info(
-      { total: tickers.length, hits: tickers.length - staleTickers.length, misses: staleTickers.length },
+      {
+        total: tickers.length,
+        hits: tickers.length - staleTickers.length,
+        misses: staleTickers.length,
+      },
       "price-cache: bulk lookup",
     );
 
@@ -86,7 +90,7 @@ export class PriceCacheService {
 
       for (const [ticker, data] of fresh.entries()) {
         const currency = currencyMap.get(ticker) ?? "ARS";
-        await this.saveToCache(ticker, data.price, currency);
+        await this.saveToCache(ticker, data.price, currency, data.source);
         const price: MarketPrice = {
           ticker,
           price: data.price,
@@ -121,11 +125,16 @@ export class PriceCacheService {
       price: row.price,
       currency: row.currency,
       fetchedAt: row.fetchedAt,
-      source: "live",
+      source: row.source,
     };
   }
 
-  private async saveToCache(ticker: string, price: number, currency: "ARS" | "USD"): Promise<void> {
+  private async saveToCache(
+    ticker: string,
+    price: number,
+    currency: "ARS" | "USD",
+    source: "live" | "mock",
+  ): Promise<void> {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + env.CACHE_TTL_PRICE_SECONDS * 1000);
 
@@ -135,6 +144,7 @@ export class PriceCacheService {
       currency,
       fetchedAt: now.toISOString(),
       expiresAt: expiresAt.toISOString(),
+      source,
     });
   }
 }

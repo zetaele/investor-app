@@ -111,6 +111,12 @@ const ytmClass = computed(() => {
         </div>
       </header>
 
+      <!-- Mock price warning -->
+      <div v-if="analysis.market.source === 'mock'" class="mock-banner">
+        ⚠ <strong>Precio estimativo:</strong> no hay datos en tiempo real para este instrumento.
+        El precio mostrado es un valor de referencia y puede no reflejar la cotización actual del mercado.
+      </div>
+
       <!-- YTW disclaimer for dual bonds -->
       <div v-if="analysis.subtype === 'DUAL'" class="ytw-banner">
         <strong>Rendimiento calculado bajo criterio Yield to Worst (YTW):</strong>
@@ -209,6 +215,16 @@ const ytmClass = computed(() => {
   flex-direction: column;
   gap: 2.5rem;
   padding-top: 1rem;
+}
+
+.mock-banner {
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-warning, #f59e0b) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning, #f59e0b) 40%, transparent);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text);
 }
 
 .ytw-banner {

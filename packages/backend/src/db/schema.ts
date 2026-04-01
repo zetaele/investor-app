@@ -54,6 +54,7 @@ export const priceCache = sqliteTable("price_cache", {
   currency: text("currency", { enum: ["ARS", "USD"] }).notNull(),
   fetchedAt: text("fetched_at").notNull(),
   expiresAt: text("expires_at").notNull(),
+  source: text("source", { enum: ["live", "mock"] }).notNull().default("live"),
 });
 
 /** Short-lived cache for ARS/USD exchange rates. */

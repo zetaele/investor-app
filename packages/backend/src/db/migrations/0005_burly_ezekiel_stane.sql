@@ -1,0 +1,1 @@
+ALTER TABLE `price_cache` ADD `source` text DEFAULT 'live' NOT NULL;
