@@ -1,7 +1,8 @@
 /** Foreign exchange rate between two currencies. */
 export interface FxRate {
   pair: string; // e.g. "ARS/USD"
-  rate: number;
+  buy: number;
+  sell: number;
   fetchedAt: string;
 }
 

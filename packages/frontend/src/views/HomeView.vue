@@ -105,8 +105,12 @@ const FX_LABELS: Record<string, string> = {
           >
             <p class="fx-label">{{ FX_LABELS[rate.pair] ?? rate.pair }}</p>
             <p class="fx-value font-mono">
-              ${{ rate.rate.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
+              ${{ rate.sell.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
             </p>
+            <div class="fx-spread font-mono">
+              <span class="fx-buy">C ${{ rate.buy.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}</span>
+              <span class="fx-sell">V ${{ rate.sell.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}</span>
+            </div>
           </div>
         </template>
         <template v-else>
@@ -330,6 +334,16 @@ const FX_LABELS: Record<string, string> = {
   margin: 0;
   letter-spacing: -0.02em;
 }
+
+.fx-spread {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  margin-top: 0.125rem;
+}
+
+.fx-buy  { color: var(--color-text-dim); }
+.fx-sell { color: var(--color-text-dim); }
 
 .fx-unavailable {
   grid-column: 1 / -1;

@@ -53,7 +53,7 @@ export class BondsService {
         marketPrice.price,
         instrument.currency,
         effectiveCurrency,
-        rates.mep.rate,
+        rates.mep.sell,
       );
     }
 
@@ -178,7 +178,7 @@ export class BondsService {
           input.price,
           effectiveCurrency,
           instrument.currency,
-          rates.mep.rate,
+          rates.mep.sell,
         );
       }
       cleanPrice = calcPrice;
@@ -193,7 +193,7 @@ export class BondsService {
           cleanPrice,
           instrument.currency,
           effectiveCurrency,
-          rates.mep.rate,
+          rates.mep.sell,
         );
       }
       inputType = "ytm";

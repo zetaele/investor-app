@@ -9,10 +9,10 @@ import type { FxRates } from "@investor-app/shared";
  *
  * Data source: dolarapi.com (public, no auth required).
  * TTL is driven by CACHE_TTL_FX_SECONDS (default: 600s / 10 minutes).
+ *
+ * dolarapi.com casa codes: "oficial", "blue", "bolsa" (MEP), "contadoconliqui" (CCL).
  */
 export class FxService {
-  private readonly PAIRS = ["ARS/USD_OFFICIAL", "ARS/USD_BLUE", "ARS/USD_MEP", "ARS/USD_CCL"] as const;
-
   async getRates(): Promise<FxRates> {
     const cached = await this.getFromCache();
     if (cached !== null) return cached;
@@ -45,10 +45,10 @@ export class FxService {
 
     const fetchedAt = official.fetchedAt;
     return {
-      official: { pair: official.pair, rate: official.rate, fetchedAt },
-      blue:     { pair: blue.pair,     rate: blue.rate,     fetchedAt },
-      mep:      { pair: mep.pair,      rate: mep.rate,      fetchedAt },
-      ccl:      { pair: ccl.pair,      rate: ccl.rate,      fetchedAt },
+      official: { pair: official.pair, buy: official.buy, sell: official.sell, fetchedAt },
+      blue:     { pair: blue.pair,     buy: blue.buy,     sell: blue.sell,     fetchedAt },
+      mep:      { pair: mep.pair,      buy: mep.buy,      sell: mep.sell,      fetchedAt },
+      ccl:      { pair: ccl.pair,      buy: ccl.buy,      sell: ccl.sell,      fetchedAt },
     };
   }
 
@@ -59,10 +59,10 @@ export class FxService {
     await db.delete(fxCache);
 
     await db.insert(fxCache).values([
-      { pair: rates.official.pair, rate: rates.official.rate, fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
-      { pair: rates.blue.pair,     rate: rates.blue.rate,     fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
-      { pair: rates.mep.pair,      rate: rates.mep.rate,      fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
-      { pair: rates.ccl.pair,      rate: rates.ccl.rate,      fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
+      { pair: rates.official.pair, buy: rates.official.buy, sell: rates.official.sell, fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
+      { pair: rates.blue.pair,     buy: rates.blue.buy,     sell: rates.blue.sell,     fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
+      { pair: rates.mep.pair,      buy: rates.mep.buy,      sell: rates.mep.sell,      fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
+      { pair: rates.ccl.pair,      buy: rates.ccl.buy,      sell: rates.ccl.sell,      fetchedAt: now.toISOString(), expiresAt: expiresAt.toISOString() },
     ]);
   }
 
@@ -81,31 +81,32 @@ export class FxService {
     const find = (casa: string) => items.find((i) => i.casa === casa);
     const now  = new Date().toISOString();
 
+    // dolarapi.com casa codes: "oficial", "blue", "bolsa" (MEP), "contadoconliqui" (CCL)
     const oficial = find("oficial");
     const blue    = find("blue");
-    const mep     = find("mep");
-    const ccl     = find("ccl");
+    const bolsa   = find("bolsa");        // MEP / dólar bolsa
+    const ccl     = find("contadoconliqui");
 
-    if (!oficial || !blue || !mep || !ccl) {
+    if (!oficial || !blue || !bolsa || !ccl) {
       console.warn("FxService: unexpected dolarapi response shape, using fallback");
       return this.fallbackRates();
     }
 
     return {
-      official: { pair: "ARS/USD_OFFICIAL", rate: oficial.venta, fetchedAt: now },
-      blue:     { pair: "ARS/USD_BLUE",     rate: blue.venta,    fetchedAt: now },
-      mep:      { pair: "ARS/USD_MEP",      rate: mep.venta,     fetchedAt: now },
-      ccl:      { pair: "ARS/USD_CCL",      rate: ccl.venta,     fetchedAt: now },
+      official: { pair: "ARS/USD_OFFICIAL", buy: oficial.compra, sell: oficial.venta, fetchedAt: now },
+      blue:     { pair: "ARS/USD_BLUE",     buy: blue.compra,    sell: blue.venta,    fetchedAt: now },
+      mep:      { pair: "ARS/USD_MEP",      buy: bolsa.compra,   sell: bolsa.venta,   fetchedAt: now },
+      ccl:      { pair: "ARS/USD_CCL",      buy: ccl.compra,     sell: ccl.venta,     fetchedAt: now },
     };
   }
 
   private fallbackRates(): FxRates {
     const now = new Date().toISOString();
     return {
-      official: { pair: "ARS/USD_OFFICIAL", rate: 1065,  fetchedAt: now },
-      blue:     { pair: "ARS/USD_BLUE",     rate: 1215,  fetchedAt: now },
-      mep:      { pair: "ARS/USD_MEP",      rate: 1195,  fetchedAt: now },
-      ccl:      { pair: "ARS/USD_CCL",      rate: 1210,  fetchedAt: now },
+      official: { pair: "ARS/USD_OFFICIAL", buy: 1355, sell: 1405, fetchedAt: now },
+      blue:     { pair: "ARS/USD_BLUE",     buy: 1390, sell: 1410, fetchedAt: now },
+      mep:      { pair: "ARS/USD_MEP",      buy: 1422, sell: 1422, fetchedAt: now },
+      ccl:      { pair: "ARS/USD_CCL",      buy: 1470, sell: 1470, fetchedAt: now },
     };
   }
 }

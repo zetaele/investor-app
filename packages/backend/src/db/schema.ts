@@ -61,7 +61,8 @@ export const priceCache = sqliteTable("price_cache", {
 export const fxCache = sqliteTable("fx_cache", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   pair: text("pair").notNull(),
-  rate: real("rate").notNull(),
+  buy: real("buy").notNull().default(0),
+  sell: real("sell").notNull(),
   fetchedAt: text("fetched_at").notNull(),
   expiresAt: text("expires_at").notNull(),
 });
