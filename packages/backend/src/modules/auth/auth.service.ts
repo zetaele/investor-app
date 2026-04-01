@@ -14,12 +14,14 @@ export interface SessionUser {
   email: string;
   name: string | null;
   avatarUrl: string | null;
-  plan: "FREE" | "PRO" | "ADVANCED";
+  plan: "TRIAL" | "PRO";
+  trialExpiresAt: string | null;
 }
 
 /**
  * Find or create a user from a Google OAuth profile.
  * Lookup order: googleId → email → create new.
+ * New users receive a 24-hour TRIAL automatically.
  */
 export async function upsertUser(profile: GoogleProfile): Promise<SessionUser> {
   // 1. Try by googleId (returning visitor)
@@ -31,12 +33,18 @@ export async function upsertUser(profile: GoogleProfile): Promise<SessionUser> {
 
   if (byGoogleId[0]) {
     const u = byGoogleId[0];
-    // Keep name/avatar in sync
     await db
       .update(users)
       .set({ name: profile.name, avatarUrl: profile.picture })
       .where(eq(users.id, u.id));
-    return { id: u.id, email: u.email, name: profile.name, avatarUrl: profile.picture, plan: u.plan };
+    return {
+      id: u.id,
+      email: u.email,
+      name: profile.name,
+      avatarUrl: profile.picture,
+      plan: u.plan as "TRIAL" | "PRO",
+      trialExpiresAt: u.trialExpiresAt,
+    };
   }
 
   // 2. Try by email (pre-existing account without googleId)
@@ -52,10 +60,19 @@ export async function upsertUser(profile: GoogleProfile): Promise<SessionUser> {
       .update(users)
       .set({ googleId: profile.sub, name: profile.name, avatarUrl: profile.picture })
       .where(eq(users.id, u.id));
-    return { id: u.id, email: u.email, name: profile.name, avatarUrl: profile.picture, plan: u.plan };
+    return {
+      id: u.id,
+      email: u.email,
+      name: profile.name,
+      avatarUrl: profile.picture,
+      plan: u.plan as "TRIAL" | "PRO",
+      trialExpiresAt: u.trialExpiresAt,
+    };
   }
 
-  // 3. New user
+  // 3. New user — activate 24-hour trial
+  const trialExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
   const result = await db
     .insert(users)
     .values({
@@ -63,11 +80,20 @@ export async function upsertUser(profile: GoogleProfile): Promise<SessionUser> {
       googleId: profile.sub,
       name: profile.name,
       avatarUrl: profile.picture,
+      plan: "TRIAL",
+      trialExpiresAt,
     })
-    .returning({ id: users.id, plan: users.plan });
+    .returning({ id: users.id, plan: users.plan, trialExpiresAt: users.trialExpiresAt });
 
   const inserted = result[0]!;
-  return { id: inserted.id, email: profile.email, name: profile.name, avatarUrl: profile.picture, plan: inserted.plan };
+  return {
+    id: inserted.id,
+    email: profile.email,
+    name: profile.name,
+    avatarUrl: profile.picture,
+    plan: inserted.plan as "TRIAL" | "PRO",
+    trialExpiresAt: inserted.trialExpiresAt,
+  };
 }
 
 /** Create a session valid for 30 days. Returns the session ID. */
@@ -89,6 +115,7 @@ export async function getSessionUser(sessionId: string): Promise<SessionUser | n
       name: users.name,
       avatarUrl: users.avatarUrl,
       plan: users.plan,
+      trialExpiresAt: users.trialExpiresAt,
       expiresAt: sessions.expiresAt,
     })
     .from(sessions)
@@ -99,7 +126,14 @@ export async function getSessionUser(sessionId: string): Promise<SessionUser | n
   const row = rows[0];
   if (!row || row.expiresAt <= now) return null;
 
-  return { id: row.id, email: row.email, name: row.name, avatarUrl: row.avatarUrl, plan: row.plan };
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    avatarUrl: row.avatarUrl,
+    plan: row.plan as "TRIAL" | "PRO",
+    trialExpiresAt: row.trialExpiresAt,
+  };
 }
 
 /** Delete a session (logout). */

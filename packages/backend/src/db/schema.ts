@@ -108,9 +108,10 @@ export const users = sqliteTable("users", {
   name: text("name"),
   avatarUrl: text("avatar_url"),
   passwordHash: text("password_hash"),
-  plan: text("plan", { enum: ["FREE", "PRO", "ADVANCED"] })
+  plan: text("plan", { enum: ["TRIAL", "PRO"] })
     .notNull()
-    .default("FREE"),
+    .default("TRIAL"),
+  trialExpiresAt: text("trial_expires_at"),
   createdAt: text("created_at")
     .notNull()
     .$defaultFn(() => new Date().toISOString()),

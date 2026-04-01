@@ -28,3 +28,21 @@ export async function requireAuth(request: FastifyRequest, reply: FastifyReply):
 
   request.user = user;
 }
+
+/**
+ * Fastify preHandler hook that enforces plan access.
+ * Must be used after requireAuth (relies on request.user being set).
+ * Returns 402 if the user's TRIAL has expired.
+ */
+export async function requireActivePlan(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+  const user = request.user!;
+  if (
+    user.plan === "TRIAL" &&
+    user.trialExpiresAt !== null &&
+    user.trialExpiresAt < new Date().toISOString()
+  ) {
+    return reply.status(402).send({
+      error: "Tu prueba gratuita ha expirado. Actualizá tu plan para continuar.",
+    });
+  }
+}

@@ -19,7 +19,8 @@ import { formatYield, formatTimeToMaturity } from "@/composables/useFormat";
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, ChartDataLabels);
 
-const props = defineProps<{ entries: CompareEntry[] }>();
+const props = defineProps<{ entries: CompareEntry[]; clickable?: boolean }>();
+const emit = defineEmits<{ (e: "point-click", ticker: string): void }>();
 
 const isDark = computed(() => document.documentElement.classList.contains("dark"));
 
@@ -279,6 +280,14 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
       },
     },
   },
+  onClick: props.clickable
+    ? (_event: unknown, elements: { datasetIndex: number }[], chart: { data: { datasets: { label?: string }[] } }) => {
+        const el = elements[0];
+        if (!el) return;
+        const ticker = chart.data.datasets[el.datasetIndex]?.label;
+        if (ticker && !ticker.startsWith("__curve__")) emit("point-click", ticker);
+      }
+    : undefined,
   scales: {
     x: {
       title: {
@@ -351,7 +360,7 @@ const chartOptions = computed((): ChartOptions<"scatter"> => ({
         {{ item.subtype }}
       </span>
     </div>
-    <Scatter :data="chartData" :options="chartOptions" />
+    <Scatter :data="chartData" :options="chartOptions" :style="clickable ? { cursor: 'pointer' } : {}" />
   </div>
 </template>
 

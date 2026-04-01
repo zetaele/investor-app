@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { requireAuth } from "../auth/auth.middleware.js";
+import { requireAuth, requireActivePlan } from "../auth/auth.middleware.js";
 import { NotFoundError, InvalidTickerError, PortfolioService } from "./portfolio.service.js";
 import { z } from "zod";
 
@@ -21,14 +21,14 @@ export function portfolioRouter(portfolioService: PortfolioService) {
   return async function (app: FastifyInstance): Promise<void> {
 
     /** GET /api/v1/portfolios — list the current user's portfolios */
-    app.get("/", { preHandler: requireAuth }, async (request, reply) => {
+    app.get("/", { preHandler: [requireAuth, requireActivePlan] }, async (request, reply) => {
       const userId = request.user!.id;
       const data = await portfolioService.listPortfolios(userId);
       return reply.send({ data });
     });
 
     /** POST /api/v1/portfolios — create a new portfolio */
-    app.post("/", { preHandler: requireAuth }, async (request, reply) => {
+    app.post("/", { preHandler: [requireAuth, requireActivePlan] }, async (request, reply) => {
       const body = createPortfolioSchema.safeParse(request.body);
       if (!body.success) {
         return reply.status(400).send({ error: body.error.issues[0]?.message ?? "Invalid body" });
@@ -39,7 +39,7 @@ export function portfolioRouter(portfolioService: PortfolioService) {
     });
 
     /** GET /api/v1/portfolios/:id — get portfolio detail with holdings */
-    app.get("/:id", { preHandler: requireAuth }, async (request, reply) => {
+    app.get("/:id", { preHandler: [requireAuth, requireActivePlan] }, async (request, reply) => {
       const id = Number((request.params as { id: string }).id);
       if (!Number.isInteger(id) || id <= 0) {
         return reply.status(400).send({ error: "Invalid portfolio id" });
@@ -54,7 +54,7 @@ export function portfolioRouter(portfolioService: PortfolioService) {
     });
 
     /** POST /api/v1/portfolios/:id/instruments — add or update an instrument */
-    app.post("/:id/instruments", { preHandler: requireAuth }, async (request, reply) => {
+    app.post("/:id/instruments", { preHandler: [requireAuth, requireActivePlan] }, async (request, reply) => {
       const id = Number((request.params as { id: string }).id);
       if (!Number.isInteger(id) || id <= 0) {
         return reply.status(400).send({ error: "Invalid portfolio id" });
@@ -79,7 +79,7 @@ export function portfolioRouter(portfolioService: PortfolioService) {
     });
 
     /** DELETE /api/v1/portfolios/:id/instruments/:ticker — remove an instrument */
-    app.delete("/:id/instruments/:ticker", { preHandler: requireAuth }, async (request, reply) => {
+    app.delete("/:id/instruments/:ticker", { preHandler: [requireAuth, requireActivePlan] }, async (request, reply) => {
       const { id, ticker } = request.params as { id: string; ticker: string };
       const portfolioId = Number(id);
       if (!Number.isInteger(portfolioId) || portfolioId <= 0) {
@@ -95,7 +95,7 @@ export function portfolioRouter(portfolioService: PortfolioService) {
     });
 
     /** GET /api/v1/portfolios/:id/calendar — consolidated cashflow calendar */
-    app.get("/:id/calendar", { preHandler: requireAuth }, async (request, reply) => {
+    app.get("/:id/calendar", { preHandler: [requireAuth, requireActivePlan] }, async (request, reply) => {
       const id = Number((request.params as { id: string }).id);
       if (!Number.isInteger(id) || id <= 0) {
         return reply.status(400).send({ error: "Invalid portfolio id" });

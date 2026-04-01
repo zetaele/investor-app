@@ -100,8 +100,8 @@ router.beforeEach(async (to) => {
     return { name: "login", query: { redirect: to.fullPath } };
   }
 
-  // Redirect authenticated users away from login/home to the app
-  if ((to.name === "login" || to.name === "home") && authStore.isAuthenticated) {
+  // Redirect authenticated users away from login to the app
+  if (to.name === "login" && authStore.isAuthenticated) {
     return { name: "bonos" };
   }
 });

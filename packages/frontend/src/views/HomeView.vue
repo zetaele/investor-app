@@ -1,25 +1,40 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import type { CompareEntry } from "@investor-app/shared";
-import { fetchCompare } from "@/services/api";
+import type { CompareEntry, FxRates } from "@investor-app/shared";
+import type { Instrument } from "@investor-app/shared";
+import { fetchCompare, fetchInstruments, fetchFxRates } from "@/services/api";
 import { useAuthStore } from "@/stores/authStore";
-import { formatYield, formatTimeToMaturity } from "@/composables/useFormat";
+import YieldCurveChart from "@/components/charts/YieldCurveChart.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
 
+const fxRates = ref<FxRates | null>(null);
+const fxLoading = ref(true);
+
 const previewEntries = ref<CompareEntry[]>([]);
 const previewLoading = ref(true);
 
-const PREVIEW_TICKERS = ["GD30D", "AL30D", "GD35D", "AL35D", "GD38D", "AE38D"];
-
 onMounted(async () => {
+  // FX rates — best-effort, public endpoint
+  fetchFxRates()
+    .then((r) => { fxRates.value = r; })
+    .catch(() => {})
+    .finally(() => { fxLoading.value = false; });
+
+  // Yield curve preview — SOV_USD_EXT (Ley Nueva York)
   try {
-    const { entries } = await fetchCompare(PREVIEW_TICKERS);
-    previewEntries.value = entries;
+    const instruments: Instrument[] = await fetchInstruments();
+    const tickers = instruments
+      .filter((i) => i.subtype === "SOV_USD_EXT")
+      .map((i) => i.ticker);
+    if (tickers.length >= 2) {
+      const { entries } = await fetchCompare(tickers);
+      previewEntries.value = entries;
+    }
   } catch {
-    // Preview is best-effort — silently ignore errors
+    // silent
   } finally {
     previewLoading.value = false;
   }
@@ -32,6 +47,17 @@ function login() {
 function goToApp() {
   router.push("/bonos");
 }
+
+function onChartPointClick(ticker: string) {
+  router.push(`/instrument/${ticker}`);
+}
+
+const FX_LABELS: Record<string, string> = {
+  "ARS/USD_OFFICIAL": "Oficial",
+  "ARS/USD_BLUE": "Blue",
+  "ARS/USD_MEP": "MEP",
+  "ARS/USD_CCL": "CCL",
+};
 </script>
 
 <template>
@@ -50,22 +76,10 @@ function goToApp() {
       <div class="hero-actions">
         <button v-if="!authStore.isAuthenticated" class="btn-primary" @click="login">
           <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              fill="#4285F4"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            />
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
           </svg>
           Ingresar con Google
         </button>
@@ -73,48 +87,54 @@ function goToApp() {
       </div>
     </section>
 
-    <!-- ── Live preview ───────────────────────────────────────────────────── -->
+    <!-- ── FX Rates ──────────────────────────────────────────────────────── -->
+    <section class="fx-section">
+      <h2 class="section-label">Cotización del dólar</h2>
+      <div class="fx-grid">
+        <template v-if="fxLoading">
+          <div v-for="n in 4" :key="n" class="fx-card card skeleton-card">
+            <div class="skeleton" style="width: 48px; height: 12px; margin-bottom: 0.5rem" />
+            <div class="skeleton" style="width: 80px; height: 24px" />
+          </div>
+        </template>
+        <template v-else-if="fxRates">
+          <div
+            v-for="rate in [fxRates.official, fxRates.blue, fxRates.mep, fxRates.ccl]"
+            :key="rate.pair"
+            class="fx-card card"
+          >
+            <p class="fx-label">{{ FX_LABELS[rate.pair] ?? rate.pair }}</p>
+            <p class="fx-value font-mono">
+              ${{ rate.rate.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
+            </p>
+          </div>
+        </template>
+        <template v-else>
+          <div class="fx-unavailable">Cotizaciones no disponibles.</div>
+        </template>
+      </div>
+    </section>
+
+    <!-- ── Yield curve preview ───────────────────────────────────────────── -->
     <section class="preview-section">
-      <h2 class="preview-title">Bonos Soberanos USD — datos en tiempo real</h2>
+      <h2 class="section-label">Bonos Soberanos USD — Ley Nueva York</h2>
+      <p class="section-hint">Curva TIR vs. duration. Hacé click en un bono para ver el análisis completo.</p>
 
       <div class="preview-card card">
-        <!-- Skeleton -->
-        <div v-if="previewLoading" class="preview-skeleton">
-          <div v-for="n in 5" :key="n" class="skeleton-row">
-            <div class="skeleton" style="width: 60px; height: 14px" />
-            <div class="skeleton" style="width: 72px; height: 14px" />
-            <div class="skeleton" style="width: 48px; height: 14px" />
-            <div class="skeleton" style="width: 64px; height: 14px" />
-            <div class="skeleton" style="width: 80px; height: 14px" />
-          </div>
+        <div v-if="previewLoading" class="chart-skeleton">
+          <div class="skeleton" style="height: 260px; border-radius: 0.5rem" />
         </div>
-
-        <!-- Table -->
-        <table v-else-if="previewEntries.length" class="preview-table">
-          <thead>
-            <tr>
-              <th>Ticker</th>
-              <th class="num">TIR</th>
-              <th class="num">MD</th>
-              <th class="num">Paridad</th>
-              <th class="num">Vencimiento</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="entry in previewEntries" :key="entry.ticker">
-              <td class="ticker-cell">{{ entry.ticker }}</td>
-              <td class="num">{{ formatYield(entry.calculations.ytm) }}</td>
-              <td class="num">{{ entry.calculations.modifiedDuration.toFixed(2) }}</td>
-              <td class="num">{{ formatYield(entry.calculations.parityPct) }}</td>
-              <td class="num dim">{{ formatTimeToMaturity(entry.maturityDate) }}</td>
-            </tr>
-          </tbody>
-        </table>
-
+        <template v-else-if="previewEntries.length >= 2">
+          <YieldCurveChart
+            :entries="previewEntries"
+            :clickable="true"
+            @point-click="onChartPointClick"
+          />
+        </template>
         <div v-else class="preview-unavailable">Datos no disponibles en este momento.</div>
 
         <p class="preview-cta-hint">
-          Ingresá para ver el análisis completo, simulaciones y curvas de rendimiento.
+          Ingresá para acceder al análisis completo, simulaciones, comparador y curvas de todos los segmentos.
         </p>
       </div>
     </section>
@@ -157,25 +177,13 @@ function goToApp() {
 
     <!-- ── Bottom CTA ─────────────────────────────────────────────────────── -->
     <section v-if="!authStore.isAuthenticated" class="bottom-cta">
-      <p class="bottom-cta-text">Acceso completo. Sin tarjeta de crédito.</p>
+      <p class="bottom-cta-text">24 horas de acceso gratuito. Sin tarjeta de crédito.</p>
       <button class="btn-primary" @click="login">
         <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="#4285F4"
-            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-          />
-          <path
-            fill="#34A853"
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-          />
-          <path
-            fill="#FBBC05"
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-          />
-          <path
-            fill="#EA4335"
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-          />
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
         </svg>
         Ingresar con Google
       </button>
@@ -212,13 +220,8 @@ function goToApp() {
   letter-spacing: -0.02em;
 }
 
-.logo-mark {
-  color: var(--color-accent);
-}
-
-.logo-accent {
-  color: var(--color-accent);
-}
+.logo-mark { color: var(--color-accent); }
+.logo-accent { color: var(--color-accent); }
 
 .hero-headline {
   font-family: var(--font-display);
@@ -238,9 +241,7 @@ function goToApp() {
   margin: 0;
 }
 
-.hero-actions {
-  margin-top: 0.5rem;
-}
+.hero-actions { margin-top: 0.5rem; }
 
 /* ── Button ────────────────────────────────────────────────────────────────── */
 
@@ -258,7 +259,6 @@ function goToApp() {
   cursor: pointer;
   transition: all var(--transition-base);
 }
-
 .btn-primary:hover {
   border-color: var(--color-accent);
   background: var(--color-bg-sunken);
@@ -271,102 +271,108 @@ function goToApp() {
   flex-shrink: 0;
 }
 
-/* ── Live preview ──────────────────────────────────────────────────────────── */
+/* ── Section labels ────────────────────────────────────────────────────────── */
 
-.preview-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.section-label {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.75rem;
+  text-align: center;
+}
+
+.section-hint {
+  font-size: 0.78rem;
+  color: var(--color-text-dim);
+  text-align: center;
+  margin: -0.5rem 0 0.75rem;
+}
+
+/* ── FX rates ──────────────────────────────────────────────────────────────── */
+
+.fx-section {
   max-width: 640px;
   margin: 0 auto;
   width: 100%;
 }
 
-.preview-title {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-  margin: 0;
-  text-align: center;
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
 }
 
-.preview-card {
-  padding: 0;
-  overflow: hidden;
-}
-
-.preview-skeleton {
+.fx-card {
+  padding: 1rem 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding: 0.5rem 0;
+  gap: 0.375rem;
 }
 
-.skeleton-row {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-  padding: 0.625rem 1.25rem;
+.skeleton-card {
+  min-height: 72px;
 }
 
-.preview-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-}
-
-.preview-table th {
-  padding: 0.625rem 1.25rem;
-  text-align: left;
-  font-size: 0.72rem;
+.fx-label {
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--color-text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--color-border);
+  letter-spacing: 0.06em;
+  margin: 0;
 }
 
-.preview-table td {
-  padding: 0.625rem 1.25rem;
-  color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-border-dim);
-}
-
-.preview-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.preview-table th.num,
-.preview-table td.num {
-  text-align: right;
-}
-
-.ticker-cell {
+.fx-value {
+  font-size: 1.35rem;
   font-weight: 600;
-  color: var(--color-accent) !important;
-  letter-spacing: 0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.dim {
-  color: var(--color-text-dim) !important;
+.fx-unavailable {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+}
+
+/* ── Yield curve preview ───────────────────────────────────────────────────── */
+
+.preview-section {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.preview-card {
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.chart-skeleton {
+  padding: 0.5rem;
 }
 
 .preview-unavailable {
-  padding: 2rem;
+  padding: 3rem 1rem;
   text-align: center;
   color: var(--color-text-dim);
   font-size: 0.85rem;
 }
 
 .preview-cta-hint {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 0 0;
   font-size: 0.78rem;
   color: var(--color-text-dim);
   text-align: center;
   margin: 0;
   border-top: 1px solid var(--color-border-dim);
+  margin-top: 1rem;
 }
 
 /* ── Features ──────────────────────────────────────────────────────────────── */
@@ -427,16 +433,9 @@ function goToApp() {
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
-  .home {
-    gap: 3rem;
-  }
-
-  .hero {
-    padding-top: 1.5rem;
-  }
-
-  .features {
-    grid-template-columns: 1fr;
-  }
+  .home { gap: 3rem; }
+  .hero { padding-top: 1.5rem; }
+  .features { grid-template-columns: 1fr; }
+  .fx-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
