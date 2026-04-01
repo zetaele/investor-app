@@ -13,7 +13,25 @@
       "Bash(node_modules/.pnpm/node_modules/.bin/tsc -p packages/frontend/tsconfig.app.json --noEmit)",
       "Bash(node_modules/.pnpm/node_modules/.bin/tsc -p packages/backend/tsconfig.json --noEmit)",
       "Bash(npm run:*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(curl -s \"http://localhost:3001/api/v1/compare?tickers=TX28,TZX28,X15Y6,X29Y6,X30N6,X30S6,X31L6\")",
+      "Bash(curl -s \"http://localhost:3001/api/v1/compare?tickers=AE38D,AL30D,AL35D,AL41D,AO27D,GD30D,GD35D,GD38D,GD41D,GD46D\")",
+      "Bash(curl -s \"http://localhost:3001/api/v1/compare?tickers=T30J6,S17A6,S30A6,S31L6\")",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(curl -s \"http://localhost:3001/api/v1/instruments\")",
+      "Bash(find /Users/zeta/Projects/investor-app/packages/backend/src/db -name *.ts)",
+      "Bash(grep -n \"import.*ChartData\\\\|import.*ChartDataset\\\\|from ''chart.js''\\\\|from \"\"chart.js\"\"\" /Users/zeta/Projects/investor-app/packages/frontend/src/components/charts/YieldCurveChart.vue)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(curl -s -L -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" \"https://query1.finance.yahoo.com/v8/finance/chart/ARS=X\")",
+      "Bash(curl -sv -L -H \"User-Agent: Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" -H \"Accept: application/json,text/plain,*/*\" -H \"Accept-Language: en-US,en;q=0.9\" -H \"Accept-Encoding: gzip, deflate, br\" -H \"Origin: https://finance.yahoo.com\" -H \"Referer: https://finance.yahoo.com/\" \"https://query1.finance.yahoo.com/v8/finance/chart/GD30D.BA\")",
+      "WebFetch(domain:query1.finance.yahoo.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm --filter frontend exec vue-tsc --noEmit)",
+      "Bash(pnpm --filter shared build)",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(pnpm --filter backend db:migrate)",
+      "Bash(sqlite3 /Users/zeta/Projects/investor-app/packages/backend/data/app.db \"DELETE FROM price_cache; SELECT changes\\(\\) || '' rows deleted'';\")"
     ]
   }
 }

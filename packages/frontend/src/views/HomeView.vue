@@ -19,16 +19,18 @@ const previewLoading = ref(true);
 onMounted(async () => {
   // FX rates — best-effort, public endpoint
   fetchFxRates()
-    .then((r) => { fxRates.value = r; })
+    .then((r) => {
+      fxRates.value = r;
+    })
     .catch(() => {})
-    .finally(() => { fxLoading.value = false; });
+    .finally(() => {
+      fxLoading.value = false;
+    });
 
   // Yield curve preview — SOV_USD_EXT (Ley Nueva York)
   try {
     const instruments: Instrument[] = await fetchInstruments();
-    const tickers = instruments
-      .filter((i) => i.subtype === "SOV_USD_EXT")
-      .map((i) => i.ticker);
+    const tickers = instruments.filter((i) => i.subtype === "SOV_USD_EXT").map((i) => i.ticker);
     if (tickers.length >= 2) {
       const { entries } = await fetchCompare(tickers);
       previewEntries.value = entries;
@@ -76,10 +78,22 @@ const FX_LABELS: Record<string, string> = {
       <div class="hero-actions">
         <button v-if="!authStore.isAuthenticated" class="btn-primary" @click="login">
           <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            <path
+              fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+            />
           </svg>
           Ingresar con Google
         </button>
@@ -105,11 +119,30 @@ const FX_LABELS: Record<string, string> = {
           >
             <p class="fx-label">{{ FX_LABELS[rate.pair] ?? rate.pair }}</p>
             <p class="fx-value font-mono">
-              ${{ rate.sell.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
+              ${{
+                rate.sell.toLocaleString("es-AR", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })
+              }}
             </p>
             <div class="fx-spread font-mono">
-              <span class="fx-buy">C ${{ rate.buy.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}</span>
-              <span class="fx-sell">V ${{ rate.sell.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}</span>
+              <span class="fx-buy"
+                >C ${{
+                  rate.buy.toLocaleString("es-AR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })
+                }}</span
+              >
+              <span class="fx-sell"
+                >V ${{
+                  rate.sell.toLocaleString("es-AR", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })
+                }}</span
+              >
             </div>
           </div>
         </template>
@@ -122,7 +155,9 @@ const FX_LABELS: Record<string, string> = {
     <!-- ── Yield curve preview ───────────────────────────────────────────── -->
     <section class="preview-section">
       <h2 class="section-label">Bonos Soberanos USD — Ley Nueva York</h2>
-      <p class="section-hint">Curva TIR vs. duration. Hacé click en un bono para ver el análisis completo.</p>
+      <p class="section-hint">
+        Curva TIR vs. duration. Hacé click en un bono para ver el análisis completo.
+      </p>
 
       <div class="preview-card card">
         <div v-if="previewLoading" class="chart-skeleton">
@@ -138,7 +173,8 @@ const FX_LABELS: Record<string, string> = {
         <div v-else class="preview-unavailable">Datos no disponibles en este momento.</div>
 
         <p class="preview-cta-hint">
-          Ingresá para acceder al análisis completo, simulaciones, comparador y curvas de todos los segmentos.
+          Ingresá para acceder al análisis completo, simulaciones, comparador y curvas de todos los
+          segmentos.
         </p>
       </div>
     </section>
@@ -150,7 +186,7 @@ const FX_LABELS: Record<string, string> = {
         <h3 class="feature-title">Análisis completo</h3>
         <p class="feature-desc">
           TIR, TNA, TEM, duration modificada, precio limpio/sucio, paridad y tabla de flujos de caja
-          con valor presente para cada instrumento.
+          para cada instrumento.
         </p>
       </div>
       <div class="feature-card card">
@@ -184,10 +220,22 @@ const FX_LABELS: Record<string, string> = {
       <p class="bottom-cta-text">24 horas de acceso gratuito. Sin tarjeta de crédito.</p>
       <button class="btn-primary" @click="login">
         <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          <path
+            fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+          />
         </svg>
         Ingresar con Google
       </button>
@@ -224,8 +272,12 @@ const FX_LABELS: Record<string, string> = {
   letter-spacing: -0.02em;
 }
 
-.logo-mark { color: var(--color-accent); }
-.logo-accent { color: var(--color-accent); }
+.logo-mark {
+  color: var(--color-accent);
+}
+.logo-accent {
+  color: var(--color-accent);
+}
 
 .hero-headline {
   font-family: var(--font-display);
@@ -245,7 +297,9 @@ const FX_LABELS: Record<string, string> = {
   margin: 0;
 }
 
-.hero-actions { margin-top: 0.5rem; }
+.hero-actions {
+  margin-top: 0.5rem;
+}
 
 /* ── Button ────────────────────────────────────────────────────────────────── */
 
@@ -342,8 +396,12 @@ const FX_LABELS: Record<string, string> = {
   margin-top: 0.125rem;
 }
 
-.fx-buy  { color: var(--color-text-dim); }
-.fx-sell { color: var(--color-text-dim); }
+.fx-buy {
+  color: var(--color-text-dim);
+}
+.fx-sell {
+  color: var(--color-text-dim);
+}
 
 .fx-unavailable {
   grid-column: 1 / -1;
@@ -447,9 +505,17 @@ const FX_LABELS: Record<string, string> = {
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
-  .home { gap: 3rem; }
-  .hero { padding-top: 1.5rem; }
-  .features { grid-template-columns: 1fr; }
-  .fx-grid { grid-template-columns: repeat(2, 1fr); }
+  .home {
+    gap: 3rem;
+  }
+  .hero {
+    padding-top: 1.5rem;
+  }
+  .features {
+    grid-template-columns: 1fr;
+  }
+  .fx-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

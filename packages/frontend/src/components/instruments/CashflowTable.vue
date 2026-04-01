@@ -37,7 +37,6 @@ const visible = computed(() => {
           <th class="text-right">Amortización</th>
           <th class="text-right">Flujo total</th>
           <th class="text-right">Residual</th>
-          <th class="text-right">Valor presente</th>
         </tr>
       </thead>
       <tbody>
@@ -63,12 +62,6 @@ const visible = computed(() => {
             {{ currency }} {{ formatNumber(cf.coupon + cf.amortization, 4) }}
           </td>
           <td class="font-mono text-right">{{ formatNumber(cf.residual * 100, 0) }}%</td>
-          <td class="font-mono text-right pv-cell">
-            <span v-if="cf.paymentDate >= today">
-              {{ currency }} {{ formatNumber(cf.presentValue, 4) }}
-            </span>
-            <span v-else class="dim">—</span>
-          </td>
         </tr>
       </tbody>
     </table>

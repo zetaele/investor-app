@@ -8,7 +8,7 @@ Plataforma web para analizar y comparar instrumentos de renta fija del mercado a
 
 - **Listado de instrumentos** — bonos soberanos, letras del Tesoro y obligaciones negociables que cotizan en BYMA
 - **Análisis individual** — precio de mercado, TIR (YTM), precio limpio/sucio, interés corrido, duration modificada y paridad
-- **Gráfico de flujos de pago** — visualización de cupones y amortizaciones hasta el vencimiento, con valor presente de cada flujo
+- **Gráfico de flujos de pago** — visualización de cupones y amortizaciones hasta el vencimiento de cada flujo
 - **Comparador** — análisis side-by-side de hasta 5 instrumentos con tabla comparativa y curva de rendimientos
 - **Calendario de pagos** — próximos cupones y amortizaciones de todos los instrumentos activos, agrupados por mes
 - **Panel de administración** — carga manual de instrumentos con soporte para todos los tipos de flujo del mercado argentino
