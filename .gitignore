@@ -29,5 +29,8 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 
+# Claude Code
+.claude/
+
 # Test coverage
 coverage/
