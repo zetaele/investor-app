@@ -2279,7 +2279,7 @@ const cerConfigMap: Record<string, number> = {
   // CER coupon bonds — VT_now in ARS (same units as market price).
   // Cashflows in seed are nominal % of VN; the service scales them to ARS via (VT_now / nominalFace).
   // Estimated from mock prices / expected paridad (snapshot ~2026-03-27, Abbaco reference).
-  TX28: 2130, // residual=60%, cerScale≈35.5; price=1915 → paridad≈90%
+  TX28: 1949.64, // VT=19.496391×100. residual=60%, cerScale≈32.49; Balanz 2026-04-01
   TX26: 1327, // residual=50%, cerScale≈26.5; price=1314 → paridad≈99%
   TX31: 1620, // residual=100%, cerScale≈16.2; price=1359 → paridad≈84%
   DICP: 54000, // residual≈25%, cerScale≈1800; price=48570 → paridad≈90%

@@ -59,7 +59,7 @@ const MOCK_PRICES: Record<string, number> = {
   TTS26: 151.9,
 
   // ── CER-adjusted sovereign bonds — ARS (price in ARS) ────────────────────
-  TX28: 1915.0,
+  TX28: 1945.0, // dirty price ≈ VT×paridad = 1949.64×0.9976. Balanz 2026-04-01
   TZX28: 308.4,
 
   // ── BOPREAL — BCRA bonds USD ──────────────────────────────────────────────
