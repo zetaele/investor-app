@@ -30,7 +30,7 @@ const CARDS = [
 ];
 
 function fmt(n: number): string {
-  return n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return n.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 </script>
 
@@ -55,7 +55,7 @@ function fmt(n: number): string {
       <div v-for="card in CARDS" :key="card.key" class="rate-card card">
         <p class="rate-label">{{ card.label }}</p>
         <p class="rate-sell font-mono">${{ fmt(rates[card.key].sell) }}</p>
-        <div class="rate-spread font-mono">
+        <div v-if="rates[card.key].buy !== rates[card.key].sell" class="rate-spread font-mono">
           <span class="spread-item">
             <span class="spread-tag">Compra</span>
             ${{ fmt(rates[card.key].buy) }}
