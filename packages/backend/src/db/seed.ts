@@ -1293,19 +1293,36 @@ const tx31Cashflows: CF[] = [
 ];
 
 /**
- * DICP — Discount en Pesos CER 5.83% TNA, quarterly, amortizable 2033.
- * 2005 restructuring bond. Quarterly coupons + quarterly amortization from 2014.
- * CER-adjusted: cerConfigMap = residual × 100 (approximate; by March 2026 residual ≈ 30%).
- * Approximate cashflows — confirm exact schedule from prospectus.
+ * DICP — Discount en Pesos CER 5.83% VTO. 2033-12-31
+ * 2005 restructuring bond. Semiannual coupon + 5% amort per semester.
+ * Amortization started 2024-06-30 (20 installments of 5% through 2033-12-31).
+ * 4 installments already paid (Jun/Dec 2024, Jun/Dec 2025) → nominal residual 80%.
+ * Coupon = 5.83%/2 on CER-adjusted residual (renta efectiva from Balanz 2026-04-01).
+ * Day count: D30/360. Source: Balanz.
  */
 const dicpCashflows: CF[] = [
-  // ── Future payments only (past history omitted for brevity) ────────────────
-  { paymentDate: "2026-06-30", coupon: 0.44, amortization: 5.0, residual: 0.25 },
-  { paymentDate: "2026-09-30", coupon: 0.36, amortization: 5.0, residual: 0.2 },
-  { paymentDate: "2026-12-31", coupon: 0.29, amortization: 5.0, residual: 0.15 },
-  { paymentDate: "2027-03-31", coupon: 0.22, amortization: 5.0, residual: 0.1 },
-  { paymentDate: "2027-06-30", coupon: 0.15, amortization: 5.0, residual: 0.05 },
-  { paymentDate: "2027-09-30", coupon: 0.07, amortization: 5.0, residual: 0.0 },
+  // ── Past payments with amortization (from when amort started) ────────────
+  { paymentDate: "2024-06-30", coupon: 3.70, amortization: 5.0, residual: 1.2064 },
+  { paymentDate: "2024-12-31", coupon: 3.52, amortization: 5.0, residual: 1.1429 },
+  { paymentDate: "2025-06-30", coupon: 3.33, amortization: 5.0, residual: 1.0794 },
+  { paymentDate: "2025-12-31", coupon: 3.15, amortization: 5.0, residual: 1.0159 },
+  // ── Future payments ───────────────────────────────────────────────────────
+  { paymentDate: "2026-06-30", coupon: 2.96, amortization: 5.0, residual: 0.9525 },
+  { paymentDate: "2026-12-31", coupon: 2.78, amortization: 5.0, residual: 0.8890 },
+  { paymentDate: "2027-06-30", coupon: 2.59, amortization: 5.0, residual: 0.8255 },
+  { paymentDate: "2027-12-31", coupon: 2.41, amortization: 5.0, residual: 0.7620 },
+  { paymentDate: "2028-06-30", coupon: 2.22, amortization: 5.0, residual: 0.6985 },
+  { paymentDate: "2028-12-31", coupon: 2.04, amortization: 5.0, residual: 0.6350 },
+  { paymentDate: "2029-06-30", coupon: 1.85, amortization: 5.0, residual: 0.5715 },
+  { paymentDate: "2029-12-31", coupon: 1.67, amortization: 5.0, residual: 0.5080 },
+  { paymentDate: "2030-06-30", coupon: 1.48, amortization: 5.0, residual: 0.4445 },
+  { paymentDate: "2030-12-31", coupon: 1.30, amortization: 5.0, residual: 0.3810 },
+  { paymentDate: "2031-06-30", coupon: 1.11, amortization: 5.0, residual: 0.3175 },
+  { paymentDate: "2031-12-31", coupon: 0.93, amortization: 5.0, residual: 0.2540 },
+  { paymentDate: "2032-06-30", coupon: 0.74, amortization: 5.0, residual: 0.1905 },
+  { paymentDate: "2032-12-31", coupon: 0.56, amortization: 5.0, residual: 0.1270 },
+  { paymentDate: "2033-06-30", coupon: 0.37, amortization: 5.0, residual: 0.0635 },
+  { paymentDate: "2033-12-31", coupon: 0.19, amortization: 5.0, residual: 0.0 },
 ];
 
 /**
@@ -2282,7 +2299,7 @@ const cerConfigMap: Record<string, number> = {
   TX28: 1949.64, // VT=19.496391×100. residual=60%, cerScale≈32.49; Balanz 2026-04-01
   TX26: 1327, // residual=50%, cerScale≈26.5; price=1314 → paridad≈99%
   TX31: 1620, // residual=100%, cerScale≈16.2; price=1359 → paridad≈84%
-  DICP: 54000, // residual≈25%, cerScale≈1800; price=48570 → paridad≈90%
+  DICP: 38602.3, // VT=386.023009×100. nominalFace=80 → cerScale≈482.5. Balanz 2026-04-01
   PARP: 38000, // residual=100% bullet 2038; cerScale≈380; price=32690 → paridad≈86%
   CUAP: 45000, // residual=100% bullet 2045; cerScale≈450; price=39870 → paridad≈89%
   DIP0: 54000, // zero-coupon bullet 2033; price=48500 → paridad≈90%
