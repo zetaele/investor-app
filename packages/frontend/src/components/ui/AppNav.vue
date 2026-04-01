@@ -26,6 +26,11 @@ async function handleLogout(): Promise<void> {
       <!-- Nav links -->
       <ul class="nav-links">
         <li>
+          <RouterLink to="/dolar" class="nav-link" :class="{ active: route.name === 'dolar' }">
+            Dólar
+          </RouterLink>
+        </li>
+        <li>
           <RouterLink to="/bonos" class="nav-link" :class="{ active: route.name === 'bonos' }">
             Bonos
           </RouterLink>
