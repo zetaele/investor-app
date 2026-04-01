@@ -44,6 +44,16 @@ const TYPE_LABELS: Record<string, string> = {
   ON: "Obligación Negociable",
 };
 
+/** Current residual: residual of the last past cashflow, or 1 if none paid yet. */
+const currentResidual = computed(() => {
+  const cfs = analysis.value?.cashflows;
+  if (!cfs) return null;
+  const today = new Date().toISOString().slice(0, 10);
+  const past = cfs.filter((cf) => cf.paymentDate.slice(0, 10) <= today && cf.amortization > 0);
+  if (past.length === 0) return 1;
+  return past[past.length - 1]!.residual;
+});
+
 const ytmClass = computed(() => {
   const ytm = analysis.value?.calculations.ytm ?? 0;
   if (ytm > 0.15) return "num-positive";
@@ -155,6 +165,12 @@ const ytmClass = computed(() => {
             label="Duration mod."
             :value="`${formatNumber(analysis.calculations.modifiedDuration)} años`"
             tooltip="Sensibilidad del precio ante una variación de 1% en la tasa de interés"
+          />
+          <MetricCard
+            v-if="currentResidual !== null && currentResidual < 1"
+            label="Residual"
+            :value="formatYield(currentResidual)"
+            tooltip="Porcentaje del capital original aún pendiente de amortización"
           />
           <MetricCard
             label="Paridad"
