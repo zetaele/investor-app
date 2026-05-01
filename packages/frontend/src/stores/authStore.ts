@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { BACKEND_URL } from "@/services/api";
 
 export interface AuthUser {
   id: number;
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore("auth", () => {
     if (status.value === "loading") return;
     status.value = "loading";
     try {
-      const res = await fetch("/auth/me", { credentials: "include" });
+      const res = await fetch(`${BACKEND_URL}/auth/me`, { credentials: "include" });
       if (res.ok) {
         user.value = (await res.json()) as AuthUser;
         status.value = "authenticated";
@@ -39,13 +40,13 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function logout(): Promise<void> {
-    await fetch("/auth/logout", { method: "POST", credentials: "include" });
+    await fetch(`${BACKEND_URL}/auth/logout`, { method: "POST", credentials: "include" });
     user.value = null;
     status.value = "unauthenticated";
   }
 
   function loginWithGoogle(): void {
-    window.location.href = "/auth/login";
+    window.location.href = `${BACKEND_URL}/auth/login`;
   }
 
   return { user, status, isAuthenticated, fetchMe, logout, loginWithGoogle };

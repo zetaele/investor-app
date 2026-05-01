@@ -16,6 +16,9 @@ export type { CalendarPayment, CalendarMonth, PortfolioSummary, PortfolioDetail 
 
 const BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "/api/v1";
 
+/** Backend root URL (without /api/v1) — used for auth routes (/auth/login, etc.). */
+export const BACKEND_URL = BASE_URL.replace(/\/api\/v\d+\/?$/, "");
+
 // ── HTTP helper ───────────────────────────────────────────────────────────────
 
 class ApiError extends Error {
