@@ -12,6 +12,18 @@ import type { BondsService } from "../bonds/bonds.service.js";
 export class CompareService {
   constructor(private readonly bondsService: BondsService) {}
 
+  /**
+   * Runs a full financial analysis for each ticker in parallel and normalises
+   * the results into a list sorted by YTM descending.
+   *
+   * Tickers that fail analysis (not found, price unavailable) are collected in
+   * the `failed` array rather than rejecting the whole request. Tickers whose
+   * price comes from the mock client are collected in `estimated`.
+   *
+   * @param tickers         - List of instrument tickers to compare (max 5 recommended).
+   * @param displayCurrency - Optional currency override applied to all entries.
+   * @returns Resolved entries, failed ticker list, and estimated (mock-price) ticker list.
+   */
   async compareInstruments(
     tickers: string[],
     displayCurrency: Currency | undefined,

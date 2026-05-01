@@ -228,6 +228,16 @@ export class BondsService {
 
   // ── Private helpers ──────────────────────────────────────────────────────────
 
+  /**
+   * Converts a price between ARS and USD using the MEP sell rate.
+   * USD_LINKED is treated as USD for display purposes.
+   *
+   * @param price     - The price to convert.
+   * @param from      - Source currency.
+   * @param to        - Target currency.
+   * @param arsPerUsd - ARS per USD rate (MEP sell).
+   * @returns Converted price, or the original price if currencies match.
+   */
   private convertPrice(price: number, from: Currency, to: Currency, arsPerUsd: number): number {
     if (from === to) return price;
     if (from === "USD" && to === "ARS") return price * arsPerUsd;

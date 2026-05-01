@@ -14,6 +14,10 @@ export class PortfolioService {
 
   // ── Portfolios ───────────────────────────────────────────────────────────────
 
+  /**
+   * Returns all portfolios owned by a user, each with a holding count.
+   * @param userId - The authenticated user's ID.
+   */
   async listPortfolios(userId: number): Promise<PortfolioSummary[]> {
     const rows = await db
       .select()
@@ -37,6 +41,11 @@ export class PortfolioService {
     return summaries;
   }
 
+  /**
+   * Creates a new portfolio for a user and returns the summary.
+   * @param userId - The authenticated user's ID.
+   * @param name   - Display name for the new portfolio.
+   */
   async createPortfolio(userId: number, name: string): Promise<PortfolioSummary> {
     const [row] = await db
       .insert(portfolios)
@@ -46,6 +55,14 @@ export class PortfolioService {
     return { id: row.id, name: row.name, holdingCount: 0, createdAt: row.createdAt };
   }
 
+  /**
+   * Returns full portfolio detail including live instrument analysis for each holding.
+   * Holdings whose instrument or price is unavailable are silently skipped.
+   * Throws NotFoundError if the portfolio does not belong to the user.
+   *
+   * @param portfolioId - The portfolio to load.
+   * @param userId      - The requesting user (ownership check).
+   */
   async getPortfolioDetail(portfolioId: number, userId: number): Promise<PortfolioDetail> {
     const portfolio = await this.requireOwnership(portfolioId, userId);
 
@@ -99,6 +116,16 @@ export class PortfolioService {
 
   // ── Holdings ─────────────────────────────────────────────────────────────────
 
+  /**
+   * Adds an instrument to a portfolio by nominal quantity.
+   * If the ticker is already present, accumulates quantity and recalculates
+   * the weighted average purchase price.
+   * Throws InvalidTickerError if the ticker is not in the instruments table.
+   *
+   * @param portfolioId - Target portfolio.
+   * @param userId      - Requesting user (ownership check).
+   * @param data        - Ticker, quantity (VN), and optional purchase price (clean).
+   */
   async addInstrument(
     portfolioId: number,
     userId: number,
@@ -158,6 +185,14 @@ export class PortfolioService {
       .where(eq(portfolios.id, portfolioId));
   }
 
+  /**
+   * Removes an instrument from a portfolio entirely (no partial removal).
+   * Throws NotFoundError if the portfolio does not belong to the user.
+   *
+   * @param portfolioId - Target portfolio.
+   * @param userId      - Requesting user (ownership check).
+   * @param ticker      - Ticker of the instrument to remove.
+   */
   async removeInstrument(portfolioId: number, userId: number, ticker: string): Promise<void> {
     await this.requireOwnership(portfolioId, userId);
     await db
@@ -176,6 +211,14 @@ export class PortfolioService {
 
   // ── Calendar ─────────────────────────────────────────────────────────────────
 
+  /**
+   * Returns upcoming payment dates for all instruments held in a portfolio,
+   * grouped by calendar month and scaled by the holding's nominal quantity.
+   *
+   * @param portfolioId - Target portfolio.
+   * @param userId      - Requesting user (ownership check).
+   * @param daysAhead   - Look-ahead window in days (default: 730 ≈ 2 years).
+   */
   async getPortfolioCalendar(
     portfolioId: number,
     userId: number,
@@ -259,6 +302,10 @@ export class PortfolioService {
 
   // ── Private ──────────────────────────────────────────────────────────────────
 
+  /**
+   * Loads a portfolio and verifies it belongs to the given user.
+   * Throws NotFoundError if the portfolio is missing or owned by another user.
+   */
   private async requireOwnership(portfolioId: number, userId: number) {
     const [portfolio] = await db
       .select()
@@ -270,6 +317,10 @@ export class PortfolioService {
   }
 }
 
+/**
+ * Formats a "YYYY-MM" string into a human-readable Spanish label.
+ * e.g. "2026-07" → "Julio 2026"
+ */
 function formatMonthLabel(month: string): string {
   const [year, monthNum] = month.split("-");
   if (!year || !monthNum) return month;

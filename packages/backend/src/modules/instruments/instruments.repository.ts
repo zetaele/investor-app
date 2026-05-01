@@ -13,7 +13,7 @@ export async function findAllInstruments(filters?: {
   const today = new Date().toISOString().split("T")[0] ?? "";
   const conditions = [
     eq(instruments.isActive, true),
-    gt(instruments.maturityDate, today), // excluye vencidos
+    gt(instruments.maturityDate, today), // exclude matured instruments
   ];
 
   if (filters?.type !== undefined) {

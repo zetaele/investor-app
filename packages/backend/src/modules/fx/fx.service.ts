@@ -13,6 +13,11 @@ import type { FxRates } from "@investor-app/shared";
  * dolarapi.com casa codes: "oficial", "blue", "bolsa" (MEP), "contadoconliqui" (CCL).
  */
 export class FxService {
+  /**
+   * Returns the current ARS/USD exchange rates (official, blue, MEP, CCL).
+   * Serves from the SQLite cache if the data is still fresh; otherwise fetches
+   * from dolarapi.com, persists the result, and returns it.
+   */
   async getRates(): Promise<FxRates> {
     const cached = await this.getFromCache();
     if (cached !== null) return cached;
@@ -24,6 +29,10 @@ export class FxService {
 
   // ── Private helpers ──────────────────────────────────────────────────────────
 
+  /**
+   * Attempts to read all four rate pairs from the SQLite cache.
+   * Returns null if any pair is missing or if the cache has expired.
+   */
   private async getFromCache(): Promise<FxRates | null> {
     const now = new Date().toISOString();
 
@@ -52,6 +61,10 @@ export class FxService {
     };
   }
 
+  /**
+   * Persists all four rate pairs to the SQLite cache, replacing any existing rows.
+   * TTL is set to now + CACHE_TTL_FX_SECONDS.
+   */
   private async saveToCache(rates: FxRates): Promise<void> {
     const now = new Date();
     const expiresAt = new Date(now.getTime() + env.CACHE_TTL_FX_SECONDS * 1000);
@@ -66,6 +79,11 @@ export class FxService {
     ]);
   }
 
+  /**
+   * Fetches all four rate pairs from dolarapi.com.
+   * Falls back to hardcoded rates if the external API is unreachable or returns
+   * an unexpected response shape.
+   */
   private async fetchFreshRates(): Promise<FxRates> {
     let items: DolarApiItem[];
 
@@ -100,6 +118,10 @@ export class FxService {
     };
   }
 
+  /**
+   * Returns hardcoded fallback rates used when dolarapi.com is unreachable.
+   * Values should be kept roughly up to date but are not critical for correctness.
+   */
   private fallbackRates(): FxRates {
     const now = new Date().toISOString();
     return {
