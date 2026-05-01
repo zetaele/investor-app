@@ -97,7 +97,7 @@ const MOCK_PRICES: Record<string, number> = {
   // ── CER bonds with coupon — ARS (price in ARS) ────────────────────────────
   TX26: 1314.0,
   TX31: 1359.0,
-  DICP: 48735.0, // dirty ≈ VT×paridad = 386.023×1.2626. Balanz 2026-04-01
+  DICP: 48910.0, // dirty ≈ VT×paridad = 516.4586×0.9472. Abbaco 2026-04-01
   PARP: 32690.0,
   CUAP: 39870.0,
   DIP0: 48500.0,

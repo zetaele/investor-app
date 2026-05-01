@@ -2299,7 +2299,7 @@ const cerConfigMap: Record<string, number> = {
   TX28: 1949.64, // VT=19.496391×100. residual=60%, cerScale≈32.49; Balanz 2026-04-01
   TX26: 1327, // residual=50%, cerScale≈26.5; price=1314 → paridad≈99%
   TX31: 1620, // residual=100%, cerScale≈16.2; price=1359 → paridad≈84%
-  DICP: 38602.3, // VT=386.023009×100. nominalFace=80 → cerScale≈482.5. Balanz 2026-04-01
+  DICP: 51645.86, // VT=516.4586×100. nominalFace=80 → cerScale≈645.6. Abbaco 2026-04-01 (paridad≈94.4%)
   PARP: 38000, // residual=100% bullet 2038; cerScale≈380; price=32690 → paridad≈86%
   CUAP: 45000, // residual=100% bullet 2045; cerScale≈450; price=39870 → paridad≈89%
   DIP0: 54000, // zero-coupon bullet 2033; price=48500 → paridad≈90%
