@@ -13,7 +13,11 @@ const COOKIE_OPTIONS = {
 };
 
 export async function authRouter(app: FastifyInstance): Promise<void> {
-  // GET /auth/login — redirects to Google (handled by @fastify/oauth2 via startRedirectPath)
+  // GET /auth/login — redirects to Google with prompt=select_account
+  app.get("/login", async (request, reply) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (app.oauth2Google as any).generateAuthorizationUri(request, reply, { prompt: "select_account" });
+  });
 
   // GET /auth/callback — Google redirects here after user consents
   app.get("/callback", async (request, reply) => {

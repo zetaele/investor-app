@@ -51,7 +51,6 @@ await app.register(oauth2, {
     client: { id: env.GOOGLE_CLIENT_ID, secret: env.GOOGLE_CLIENT_SECRET },
     auth: oauth2.GOOGLE_CONFIGURATION,
   },
-  startRedirectPath: "/auth/login",
   callbackUri: env.GOOGLE_CALLBACK_URL,
 });
 
