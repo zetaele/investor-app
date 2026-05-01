@@ -3,10 +3,11 @@ import { env } from "../../config/env.js";
 import { createSession, deleteSession, upsertUser } from "./auth.service.js";
 import { requireAuth } from "./auth.middleware.js";
 
+// SameSite=None + Secure required for cross-origin cookie (frontend on Vercel, backend on Render).
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  sameSite: (env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
   path: "/",
   maxAge: 60 * 60 * 24 * 30, // 30 days
 };
