@@ -188,7 +188,7 @@ const chartData = computed((): ChartData<"scatter", Point[]> => {
   const pointDatasets = props.entries.map((entry, i) => {
     const color = COLORS[i % COLORS.length] ?? COLORS[0]!;
     const align = labelPositions[i] ?? "top";
-    const anchor = align === "top" ? "end" : align === "bottom" ? "start" : "center";
+    const anchor = (align === "top" ? "end" : align === "bottom" ? "start" : "center") as "center" | "start" | "end";
     return {
       label: entry.ticker,
       data: [{ x: entry.calculations.modifiedDuration, y: entry.calculations.ytm * 100 }],
