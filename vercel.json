@@ -2,5 +2,9 @@
   "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @investor-app/shared build && pnpm --filter frontend build",
   "outputDirectory": "packages/frontend/dist",
   "framework": null,
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/auth/:path*", "destination": "https://investor-app-3xgo.onrender.com/auth/:path*" },
+    { "source": "/api/:path*",  "destination": "https://investor-app-3xgo.onrender.com/api/:path*" },
+    { "source": "/(.*)",        "destination": "/index.html" }
+  ]
 }
