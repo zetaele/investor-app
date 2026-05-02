@@ -97,9 +97,12 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
 
-  // Resolve auth state on first navigation
+  // Resolve auth state on first navigation; timeout prevents Render cold-start from blocking the UI
   if (authStore.status === "idle") {
-    await authStore.fetchMe();
+    await Promise.race([
+      authStore.fetchMe(),
+      new Promise<void>((resolve) => setTimeout(resolve, 3000)),
+    ]);
   }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
